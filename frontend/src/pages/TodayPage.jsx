@@ -3,8 +3,9 @@ import { api } from '../api/client';
 import DailyNoteEditor from '../components/DailyNoteEditor';
 import QuickTaskInput from '../components/QuickTaskInput';
 import TaskItem from '../components/TaskItem';
+import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
-import { Check, ListTodo, Flame, PenLine } from 'lucide-react';
+import { Check, ListTodo, Flame, PenLine, Plus } from 'lucide-react';
 
 export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const todayStr = new Date().toISOString().split('T')[0];
@@ -117,7 +118,66 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     }
   };
 
+  const [newHabitName, setNewHabitName] = useState('');
+  const [isSubmittingHabit, setIsSubmittingHabit] = useState(false);
+
   // Habit actions
+  const handleCreateHabit = async (e) => {
+    if (e) e.preventDefault();
+    if (!newHabitName.trim() || isSubmittingHabit) return;
+
+    setIsSubmittingHabit(true);
+    try {
+      const created = await api.createHabit(newHabitName.trim());
+      setTodayData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          habits: [...prev.habits, created],
+        };
+      });
+      setNewHabitName('');
+      refreshContributions();
+    } catch (err) {
+      console.error('Failed to create habit:', err);
+    } finally {
+      setIsSubmittingHabit(false);
+    }
+  };
+
+  const handleUpdateHabit = async (habitId, updateData) => {
+    try {
+      const updated = await api.updateHabit(habitId, updateData);
+      setTodayData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          habits: prev.habits.map((h) => (h.id === habitId ? { ...h, ...updated } : h)),
+        };
+      });
+      refreshContributions();
+    } catch (err) {
+      console.error('Failed to update habit:', err);
+    }
+  };
+
+  const handleDeleteHabit = async (habitId) => {
+    setTodayData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        habits: prev.habits.filter((h) => h.id !== habitId),
+      };
+    });
+    try {
+      await api.deleteHabit(habitId);
+      refreshContributions();
+    } catch (err) {
+      console.error('Failed to delete habit:', err);
+      loadTodayData();
+    }
+  };
+
   const handleToggleHabit = async (habitId, newCompleted) => {
     // Optimistic update
     setTodayData((prev) => {
@@ -275,34 +335,45 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
           </div>
         </div>
 
+        <form className="quick-task-form" onSubmit={handleCreateHabit}>
+          <input
+            type="text"
+            className="task-input-field"
+            placeholder="Add a habit (e.g. Study or code, Walk or exercise)..."
+            value={newHabitName}
+            onChange={(e) => setNewHabitName(e.target.value)}
+            disabled={isSubmittingHabit}
+            id="today-new-habit-input"
+          />
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={!newHabitName.trim() || isSubmittingHabit}
+            id="today-new-habit-submit-btn"
+          >
+            <Plus size={16} />
+            <span>Add</span>
+          </button>
+        </form>
+
         {habits.length === 0 ? (
           <div className="empty-state">
             <p>No habits configured yet.</p>
+            <p className="empty-state-sub">Type a habit above to add it to your daily routine.</p>
           </div>
         ) : (
           <div className="habit-list">
-            {habits.map((habit) => {
-              const isCompleted = Boolean(habit.completed_today);
-              return (
-                <div key={habit.id} className="habit-card">
-                  <div className="habit-info">
-                    <span className="habit-name">{habit.name}</span>
-                    <span className="habit-status-text">
-                      {isCompleted ? 'Completed today' : 'Pending for today'}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    className={`habit-check-btn ${isCompleted ? 'completed' : ''}`}
-                    onClick={() => handleToggleHabit(habit.id, !isCompleted)}
-                    id={`habit-toggle-${habit.id}`}
-                  >
-                    <Check size={14} strokeWidth={isCompleted ? 3 : 2} />
-                    <span>{isCompleted ? 'Completed' : 'Mark complete'}</span>
-                  </button>
-                </div>
-              );
-            })}
+            {habits.map((habit) => (
+              <HabitItem
+                key={habit.id}
+                habit={habit}
+                todayDate={currentDateStr}
+                onToggleToday={handleToggleHabit}
+                onUpdate={handleUpdateHabit}
+                onDelete={handleDeleteHabit}
+                showHistory={false}
+              />
+            ))}
           </div>
         )}
       </section>
