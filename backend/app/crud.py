@@ -1,0 +1,293 @@
+import datetime
+from typing import Optional, List, Dict
+from sqlalchemy.orm import Session
+from sqlalchemy import desc, and_
+from . import models, schemas
+
+
+def get_daily_note_by_date(db: Session, date_str: str) -> Optional[models.DailyNote]:
+    return db.query(models.DailyNote).filter(models.DailyNote.date == date_str).first()
+
+
+def upsert_daily_note(db: Session, date_str: str, content: str) -> models.DailyNote:
+    note = get_daily_note_by_date(db, date_str)
+    now = models.utcnow()
+    if note:
+        note.content = content
+        note.updated_at = now
+    else:
+        note = models.DailyNote(date=date_str, content=content, created_at=now, updated_at=now)
+        db.add(note)
+    db.commit()
+    db.refresh(note)
+    return note
+
+
+def get_tasks(
+    db: Session,
+    filter_type: Optional[str] = None,
+    category: Optional[str] = None
+) -> List[models.Task]:
+    query = db.query(models.Task)
+
+    today_str = datetime.date.today().isoformat()
+
+    if filter_type == "active":
+        query = query.filter(models.Task.completed == False)
+    elif filter_type == "completed":
+        query = query.filter(models.Task.completed == True)
+    elif filter_type == "today":
+        # Tasks explicitly due today or completed today or active and due today
+        query = query.filter(
+            (models.Task.due_date == today_str) |
+            (models.Task.completed_at >= datetime.datetime.now(datetime.timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0))
+        )
+    elif filter_type == "overdue":
+        query = query.filter(
+            models.Task.completed == False,
+            models.Task.due_date.isnot(None),
+            models.Task.due_date < today_str
+        )
+    elif filter_type == "high":
+        query = query.filter(
+            models.Task.priority == "high",
+            models.Task.completed == False
+        )
+
+    if category:
+        query = query.filter(models.Task.category == category)
+
+    # Order: incomplete first, then by priority (high, medium, low, none), then created_at desc
+    # In SQLite we can order by completed asc, created_at desc
+    return query.order_by(models.Task.completed.asc(), desc(models.Task.created_at)).all()
+
+
+def get_today_tasks(db: Session, today_str: str) -> List[models.Task]:
+    """
+    Returns tasks relevant for Today:
+    1. Tasks with due_date == today_str
+    2. Overdue incomplete tasks (due_date < today_str and not completed)
+    3. High priority active tasks without a future due date
+    4. Tasks completed today
+    """
+    # Query tasks due today or overdue incomplete
+    tasks = db.query(models.Task).filter(
+        (models.Task.due_date == today_str) |
+        (and_(models.Task.completed == False, models.Task.due_date.isnot(None), models.Task.due_date <= today_str)) |
+        (and_(models.Task.completed == False, models.Task.priority == "high", models.Task.due_date.is_(None))) |
+        (and_(models.Task.completed == True, models.Task.due_date == today_str))
+    ).order_by(models.Task.completed.asc(), desc(models.Task.created_at)).all()
+
+    return tasks
+
+
+def create_task(db: Session, task_in: schemas.TaskCreate) -> models.Task:
+    now = models.utcnow()
+    completed_at = now if task_in.completed else None
+    task = models.Task(
+        title=task_in.title.strip(),
+        completed=bool(task_in.completed),
+        priority=task_in.priority or "none",
+        due_date=task_in.due_date or None,
+        category=task_in.category.strip() if task_in.category else None,
+        created_at=now,
+        completed_at=completed_at
+    )
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+def get_task(db: Session, task_id: int) -> Optional[models.Task]:
+    return db.query(models.Task).filter(models.Task.id == task_id).first()
+
+
+def update_task(db: Session, task_id: int, task_in: schemas.TaskUpdate) -> Optional[models.Task]:
+    task = get_task(db, task_id)
+    if not task:
+        return None
+
+    data = task_in.model_dump(exclude_unset=True)
+    if "completed" in data:
+        now = models.utcnow()
+        if data["completed"] and not task.completed:
+            task.completed_at = now
+        elif not data["completed"]:
+            task.completed_at = None
+        task.completed = data["completed"]
+
+    if "title" in data and data["title"] is not None:
+        task.title = data["title"].strip()
+    if "priority" in data:
+        task.priority = data["priority"] or "none"
+    if "due_date" in data:
+        task.due_date = data["due_date"] or None
+    if "category" in data:
+        task.category = data["category"].strip() if data["category"] else None
+
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+def delete_task(db: Session, task_id: int) -> bool:
+    task = get_task(db, task_id)
+    if not task:
+        return False
+    db.delete(task)
+    db.commit()
+    return True
+
+
+def get_habits(db: Session, active_only: bool = True) -> List[models.Habit]:
+    query = db.query(models.Habit)
+    if active_only:
+        query = query.filter(models.Habit.active == True)
+    return query.order_by(models.Habit.id.asc()).all()
+
+
+def get_habit(db: Session, habit_id: int) -> Optional[models.Habit]:
+    return db.query(models.Habit).filter(models.Habit.id == habit_id).first()
+
+
+def create_habit(db: Session, habit_in: schemas.HabitCreate) -> models.Habit:
+    habit = models.Habit(name=habit_in.name.strip(), active=True, created_at=models.utcnow())
+    db.add(habit)
+    db.commit()
+    db.refresh(habit)
+    return habit
+
+
+def update_habit(db: Session, habit_id: int, habit_in: schemas.HabitUpdate) -> Optional[models.Habit]:
+    habit = get_habit(db, habit_id)
+    if not habit:
+        return None
+    data = habit_in.model_dump(exclude_unset=True)
+    if "name" in data and data["name"] is not None:
+        habit.name = data["name"].strip()
+    if "active" in data and data["active"] is not None:
+        habit.active = data["active"]
+    db.commit()
+    db.refresh(habit)
+    return habit
+
+
+def delete_habit(db: Session, habit_id: int) -> bool:
+    habit = get_habit(db, habit_id)
+    if not habit:
+        return False
+    db.delete(habit)
+    db.commit()
+    return True
+
+
+def toggle_habit_log(
+    db: Session,
+    habit_id: int,
+    date_str: str,
+    completed: Optional[bool] = None
+) -> bool:
+    log = db.query(models.HabitLog).filter(
+        models.HabitLog.habit_id == habit_id,
+        models.HabitLog.date == date_str
+    ).first()
+
+    if log:
+        if completed is None:
+            new_state = not log.completed
+        else:
+            new_state = completed
+        log.completed = new_state
+        db.commit()
+        return new_state
+    else:
+        new_state = True if completed is None else completed
+        log = models.HabitLog(habit_id=habit_id, date=date_str, completed=new_state)
+        db.add(log)
+        db.commit()
+        return new_state
+
+
+def get_habits_with_history(
+    db: Session,
+    active_only: bool = True,
+    days: int = 14,
+    reference_date_str: Optional[str] = None
+) -> List[schemas.HabitItemResponse]:
+    habits = get_habits(db, active_only=active_only)
+
+    if reference_date_str:
+        today = datetime.date.fromisoformat(reference_date_str)
+    else:
+        today = datetime.date.today()
+
+    today_str = today.isoformat()
+    start_date = today - datetime.timedelta(days=days - 1)
+    start_date_str = start_date.isoformat()
+
+    habit_ids = [h.id for h in habits]
+    logs = db.query(models.HabitLog).filter(
+        models.HabitLog.habit_id.in_(habit_ids),
+        models.HabitLog.date >= start_date_str,
+        models.HabitLog.date <= today_str
+    ).all() if habit_ids else []
+
+    # Map logs by habit_id -> {date: completed}
+    log_map: Dict[int, Dict[str, bool]] = {h.id: {} for h in habits}
+    for log in logs:
+        if log.completed:
+            log_map[log.habit_id][log.date] = True
+
+    result = []
+    for h in habits:
+        history = log_map.get(h.id, {})
+        is_completed_today = history.get(today_str, False)
+        result.append(
+            schemas.HabitItemResponse(
+                id=h.id,
+                name=h.name,
+                active=h.active,
+                created_at=h.created_at,
+                completed_today=is_completed_today,
+                recent_history=history
+            )
+        )
+    return result
+
+
+def seed_default_data_if_empty(db: Session):
+    # Check if any habits exist
+    habit_count = db.query(models.Habit).count()
+    if habit_count == 0:
+        default_habits = [
+            "Sleep before midnight",
+            "Walk or exercise",
+            "No phone first 30 minutes",
+            "Study or code",
+            "Daily reflection"
+        ]
+        now = models.utcnow()
+        for name in default_habits:
+            db.add(models.Habit(name=name, active=True, created_at=now))
+        db.commit()
+
+    task_count = db.query(models.Task).count()
+    if task_count == 0:
+        today_str = datetime.date.today().isoformat()
+        sample_tasks = [
+            ("Review current course assignments", "high", today_str, "University"),
+            ("Review algorithm notes for interviews", "medium", today_str, "Career"),
+            ("Walk outside for 30 minutes", "low", today_str, "Health")
+        ]
+        now = models.utcnow()
+        for title, priority, due, cat in sample_tasks:
+            db.add(models.Task(
+                title=title,
+                completed=False,
+                priority=priority,
+                due_date=due,
+                category=cat,
+                created_at=now
+            ))
+        db.commit()

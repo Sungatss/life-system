@@ -1,0 +1,15 @@
+# Caddy reverse proxy for custom domain deployment with automatic SSL
+# Replace yourdomain.com with your actual custom domain.
+
+yourdomain.com {
+    reverse_proxy 127.0.0.1:8000
+    
+    encode zstd gzip
+    
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
