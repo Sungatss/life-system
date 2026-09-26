@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../api/client';
+import { Sparkles, Plus } from 'lucide-react';
+
+const REFLECTION_EXAMPLES = [
+  '#### What exactly did I do today that will help me achieve my goal?',
+  '#### what has prevented me from being productive and needs to be changed',
+  '#### "Am I fully unlocking the potential inside me?"',
+];
+
+const FULL_TEMPLATE = `${REFLECTION_EXAMPLES[0]}\n\n\n${REFLECTION_EXAMPLES[1]}\n\n\n${REFLECTION_EXAMPLES[2]}\n\n`;
 
 export default function DailyNoteEditor({ date, initialContent, onContentSaved }) {
   const [content, setContent] = useState(initialContent || '');
   const [saveStatus, setSaveStatus] = useState('saved'); // 'saved', 'saving', 'error'
   const [wordCount, setWordCount] = useState(0);
   const debounceTimerRef = useRef(null);
-  const isFirstMount = useRef(true);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     setContent(initialContent || '');
     const words = (initialContent || '').trim().split(/\s+/).filter(Boolean).length;
     setWordCount(words);
     setSaveStatus('saved');
-    isFirstMount.current = true;
   }, [date, initialContent]);
 
   const performSave = async (textToSave) => {
@@ -30,8 +38,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
     }
   };
 
-  const handleChange = (e) => {
-    const newText = e.target.value;
+  const updateAndSave = (newText) => {
     setContent(newText);
     const words = newText.trim().split(/\s+/).filter(Boolean).length;
     setWordCount(words);
@@ -46,6 +53,10 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
     }, 600);
   };
 
+  const handleChange = (e) => {
+    updateAndSave(e.target.value);
+  };
+
   const handleKeyDown = (e) => {
     // Ctrl+S or Cmd+S quick save
     if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -57,17 +68,88 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
     }
   };
 
+  const insertPrompt = (promptText) => {
+    let nextContent = content;
+    if (!content.trim()) {
+      nextContent = `${promptText}\n\n`;
+    } else {
+      nextContent = `${content.trimEnd()}\n\n${promptText}\n\n`;
+    }
+    updateAndSave(nextContent);
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const insertAllPrompts = () => {
+    let nextContent = content;
+    if (!content.trim()) {
+      nextContent = FULL_TEMPLATE;
+    } else {
+      nextContent = `${content.trimEnd()}\n\n${FULL_TEMPLATE}`;
+    }
+    updateAndSave(nextContent);
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const placeholderText = `Write a note... For example:\n\n${REFLECTION_EXAMPLES[0]}\n\n${REFLECTION_EXAMPLES[1]}\n\n${REFLECTION_EXAMPLES[2]}`;
+
   return (
     <div className="daily-note-container">
+      {/* Reflection Prompts Toolbar */}
+      <div className="note-prompts-bar">
+        <span className="note-prompts-label">Reflection prompts:</span>
+        <button
+          type="button"
+          className="note-prompt-btn"
+          onClick={insertAllPrompts}
+          title="Insert full reflection template"
+        >
+          <Sparkles size={11} />
+          <span>Insert template</span>
+        </button>
+        <button
+          type="button"
+          className="note-prompt-btn"
+          onClick={() => insertPrompt(REFLECTION_EXAMPLES[0])}
+          title="Insert goal achievement prompt"
+        >
+          <Plus size={11} />
+          <span>1. Goal progress</span>
+        </button>
+        <button
+          type="button"
+          className="note-prompt-btn"
+          onClick={() => insertPrompt(REFLECTION_EXAMPLES[1])}
+          title="Insert productivity blockers prompt"
+        >
+          <Plus size={11} />
+          <span>2. Blockers</span>
+        </button>
+        <button
+          type="button"
+          className="note-prompt-btn"
+          onClick={() => insertPrompt(REFLECTION_EXAMPLES[2])}
+          title="Insert unlocking potential prompt"
+        >
+          <Plus size={11} />
+          <span>3. Unlocking potential</span>
+        </button>
+      </div>
+
       <textarea
+        ref={textareaRef}
         className="daily-note-textarea"
         value={content}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="Write a note... What is on your mind today? Daily reflections, plans, problems, or quick ideas."
+        placeholder={placeholderText}
         aria-label="Daily note content"
-        rows={7}
+        rows={8}
       />
+
       <div className="daily-note-footer">
         <div className="save-status">
           <div className={`save-indicator ${saveStatus}`} />
