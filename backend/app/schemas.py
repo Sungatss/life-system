@@ -100,3 +100,23 @@ class TodayOverview(BaseModel):
     daily_note: Optional[DailyNoteResponse] = None
     tasks: List[TaskResponse] = []
     habits: List[HabitItemResponse] = []
+
+
+# GitHub-style Contribution Tracker Schemas
+class ContributionDay(BaseModel):
+    date: str
+    has_note: bool = False
+    note_words: int = 0
+    habits_completed: int = 0
+    total_habits: int = 0
+    tasks_completed: int = 0
+
+
+class ContributionsResponse(BaseModel):
+    start_date: str
+    end_date: str
+    days: List[ContributionDay]
+    total_notes_written: int
+    total_habits_completed: int
+    total_tasks_completed: int
+

@@ -1,30 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import HabitItem from '../components/HabitItem';
+import ContributionGraph from '../components/ContributionGraph';
 import { Plus, Flame } from 'lucide-react';
 
 export default function HabitsPage() {
   const [habits, setHabits] = useState([]);
+  const [contributions, setContributions] = useState(null);
   const [newHabitName, setNewHabitName] = useState('');
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const todayStr = new Date().toISOString().split('T')[0];
 
-  const loadHabits = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const data = await api.getHabits(14, todayStr);
-      setHabits(data);
+      const [habitsData, contribData] = await Promise.all([
+        api.getHabits(14, todayStr),
+        api.getContributions(112, todayStr),
+      ]);
+      setHabits(habitsData);
+      setContributions(contribData);
     } catch (err) {
-      console.error('Failed to load habits:', err);
+      console.error('Failed to load habits data:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  const refreshContributions = async () => {
+    try {
+      const contribData = await api.getContributions(112, todayStr);
+      setContributions(contribData);
+    } catch (err) {
+      console.error('Failed to refresh contributions:', err);
+    }
+  };
+
   useEffect(() => {
-    loadHabits();
+    loadData();
   }, []);
 
   const handleCreateHabit = async (e) => {
@@ -36,6 +51,7 @@ export default function HabitsPage() {
       const created = await api.createHabit(newHabitName.trim());
       setHabits((prev) => [...prev, created]);
       setNewHabitName('');
+      refreshContributions();
     } catch (err) {
       console.error('Failed to create habit:', err);
     } finally {
@@ -63,9 +79,10 @@ export default function HabitsPage() {
 
     try {
       await api.toggleHabit(habitId, todayStr, newCompleted);
+      refreshContributions();
     } catch (err) {
       console.error('Failed to toggle habit:', err);
-      loadHabits();
+      loadData();
     }
   };
 
@@ -82,9 +99,10 @@ export default function HabitsPage() {
     setHabits((prev) => prev.filter((h) => h.id !== habitId));
     try {
       await api.deleteHabit(habitId);
+      refreshContributions();
     } catch (err) {
       console.error('Failed to delete habit:', err);
-      loadHabits();
+      loadData();
     }
   };
 
@@ -94,6 +112,15 @@ export default function HabitsPage() {
         <div className="cockpit-weekday">Daily consistency</div>
         <h1 className="cockpit-title">Habits</h1>
       </div>
+
+      {/* GitHub-style Contribution Heatmap for Habits & Notes */}
+      {contributions && (
+        <ContributionGraph
+          contributions={contributions}
+          title="Habits and daily notes consistency"
+          defaultMode="habits"
+        />
+      )}
 
       <section className="cockpit-section">
         <div className="section-header">

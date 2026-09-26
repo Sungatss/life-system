@@ -94,4 +94,13 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ date, completed }),
     }),
+
+  // Contributions
+  getContributions: (days = 112, date) => {
+    const params = new URLSearchParams();
+    if (days) params.append('days', days.toString());
+    if (date) params.append('date', date);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return request(`/api/contributions${query}`);
+  },
 };

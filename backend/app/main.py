@@ -201,6 +201,16 @@ def toggle_habit(
     }
 
 
+# Contributions / Consistency Heatmap
+@app.get("/api/contributions", response_model=schemas.ContributionsResponse)
+def get_contributions(
+    days: int = Query(112, ge=14, le=365),
+    date: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    return crud.get_contributions_history(db, days=days, reference_date_str=date)
+
+
 # Frontend static files integration (Single-container / custom domain deployment)
 frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist"))
 if os.path.isdir(frontend_dist):

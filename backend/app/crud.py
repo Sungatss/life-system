@@ -291,3 +291,96 @@ def seed_default_data_if_empty(db: Session):
                 created_at=now
             ))
         db.commit()
+
+
+def get_contributions_history(
+    db: Session,
+    days: int = 120,
+    reference_date_str: Optional[str] = None
+) -> schemas.ContributionsResponse:
+    if reference_date_str:
+        end_date = datetime.date.fromisoformat(reference_date_str)
+    else:
+        end_date = datetime.date.today()
+
+    start_date = end_date - datetime.timedelta(days=days - 1)
+    start_str = start_date.isoformat()
+    end_str = end_date.isoformat()
+
+    # Query notes in range
+    notes = db.query(models.DailyNote).filter(
+        models.DailyNote.date >= start_str,
+        models.DailyNote.date <= end_str
+    ).all()
+    notes_map = {}
+    for n in notes:
+        text = (n.content or "").strip()
+        words = len(text.split()) if text else 0
+        if words > 0:
+            notes_map[n.date] = words
+
+    # Query habits in range
+    active_habits_count = db.query(models.Habit).filter(models.Habit.active == True).count()
+    habit_logs = db.query(models.HabitLog).filter(
+        models.HabitLog.date >= start_str,
+        models.HabitLog.date <= end_str,
+        models.HabitLog.completed == True
+    ).all()
+    habits_map = {}
+    for log in habit_logs:
+        habits_map[log.date] = habits_map.get(log.date, 0) + 1
+
+    # Query tasks completed in range
+    tasks = db.query(models.Task).filter(
+        models.Task.completed == True
+    ).all()
+    tasks_map = {}
+    for t in tasks:
+        t_date = None
+        if t.completed_at:
+            t_date = t.completed_at.strftime("%Y-%m-%d")
+        elif t.due_date:
+            t_date = t.due_date
+        if t_date and start_str <= t_date <= end_str:
+            tasks_map[t_date] = tasks_map.get(t_date, 0) + 1
+
+    # Assemble day-by-day sequence
+    day_list = []
+    curr = start_date
+    total_notes = 0
+    total_habits = 0
+    total_tasks = 0
+
+    while curr <= end_date:
+        d_str = curr.isoformat()
+        has_note = d_str in notes_map
+        words = notes_map.get(d_str, 0)
+        h_completed = habits_map.get(d_str, 0)
+        t_completed = tasks_map.get(d_str, 0)
+
+        if has_note:
+            total_notes += 1
+        total_habits += h_completed
+        total_tasks += t_completed
+
+        day_list.append(
+            schemas.ContributionDay(
+                date=d_str,
+                has_note=has_note,
+                note_words=words,
+                habits_completed=h_completed,
+                total_habits=active_habits_count,
+                tasks_completed=t_completed
+            )
+        )
+        curr += datetime.timedelta(days=1)
+
+    return schemas.ContributionsResponse(
+        start_date=start_str,
+        end_date=end_str,
+        days=day_list,
+        total_notes_written=total_notes,
+        total_habits_completed=total_habits,
+        total_tasks_completed=total_tasks
+    )
+

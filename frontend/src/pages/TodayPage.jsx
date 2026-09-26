@@ -3,12 +3,14 @@ import { api } from '../api/client';
 import DailyNoteEditor from '../components/DailyNoteEditor';
 import QuickTaskInput from '../components/QuickTaskInput';
 import TaskItem from '../components/TaskItem';
+import ContributionGraph from '../components/ContributionGraph';
 import { Check, ListTodo, Flame, PenLine } from 'lucide-react';
 
 export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const todayStr = new Date().toISOString().split('T')[0];
   const [currentDateStr, setCurrentDateStr] = useState(todayStr);
   const [todayData, setTodayData] = useState(null);
+  const [contributions, setContributions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,13 +27,26 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     try {
       setLoading(true);
       setError(null);
-      const data = await api.getToday(currentDateStr);
+      const [data, contribData] = await Promise.all([
+        api.getToday(currentDateStr),
+        api.getContributions(112, currentDateStr),
+      ]);
       setTodayData(data);
+      setContributions(contribData);
     } catch (err) {
       console.error('Failed to load today data:', err);
       setError('Could not connect to database. Make sure the backend is running.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const refreshContributions = async () => {
+    try {
+      const contribData = await api.getContributions(112, currentDateStr);
+      setContributions(contribData);
+    } catch (err) {
+      console.error('Failed to refresh contributions:', err);
     }
   };
 
@@ -116,6 +131,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     });
     try {
       await api.toggleHabit(habitId, currentDateStr, newCompleted);
+      refreshContributions();
     } catch (err) {
       console.error('Failed to toggle habit:', err);
       loadTodayData();
@@ -183,6 +199,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
                   }
                 : prev
             );
+            refreshContributions();
           }}
         />
       </section>
@@ -289,6 +306,14 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
           </div>
         )}
       </section>
+
+      {/* 5. GitHub-style Contribution Tracker for Daily Notes & Habits */}
+      {contributions && (
+        <ContributionGraph
+          contributions={contributions}
+          title="Daily consistency heatmap"
+        />
+      )}
     </div>
   );
 }
