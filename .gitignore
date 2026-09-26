@@ -11,3 +11,5 @@ dist/
 .env
 data/
 .bin/
+tunnel.log
+CURRENT_URL.txt

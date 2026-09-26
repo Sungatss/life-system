@@ -1,0 +1,18 @@
+[Unit]
+Description=Life System Web Application (24/7 Service)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sungat/Antigravity/life system/backend
+ExecStart="/home/sungat/Antigravity/life system/.venv/bin/uvicorn" app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5s
+Environment=PYTHONUNBUFFERED=1
+Environment=PORT=8000
+Environment=HOST=0.0.0.0
+Environment=DATABASE_URL=sqlite:///./lifesystem.db
+EnvironmentFile=-/home/sungat/Antigravity/life system/.env
+
+[Install]
+WantedBy=default.target

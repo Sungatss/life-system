@@ -212,7 +212,14 @@ def get_contributions(
 
 
 # Frontend static files integration (Single-container / custom domain deployment)
-frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist"))
+frontend_dist_env = os.getenv("FRONTEND_DIST")
+if frontend_dist_env and os.path.isdir(frontend_dist_env):
+    frontend_dist = frontend_dist_env
+else:
+    frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist"))
+    if not os.path.isdir(frontend_dist) and os.path.isdir("/frontend/dist"):
+        frontend_dist = "/frontend/dist"
+
 if os.path.isdir(frontend_dist):
     assets_dir = os.path.join(frontend_dist, "assets")
     if os.path.isdir(assets_dir):

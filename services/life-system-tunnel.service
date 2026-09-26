@@ -1,0 +1,15 @@
+[Unit]
+Description=Life System Cloudflare Tunnel (24/7 Persistent Domain)
+After=network.target life-system.service
+Wants=life-system.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sungat/Antigravity/life system
+ExecStart="/home/sungat/Antigravity/life system/run-tunnel.sh"
+Restart=always
+RestartSec=10s
+EnvironmentFile=-/home/sungat/Antigravity/life system/.env
+
+[Install]
+WantedBy=default.target
