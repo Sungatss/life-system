@@ -60,6 +60,12 @@ export default function App() {
       />
 
       <main className="app-main" id="main-content">
+        {!['privacy', 'terms'].includes(activeTab) && (
+          <blockquote className="cockpit-quote">
+            "Figure out what you want, ignore the opinions of others, and do so much volume that it would be unreasonable to not be successful."
+          </blockquote>
+        )}
+
         {activeTab === 'today' && (
           <TodayPage
             onNavigateToTasks={() => navigateTo('tasks')}

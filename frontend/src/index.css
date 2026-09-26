@@ -171,6 +171,21 @@ a {
   padding-bottom: 60px;
 }
 
+/* Top Focus Quote */
+.cockpit-quote {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  letter-spacing: -0.01em;
+}
+
 /* Date Display */
 .cockpit-date-banner {
   margin-bottom: 24px;
