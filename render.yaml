@@ -11,4 +11,4 @@ services:
       - key: ALLOWED_ORIGINS
         value: "*"
       - key: DATABASE_URL
-        value: sqlite:////app/data/lifesystem.db
+        sync: false

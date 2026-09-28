@@ -16,13 +16,26 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
   const [wordCount, setWordCount] = useState(0);
   const debounceTimerRef = useRef(null);
   const textareaRef = useRef(null);
+  const contentRef = useRef(initialContent || '');
 
   useEffect(() => {
     setContent(initialContent || '');
+    contentRef.current = initialContent || '';
     const words = (initialContent || '').trim().split(/\s+/).filter(Boolean).length;
     setWordCount(words);
     setSaveStatus('saved');
   }, [date, initialContent]);
+
+  // Flush any pending save on unmount or before navigating away
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+        api.saveNote(date, contentRef.current).catch((e) => console.error('Unmount save failed', e));
+      }
+    };
+  }, [date]);
 
   const performSave = async (textToSave) => {
     setSaveStatus('saving');
@@ -40,6 +53,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
 
   const updateAndSave = (newText) => {
     setContent(newText);
+    contentRef.current = newText;
     const words = newText.trim().split(/\s+/).filter(Boolean).length;
     setWordCount(words);
     setSaveStatus('saving');
@@ -51,6 +65,14 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
     debounceTimerRef.current = setTimeout(() => {
       performSave(newText);
     }, 600);
+  };
+
+  const handleBlur = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+      performSave(contentRef.current);
+    }
   };
 
   const handleChange = (e) => {
@@ -144,6 +166,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
         className="daily-note-textarea"
         value={content}
         onChange={handleChange}
+        onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         placeholder={placeholderText}
         aria-label="Daily note content"

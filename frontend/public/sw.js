@@ -1,5 +1,5 @@
-// Service Worker for Life System (24/7 Offline & Instant Mobile Launch)
-const CACHE_NAME = 'life-system-v1';
+// Service Worker for Life System (v2 - Direct API Network Access & Clean Offline App Shell)
+const CACHE_NAME = 'life-system-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -12,20 +12,22 @@ const STATIC_ASSETS = [
 
 // Install: pre-cache core static shell
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
-// Activate: clean up old caches
+// Activate: clean up ALL old caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('[SW] Purging old cache:', key);
             return caches.delete(key);
           }
         })
@@ -39,49 +41,36 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Only handle GET requests
+  // 1. CRITICAL: Never intercept or cache API requests!
+  // All /api/ requests must go directly to the live backend server.
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+
+  // Only handle GET requests for static assets
   if (request.method !== 'GET') {
     return;
   }
 
-  // 1. API Requests: Network first, fallback to cached data if offline
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response && response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          return caches.match(request);
-        })
-    );
-    return;
-  }
-
-  // 2. Navigation / Page requests: Stale-while-revalidate / cache first for instant launch
+  // 2. Navigation / Page requests: Network-first, fallback to cached index.html if offline
   if (request.mode === 'navigate') {
     event.respondWith(
-      caches.match('/index.html').then((cachedResponse) => {
-        const fetchPromise = fetch(request).then((networkResponse) => {
+      fetch(request)
+        .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse.clone()));
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return networkResponse;
-        }).catch(() => cachedResponse);
-
-        return cachedResponse || fetchPromise;
-      })
+        })
+        .catch(() => {
+          return caches.match('/index.html');
+        })
     );
     return;
   }
 
-  // 3. Static Assets (JS, CSS, images, fonts): Cache-first with background network update
+  // 3. Static Assets (JS, CSS, images): Stale-while-revalidate
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request).then((networkResponse) => {

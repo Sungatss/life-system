@@ -3,11 +3,14 @@ const API_BASE = import.meta.env.VITE_API_URL || '';
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
   const config = {
+    cache: 'no-store',
+    ...options,
     headers: {
       'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
       ...options.headers,
     },
-    ...options,
   };
 
   const response = await fetch(url, config);

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Check, Trash2, Edit2, Calendar } from 'lucide-react';
 import TaskEditModal from './TaskEditModal';
+import { getLocalDateStr } from '../utils/date';
 
 export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateStr();
   const isOverdue = !task.completed && task.due_date && task.due_date < todayStr;
   const isDueToday = task.due_date === todayStr;
 

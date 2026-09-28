@@ -6,9 +6,10 @@ import TaskItem from '../components/TaskItem';
 import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
 import { Check, ListTodo, Flame, PenLine, Plus } from 'lucide-react';
+import { getLocalDateStr } from '../utils/date';
 
 export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateStr();
   const [currentDateStr, setCurrentDateStr] = useState(todayStr);
   const [todayData, setTodayData] = useState(null);
   const [contributions, setContributions] = useState(null);

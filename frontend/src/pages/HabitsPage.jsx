@@ -3,6 +3,7 @@ import { api } from '../api/client';
 import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
 import { Plus, Flame } from 'lucide-react';
+import { getLocalDateStr } from '../utils/date';
 
 export default function HabitsPage() {
   const [habits, setHabits] = useState([]);
@@ -11,7 +12,7 @@ export default function HabitsPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateStr();
 
   const loadData = async () => {
     try {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, X } from 'lucide-react';
+import { getLocalDateStr } from '../utils/date';
 
 export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete }) {
   if (!isOpen || !task) return null;
@@ -35,14 +36,13 @@ export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete 
   };
 
   const setDueToday = () => {
-    const today = new Date().toISOString().split('T')[0];
-    setDueDate(today);
+    setDueDate(getLocalDateStr());
   };
 
   const setDueTomorrow = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    setDueDate(tomorrow.toISOString().split('T')[0]);
+    setDueDate(getLocalDateStr(tomorrow));
   };
 
   return (
