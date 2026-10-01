@@ -79,6 +79,11 @@ def get_today_overview(
 
 
 # Daily Notes
+@app.get("/api/notes/search", response_model=List[schemas.DailyNoteSearchResult])
+def search_notes(q: str = Query(..., min_length=1), db: Session = Depends(get_db)):
+    return crud.search_daily_notes(db, query_str=q)
+
+
 @app.get("/api/notes/{date_str}", response_model=schemas.DailyNoteResponse)
 def get_note(date_str: str, db: Session = Depends(get_db)):
     note = crud.get_daily_note_by_date(db, date_str)

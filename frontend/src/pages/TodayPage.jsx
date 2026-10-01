@@ -5,12 +5,15 @@ import QuickTaskInput from '../components/QuickTaskInput';
 import TaskItem from '../components/TaskItem';
 import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
-import { Check, ListTodo, Flame, PenLine, Plus } from 'lucide-react';
+import DateNavigator from '../components/DateNavigator';
+import NoteSearchModal from '../components/NoteSearchModal';
+import { Check, ListTodo, Flame, PenLine, Plus, Search } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
 
 export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const todayStr = getLocalDateStr();
   const [currentDateStr, setCurrentDateStr] = useState(todayStr);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [todayData, setTodayData] = useState(null);
   const [contributions, setContributions] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -231,11 +234,12 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
 
   return (
     <div className="today-page">
-      {/* 1. Date Header */}
-      <div className="cockpit-date-banner">
-        <div className="cockpit-weekday">{weekday}</div>
-        <h1 className="cockpit-title">{formattedDate}</h1>
-      </div>
+      {/* 1. Interactive Date Navigator */}
+      <DateNavigator
+        currentDateStr={currentDateStr}
+        onDateChange={setCurrentDateStr}
+        onOpenSearch={() => setIsSearchOpen(true)}
+      />
 
       {/* 2. Daily Note */}
       <section className="cockpit-section" aria-label="Daily note section">
@@ -244,7 +248,18 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
             <PenLine size={16} />
             <h2 className="section-title">Daily note</h2>
           </div>
-          <span className="section-badge">Auto-save</span>
+          <div className="section-header-actions">
+            <button
+              type="button"
+              className="btn-note-search"
+              onClick={() => setIsSearchOpen(true)}
+              title="Search across all notes"
+            >
+              <Search size={13} />
+              <span>Search</span>
+            </button>
+            <span className="section-badge">Auto-save</span>
+          </div>
         </div>
         <DailyNoteEditor
           date={currentDateStr}
@@ -386,6 +401,15 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
           title="Daily consistency heatmap"
         />
       )}
+
+      {/* Note Search Modal */}
+      <NoteSearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onSelectDate={(targetDate) => {
+          setCurrentDateStr(targetDate);
+        }}
+      />
     </div>
   );
 }

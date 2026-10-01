@@ -23,6 +23,40 @@ def upsert_daily_note(db: Session, date_str: str, content: str) -> models.DailyN
     return note
 
 
+def search_daily_notes(db: Session, query_str: str, limit: int = 50) -> List[schemas.DailyNoteSearchResult]:
+    cleaned = query_str.strip()
+    if not cleaned:
+        return []
+    pattern = f"%{cleaned}%"
+    notes = db.query(models.DailyNote).filter(
+        models.DailyNote.content.ilike(pattern)
+    ).order_by(desc(models.DailyNote.date)).limit(limit).all()
+
+    results = []
+    for note in notes:
+        content = note.content or ""
+        lower_content = content.lower()
+        idx = lower_content.find(cleaned.lower())
+        if idx == -1:
+            idx = 0
+        start = max(0, idx - 40)
+        end = min(len(content), idx + len(cleaned) + 60)
+        snippet = ("..." if start > 0 else "") + content[start:end].strip() + ("..." if end < len(content) else "")
+        words = len(content.split())
+        results.append(
+            schemas.DailyNoteSearchResult(
+                id=note.id,
+                date=note.date,
+                snippet=snippet,
+                content=content,
+                word_count=words,
+                updated_at=note.updated_at or note.created_at
+            )
+        )
+    return results
+
+
+
 def get_tasks(
     db: Session,
     filter_type: Optional[str] = None,

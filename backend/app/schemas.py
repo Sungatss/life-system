@@ -25,6 +25,18 @@ class DailyNoteResponse(DailyNoteBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class DailyNoteSearchResult(BaseModel):
+    id: int
+    date: str
+    snippet: str
+    content: str
+    word_count: int
+    updated_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+
 # Task Schemas
 class TaskBase(BaseModel):
     title: str

@@ -46,6 +46,7 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify({ content }),
     }),
+  searchNotes: (query) => request(`/api/notes/search?q=${encodeURIComponent(query)}`),
 
   // Tasks
   getTasks: (filter, category) => {
