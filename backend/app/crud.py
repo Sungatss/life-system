@@ -418,3 +418,143 @@ def get_contributions_history(
         total_tasks_completed=total_tasks
     )
 
+
+# ==============================================================================
+# Weekly Review & Cockpit Operations
+# ==============================================================================
+
+def get_weekly_review(db: Session, week_start_str: str) -> Optional[models.WeeklyReview]:
+    return db.query(models.WeeklyReview).filter(models.WeeklyReview.week_start == week_start_str).first()
+
+
+def upsert_weekly_review(db: Session, week_start_str: str, review_in: schemas.WeeklyReviewUpdate) -> models.WeeklyReview:
+    review = get_weekly_review(db, week_start_str)
+    now = models.utcnow()
+    if review:
+        if review_in.wins is not None:
+            review.wins = review_in.wins
+        if review_in.blockers is not None:
+            review.blockers = review_in.blockers
+        if review_in.next_focus is not None:
+            review.next_focus = review_in.next_focus
+        review.updated_at = now
+    else:
+        review = models.WeeklyReview(
+            week_start=week_start_str,
+            wins=review_in.wins or "",
+            blockers=review_in.blockers or "",
+            next_focus=review_in.next_focus or "",
+            created_at=now,
+            updated_at=now
+        )
+        db.add(review)
+    db.commit()
+    db.refresh(review)
+    return review
+
+
+def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) -> schemas.WeeklyCockpitResponse:
+    if reference_date_str:
+        ref_date = datetime.date.fromisoformat(reference_date_str)
+    else:
+        ref_date = datetime.date.today()
+
+    # Monday of the week (weekday 0)
+    monday = ref_date - datetime.timedelta(days=ref_date.weekday())
+    sunday = monday + datetime.timedelta(days=6)
+    monday_str = monday.isoformat()
+    sunday_str = sunday.isoformat()
+
+    # 1. Saved review reflection
+    review_model = get_weekly_review(db, monday_str)
+    review_schema = schemas.WeeklyReviewResponse.model_validate(review_model) if review_model else None
+
+    # 2. Daily notes in this week
+    notes = db.query(models.DailyNote).filter(
+        models.DailyNote.date >= monday_str,
+        models.DailyNote.date <= sunday_str
+    ).all()
+    notes_map = {n.date: len(n.content.split()) for n in notes if n.content}
+
+    # 3. Active habits & logs in this week
+    active_habits = get_habits(db, active_only=True)
+    habit_ids = [h.id for h in active_habits]
+    active_habits_count = len(active_habits)
+
+    habit_logs = db.query(models.HabitLog).filter(
+        models.HabitLog.habit_id.in_(habit_ids),
+        models.HabitLog.date >= monday_str,
+        models.HabitLog.date <= sunday_str,
+        models.HabitLog.completed == True
+    ).all() if habit_ids else []
+
+    habits_by_day = {}
+    for log in habit_logs:
+        habits_by_day[log.date] = habits_by_day.get(log.date, 0) + 1
+
+    # 4. Completed tasks in this week
+    tasks = db.query(models.Task).filter(
+        models.Task.completed == True
+    ).all()
+
+    tasks_by_day = {}
+    for t in tasks:
+        t_date = None
+        if t.completed_at:
+            t_date = t.completed_at.strftime("%Y-%m-%d")
+        elif t.due_date:
+            t_date = t.due_date
+        if t_date and monday_str <= t_date <= sunday_str:
+            tasks_by_day[t_date] = tasks_by_day.get(t_date, 0) + 1
+
+    # 5. Build 7-day breakdown (Mon-Sun)
+    day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    days_breakdown = []
+    total_tasks_completed = 0
+    total_habits_completed = 0
+    total_words_written = 0
+    days_active_count = 0
+
+    for i in range(7):
+        curr_d = monday + datetime.timedelta(days=i)
+        curr_str = curr_d.isoformat()
+        t_count = tasks_by_day.get(curr_str, 0)
+        h_count = habits_by_day.get(curr_str, 0)
+        has_note = curr_str in notes_map
+        words = notes_map.get(curr_str, 0)
+
+        total_tasks_completed += t_count
+        total_habits_completed += h_count
+        total_words_written += words
+        if t_count > 0 or h_count > 0 or has_note:
+            days_active_count += 1
+
+        days_breakdown.append(
+            schemas.WeeklyDayStat(
+                date=curr_str,
+                day_name=day_names[i],
+                tasks_completed=t_count,
+                habits_completed=h_count,
+                total_habits=active_habits_count,
+                has_note=has_note,
+                note_words=words
+            )
+        )
+
+    total_possible_habits = active_habits_count * 7
+    consistency_rate = round((total_habits_completed / total_possible_habits) * 100) if total_possible_habits > 0 else 0
+
+    return schemas.WeeklyCockpitResponse(
+        week_start=monday_str,
+        week_end=sunday_str,
+        total_tasks_completed=total_tasks_completed,
+        total_habits_completed=total_habits_completed,
+        total_habits_possible=total_possible_habits,
+        habit_consistency_rate=consistency_rate,
+        days_active=days_active_count,
+        total_words_written=total_words_written,
+        day_breakdown=days_breakdown,
+        review=review_schema
+    )
+
+

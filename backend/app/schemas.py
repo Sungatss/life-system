@@ -132,3 +132,46 @@ class ContributionsResponse(BaseModel):
     total_habits_completed: int
     total_tasks_completed: int
 
+
+# Weekly Review & Analytics Schemas
+class WeeklyReviewUpdate(BaseModel):
+    wins: Optional[str] = ""
+    blockers: Optional[str] = ""
+    next_focus: Optional[str] = ""
+
+
+class WeeklyReviewResponse(BaseModel):
+    id: int
+    week_start: str
+    wins: str
+    blockers: str
+    next_focus: str
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WeeklyDayStat(BaseModel):
+    date: str
+    day_name: str
+    tasks_completed: int
+    habits_completed: int
+    total_habits: int
+    has_note: bool
+    note_words: int
+
+
+class WeeklyCockpitResponse(BaseModel):
+    week_start: str
+    week_end: str
+    total_tasks_completed: int
+    total_habits_completed: int
+    total_habits_possible: int
+    habit_consistency_rate: int
+    days_active: int
+    total_words_written: int
+    day_breakdown: List[WeeklyDayStat]
+    review: Optional[WeeklyReviewResponse] = None
+
+

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, CheckSquare, Calendar, ListTodo, Flame } from 'lucide-react';
+import { Sun, Moon, CheckSquare, Calendar, ListTodo, Flame, BarChart2 } from 'lucide-react';
 
 export default function Header({ activeTab, onNavigate, theme, onToggleTheme }) {
   return (
@@ -33,6 +33,14 @@ export default function Header({ activeTab, onNavigate, theme, onToggleTheme }) 
         >
           <Flame size={16} />
           <span>Habits</span>
+        </button>
+        <button
+          className={`nav-button ${activeTab === 'review' ? 'active' : ''}`}
+          onClick={() => onNavigate('review')}
+          id="nav-review-btn"
+        >
+          <BarChart2 size={16} />
+          <span>Review</span>
         </button>
       </nav>
 

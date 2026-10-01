@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import TodayPage from './pages/TodayPage';
 import TasksPage from './pages/TasksPage';
 import HabitsPage from './pages/HabitsPage';
+import WeeklyReviewPage from './pages/WeeklyReviewPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsPage from './pages/TermsPage';
 
@@ -11,7 +12,7 @@ export default function App() {
   // Sync view state with URL hash
   const getInitialView = () => {
     const hash = window.location.hash.replace('#', '');
-    if (['today', 'tasks', 'habits', 'privacy', 'terms'].includes(hash)) {
+    if (['today', 'tasks', 'habits', 'review', 'privacy', 'terms'].includes(hash)) {
       return hash;
     }
     return 'today';
@@ -32,7 +33,7 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      if (['today', 'tasks', 'habits', 'privacy', 'terms'].includes(hash)) {
+      if (['today', 'tasks', 'habits', 'review', 'privacy', 'terms'].includes(hash)) {
         setActiveTab(hash);
       }
     };
@@ -74,6 +75,9 @@ export default function App() {
         )}
         {activeTab === 'tasks' && <TasksPage />}
         {activeTab === 'habits' && <HabitsPage />}
+        {activeTab === 'review' && (
+          <WeeklyReviewPage onNavigateToToday={() => navigateTo('today')} />
+        )}
         {activeTab === 'privacy' && (
           <PrivacyPolicyPage onBack={() => navigateTo('today')} />
         )}

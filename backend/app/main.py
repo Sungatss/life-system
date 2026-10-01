@@ -227,6 +227,26 @@ def get_contributions(
     return crud.get_contributions_history(db, days=days, reference_date_str=date)
 
 
+# Weekly Review & Analytics Cockpit
+@app.get("/api/reviews/weekly", response_model=schemas.WeeklyCockpitResponse)
+def get_weekly_review_cockpit(
+    date: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    return crud.get_weekly_cockpit(db, reference_date_str=date)
+
+
+@app.put("/api/reviews/weekly", response_model=schemas.WeeklyReviewResponse)
+def save_weekly_review(
+    week_start: str = Query(..., description="Monday of the week (YYYY-MM-DD)"),
+    review_in: schemas.WeeklyReviewUpdate = ...,
+    db: Session = Depends(get_db)
+):
+    review = crud.upsert_weekly_review(db, week_start_str=week_start, review_in=review_in)
+    return schemas.WeeklyReviewResponse.model_validate(review)
+
+
+
 # Frontend static files integration (Single-container / custom domain deployment)
 frontend_dist_env = os.getenv("FRONTEND_DIST")
 if frontend_dist_env and os.path.isdir(frontend_dist_env):

@@ -107,4 +107,15 @@ export const api = {
     const query = params.toString() ? `?${params.toString()}` : '';
     return request(`/api/contributions${query}`);
   },
+
+  // Weekly Review Cockpit
+  getWeeklyCockpit: (date) => {
+    const query = date ? `?date=${encodeURIComponent(date)}` : '';
+    return request(`/api/reviews/weekly${query}`);
+  },
+  saveWeeklyReview: (weekStart, data) =>
+    request(`/api/reviews/weekly?week_start=${encodeURIComponent(weekStart)}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
 };

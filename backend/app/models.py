@@ -72,3 +72,16 @@ class HabitLog(Base):
     __table_args__ = (
         UniqueConstraint("habit_id", "date", name="uq_habit_date"),
     )
+
+
+class WeeklyReview(Base):
+    __tablename__ = "weekly_reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    week_start = Column(String(10), unique=True, index=True, nullable=False)  # Format: YYYY-MM-DD (Monday)
+    wins = Column(Text, default="", nullable=False)
+    blockers = Column(Text, default="", nullable=False)
+    next_focus = Column(Text, default="", nullable=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+

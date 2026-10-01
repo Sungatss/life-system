@@ -6,6 +6,7 @@ import TaskItem from '../components/TaskItem';
 import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
 import DateNavigator from '../components/DateNavigator';
+import TodayProgressRing from '../components/TodayProgressRing';
 import NoteSearchModal from '../components/NoteSearchModal';
 import { Check, ListTodo, Flame, PenLine, Plus, Search } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
@@ -241,7 +242,13 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         onOpenSearch={() => setIsSearchOpen(true)}
       />
 
-      {/* 2. Daily Note */}
+      {/* 2. Today Completion Progress Ring */}
+      <TodayProgressRing
+        tasks={tasks}
+        habits={habits}
+      />
+
+      {/* 3. Daily Note */}
       <section className="cockpit-section" aria-label="Daily note section">
         <div className="section-header">
           <div className="section-title-wrap">
