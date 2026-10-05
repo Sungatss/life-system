@@ -12,13 +12,23 @@ from . import models, schemas, crud
 from .database import engine, get_db, Base
 
 
+db_startup_error = None
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize tables
-    Base.metadata.create_all(bind=engine)
-    # Seed starter defaults if brand new db
-    with Session(bind=engine) as db:
-        crud.seed_default_data_if_empty(db)
+    global db_startup_error
+    try:
+        # Initialize tables
+        Base.metadata.create_all(bind=engine)
+        # Seed starter defaults if brand new db
+        with Session(bind=engine) as db:
+            crud.seed_default_data_if_empty(db)
+        db_startup_error = None
+    except Exception as e:
+        db_startup_error = str(e)
+        import logging
+        logging.getLogger("uvicorn.error").error(f"Startup DB Error: {e}")
     yield
 
 
@@ -55,7 +65,19 @@ async def add_no_cache_headers(request, call_next):
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "service": "life-system-api"}
+    global db_startup_error
+    if db_startup_error:
+        return {
+            "status": "degraded",
+            "service": "life-system-api",
+            "db_status": "disconnected",
+            "db_error": db_startup_error
+        }
+    return {
+        "status": "ok",
+        "service": "life-system-api",
+        "db_status": "connected"
+    }
 
 
 # Today Overview
