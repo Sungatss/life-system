@@ -1,5 +1,6 @@
 import os
 import ssl
+import urllib.parse
 import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
@@ -47,6 +48,14 @@ def prepare_database_url(raw_url: str):
     })
 
     if "pg8000" in url:
+        # Strip query parameters that pg8000 does not accept as connect() keyword arguments (sslmode, channel_binding)
+        url_parts = list(urllib.parse.urlsplit(url))
+        query_params = dict(urllib.parse.parse_qsl(url_parts[3]))
+        query_params.pop("sslmode", None)
+        query_params.pop("channel_binding", None)
+        url_parts[3] = urllib.parse.urlencode(query_params)
+        url = urllib.parse.urlunsplit(url_parts)
+
         # Ensure SSL context works with cloud Neon / Supabase certificates
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
@@ -54,6 +63,11 @@ def prepare_database_url(raw_url: str):
         connect_args["ssl_context"] = ctx
 
     return url, connect_args, engine_kwargs
+
+
+def init_engine(raw_url: str):
+    url, c_args, e_kwargs = prepare_database_url(raw_url)
+    return create_engine(url, connect_args=c_args, **e_kwargs)
 
 
 DATABASE_URL, connect_args, engine_kwargs = prepare_database_url(RAW_DATABASE_URL)
