@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getLocalDateStr } from '../utils/date';
 
 // Day labels for the left axis
 const DAY_LABELS = [
@@ -45,7 +46,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
 
   while (curr <= endSaturday) {
     const dayOfWeek = curr.getDay(); // 0 is Sunday, 6 is Saturday
-    const dateStr = curr.toISOString().split('T')[0];
+    const dateStr = getLocalDateStr(curr);
     const item = dayMap[dateStr] || null;
 
     // Check for month label change around the first week of a month
@@ -129,6 +130,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
             type="button"
             className={`mode-btn ${mode === 'all' ? 'active' : ''}`}
             onClick={() => setMode('all')}
+            aria-pressed={mode === 'all'}
           >
             All
           </button>
@@ -136,6 +138,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
             type="button"
             className={`mode-btn ${mode === 'notes' ? 'active' : ''}`}
             onClick={() => setMode('notes')}
+            aria-pressed={mode === 'notes'}
           >
             Daily notes
           </button>
@@ -143,6 +146,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
             type="button"
             className={`mode-btn ${mode === 'habits' ? 'active' : ''}`}
             onClick={() => setMode('habits')}
+            aria-pressed={mode === 'habits'}
           >
             Habits
           </button>
@@ -194,9 +198,17 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
                         className={`heatmap-cell level-${level} ${!day.inRange ? 'outside-range' : ''}`}
                         onMouseEnter={() => day.inRange && setHoveredDay(day.item)}
                         onMouseLeave={() => setHoveredDay(null)}
+                        onFocus={() => day.inRange && setHoveredDay(day.item)}
                         onClick={() => day.inRange && setHoveredDay(day.item)}
-                        tabIndex={0}
-                        aria-label={`${day.dateStr}: level ${level}`}
+                        onKeyDown={(event) => {
+                          if (day.inRange && (event.key === 'Enter' || event.key === ' ')) {
+                            event.preventDefault();
+                            setHoveredDay(day.item);
+                          }
+                        }}
+                        role={day.inRange ? 'button' : undefined}
+                        tabIndex={day.inRange ? 0 : -1}
+                        aria-label={day.inRange ? `${day.dateStr}: ${day.item.note_words} note words, ${day.item.habits_completed} habits completed` : undefined}
                       />
                     );
                   })}

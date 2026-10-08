@@ -120,6 +120,7 @@ def create_task(db: Session, task_in: schemas.TaskCreate) -> models.Task:
     completed_at = now if task_in.completed else None
     task = models.Task(
         title=task_in.title.strip(),
+        description=task_in.description.strip(),
         completed=bool(task_in.completed),
         priority=task_in.priority or "none",
         due_date=task_in.due_date or None,
@@ -153,6 +154,8 @@ def update_task(db: Session, task_id: int, task_in: schemas.TaskUpdate) -> Optio
 
     if "title" in data and data["title"] is not None:
         task.title = data["title"].strip()
+    if "description" in data:
+        task.description = (data["description"] or "").strip()
     if "priority" in data:
         task.priority = data["priority"] or "none"
     if "due_date" in data:
@@ -556,5 +559,4 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
         day_breakdown=days_breakdown,
         review=review_schema
     )
-
 

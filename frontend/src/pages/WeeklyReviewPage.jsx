@@ -15,11 +15,10 @@ import {
   Trophy,
   Save,
   Check,
-  RotateCcw,
 } from 'lucide-react';
 import { marked } from 'marked';
 
-export default function WeeklyReviewPage({ onNavigateToToday }) {
+export default function WeeklyReviewPage() {
   const todayStr = getLocalDateStr();
   const [referenceDate, setReferenceDate] = useState(todayStr);
   const [data, setData] = useState(null);
@@ -34,33 +33,48 @@ export default function WeeklyReviewPage({ onNavigateToToday }) {
   const [activePreview, setActivePreview] = useState(false);
 
   const saveTimerRef = useRef(null);
-  const isInitialLoad = useRef(true);
+  const draftRef = useRef({ wins: '', blockers: '', next_focus: '' });
+  const dirtyRef = useRef(false);
+  const weekRef = useRef(null);
+  const flushRef = useRef(() => {});
+  const loadIdRef = useRef(0);
 
   // Fetch cockpit data
   const loadCockpit = async (date) => {
+    const loadId = ++loadIdRef.current;
     try {
       setLoading(true);
       setError(null);
+      setData(null);
       const res = await api.getWeeklyCockpit(date);
+      if (loadId !== loadIdRef.current) return;
       setData(res);
+      weekRef.current = res.week_start;
 
       // Load saved reflection if available
+      const draft = {
+        wins: res.review?.wins || '',
+        blockers: res.review?.blockers || '',
+        next_focus: res.review?.next_focus || '',
+      };
+      draftRef.current = draft;
+      dirtyRef.current = false;
       if (res.review) {
-        setWins(res.review.wins || '');
-        setBlockers(res.review.blockers || '');
-        setNextFocus(res.review.next_focus || '');
+        setWins(draft.wins);
+        setBlockers(draft.blockers);
+        setNextFocus(draft.next_focus);
       } else {
         setWins('');
         setBlockers('');
         setNextFocus('');
       }
       setSaveStatus('saved');
-      isInitialLoad.current = true;
     } catch (err) {
+      if (loadId !== loadIdRef.current) return;
       console.error('Failed to load weekly review cockpit:', err);
       setError('Could not load weekly review. Check your connection.');
     } finally {
-      setLoading(false);
+      if (loadId === loadIdRef.current) setLoading(false);
     }
   };
 
@@ -69,8 +83,10 @@ export default function WeeklyReviewPage({ onNavigateToToday }) {
   }, [referenceDate]);
 
   // Handle reflection changes with auto-save
-  const handleFieldChange = (setter) => (e) => {
+  const handleFieldChange = (field, setter) => (e) => {
     setter(e.target.value);
+    draftRef.current = { ...draftRef.current, [field]: e.target.value };
+    dirtyRef.current = true;
     setSaveStatus('unsaved');
 
     if (saveTimerRef.current) {
@@ -78,46 +94,63 @@ export default function WeeklyReviewPage({ onNavigateToToday }) {
     }
 
     saveTimerRef.current = setTimeout(() => {
-      triggerSave();
+      triggerSave(weekRef.current, { ...draftRef.current });
     }, 1200);
   };
 
-  const triggerSave = async () => {
-    if (!data?.week_start) return;
+  const triggerSave = async (weekStart = weekRef.current, draft = { ...draftRef.current }, background = false) => {
+    if (!weekStart) return;
+    if (weekRef.current === weekStart) dirtyRef.current = false;
     try {
-      setSaveStatus('saving');
-      const updated = await api.saveWeeklyReview(data.week_start, {
-        wins,
-        blockers,
-        next_focus: nextFocus,
-      });
-      setData((prev) => (prev ? { ...prev, review: updated } : prev));
-      setSaveStatus('saved');
+      if (!background) setSaveStatus('saving');
+      const updated = await api.saveWeeklyReview(weekStart, draft);
+      setData((prev) => (prev?.week_start === weekStart ? { ...prev, review: updated } : prev));
+      if (!background && weekRef.current === weekStart && !dirtyRef.current) setSaveStatus('saved');
     } catch (err) {
       console.error('Failed to save weekly review:', err);
-      setSaveStatus('unsaved');
+      if (weekRef.current === weekStart) {
+        dirtyRef.current = true;
+        setSaveStatus('unsaved');
+      }
     }
   };
+
+  const flushPendingSave = () => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = null;
+    if (dirtyRef.current && weekRef.current) {
+      triggerSave(weekRef.current, { ...draftRef.current }, true);
+    }
+  };
+  useEffect(() => {
+    flushRef.current = flushPendingSave;
+  });
+
+  useEffect(() => () => flushRef.current(), []);
 
   const handleManualSave = (e) => {
     e.preventDefault();
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    triggerSave();
+    saveTimerRef.current = null;
+    triggerSave(weekRef.current, { ...draftRef.current });
   };
 
   // Week navigation
   const handlePrevWeek = () => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    flushPendingSave();
+    weekRef.current = null;
     setReferenceDate((prev) => addDays(prev, -7));
   };
 
   const handleNextWeek = () => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    flushPendingSave();
+    weekRef.current = null;
     setReferenceDate((prev) => addDays(prev, 7));
   };
 
   const handleCurrentWeek = () => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    flushPendingSave();
+    weekRef.current = null;
     setReferenceDate(todayStr);
   };
 
@@ -140,11 +173,11 @@ export default function WeeklyReviewPage({ onNavigateToToday }) {
         <div className="review-nav-container">
           <div className="review-nav-left">
             <span className="section-badge" style={{ color: '#06b6d4', borderColor: 'rgba(6, 182, 212, 0.3)' }}>
-              Sunday Cockpit
+              Weekly overview
             </span>
-            <h1 className="review-title">Weekly Review & Reflection</h1>
+            <h1 className="review-title">Weekly review</h1>
             <p className="review-subtitle">
-              Audit your execution, measure habit consistency, and set your #1 lever for next week.
+              See what you completed, reflect on the week, and choose what to focus on next.
             </p>
           </div>
 
@@ -358,7 +391,7 @@ export default function WeeklyReviewPage({ onNavigateToToday }) {
             <div className="section-header">
               <div className="section-title-wrap">
                 <Sparkles size={16} style={{ color: '#f59e0b' }} />
-                <h2 className="section-title">Sunday Reflection Journal</h2>
+                <h2 className="section-title">Weekly reflection</h2>
               </div>
               <div className="section-header-actions">
                 <button
@@ -441,7 +474,7 @@ export default function WeeklyReviewPage({ onNavigateToToday }) {
                     className="reflection-textarea"
                     placeholder="e.g. Completed the core feature ahead of schedule, stuck to morning workouts 4 times, shipped the release..."
                     value={wins}
-                    onChange={handleFieldChange(setWins)}
+                    onChange={handleFieldChange('wins', setWins)}
                     rows={4}
                     id="weekly-wins-input"
                   />
@@ -460,7 +493,7 @@ export default function WeeklyReviewPage({ onNavigateToToday }) {
                     className="reflection-textarea"
                     placeholder="e.g. Got distracted on social media on Wednesday afternoon, skipped reading before bed, need to time-box email..."
                     value={blockers}
-                    onChange={handleFieldChange(setBlockers)}
+                    onChange={handleFieldChange('blockers', setBlockers)}
                     rows={4}
                     id="weekly-blockers-input"
                   />
@@ -479,7 +512,7 @@ export default function WeeklyReviewPage({ onNavigateToToday }) {
                     className="reflection-textarea focus-textarea"
                     placeholder="e.g. Ship the customer dashboard by Thursday 5pm, maintain a 7-day workout streak..."
                     value={nextFocus}
-                    onChange={handleFieldChange(setNextFocus)}
+                    onChange={handleFieldChange('next_focus', setNextFocus)}
                     rows={3}
                     id="weekly-focus-input"
                   />

@@ -18,6 +18,7 @@ export default function FilterPills({ activeFilter, onSelectFilter, categories =
           type="button"
           className={`filter-pill ${activeFilter === f.id ? 'active' : ''}`}
           onClick={() => onSelectFilter(f.id)}
+          aria-pressed={activeFilter === f.id}
           id={`filter-${f.id}`}
         >
           {f.label}
@@ -33,6 +34,7 @@ export default function FilterPills({ activeFilter, onSelectFilter, categories =
               type="button"
               className={`filter-pill ${selectedCategory === cat ? 'active' : ''}`}
               onClick={() => onSelectCategory(selectedCategory === cat ? null : cat)}
+              aria-pressed={selectedCategory === cat}
             >
               #{cat}
             </button>

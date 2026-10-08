@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from sqlalchemy.orm import Session
 
-from . import models, schemas, crud
+from . import models, schemas, crud, migrations
 from .database import engine, get_db, Base
 
 
@@ -21,6 +21,7 @@ async def lifespan(app: FastAPI):
     try:
         # Initialize tables
         Base.metadata.create_all(bind=engine)
+        migrations.add_task_description_if_missing(engine)
         # Seed starter defaults if brand new db
         with Session(bind=engine) as db:
             crud.seed_default_data_if_empty(db)

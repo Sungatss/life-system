@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
-import { Plus, Flame } from 'lucide-react';
+import { Plus, Flame, CircleAlert } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
 
 export default function HabitsPage() {
@@ -10,13 +10,16 @@ export default function HabitsPage() {
   const [contributions, setContributions] = useState(null);
   const [newHabitName, setNewHabitName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const todayStr = getLocalDateStr();
 
   const loadData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const [habitsData, contribData] = await Promise.all([
         api.getHabits(14, todayStr),
         api.getContributions(112, todayStr),
@@ -25,6 +28,7 @@ export default function HabitsPage() {
       setContributions(contribData);
     } catch (err) {
       console.error('Failed to load habits data:', err);
+      setError('Could not load habits. Check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -48,6 +52,7 @@ export default function HabitsPage() {
     if (!newHabitName.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
+    setSubmitError('');
     try {
       const created = await api.createHabit(newHabitName.trim());
       setHabits((prev) => [...prev, created]);
@@ -55,6 +60,7 @@ export default function HabitsPage() {
       refreshContributions();
     } catch (err) {
       console.error('Failed to create habit:', err);
+      setSubmitError('Could not add the habit. Try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -90,20 +96,21 @@ export default function HabitsPage() {
   const handleUpdateHabit = async (habitId, updateData) => {
     try {
       const updated = await api.updateHabit(habitId, updateData);
-      setHabits((prev) => prev.map((h) => (h.id === habitId ? updated : h)));
+      setHabits((prev) => prev.map((h) => (h.id === habitId ? updated : h)).filter((h) => h.active));
     } catch (err) {
       console.error('Failed to update habit:', err);
+      throw err;
     }
   };
 
   const handleDeleteHabit = async (habitId) => {
-    setHabits((prev) => prev.filter((h) => h.id !== habitId));
     try {
       await api.deleteHabit(habitId);
+      setHabits((prev) => prev.filter((h) => h.id !== habitId));
       refreshContributions();
     } catch (err) {
       console.error('Failed to delete habit:', err);
-      loadData();
+      throw err;
     }
   };
 
@@ -112,6 +119,7 @@ export default function HabitsPage() {
       <div className="cockpit-date-banner">
         <div className="cockpit-weekday">Daily consistency</div>
         <h1 className="cockpit-title">Habits</h1>
+        <p className="page-intro">Build a rhythm, one completed day at a time.</p>
       </div>
 
       {/* GitHub-style Contribution Heatmap for Habits & Notes */}
@@ -152,8 +160,15 @@ export default function HabitsPage() {
             <span>Add habit</span>
           </button>
         </form>
+        {submitError && <p className="form-error" role="alert">{submitError}</p>}
 
-        {loading ? (
+        {error ? (
+          <div className="empty-state error-state" role="alert">
+            <CircleAlert size={24} />
+            <p>{error}</p>
+            <button type="button" className="btn-secondary" onClick={loadData}>Retry</button>
+          </div>
+        ) : loading ? (
           <div className="empty-state">
             <p>Loading habits...</p>
           </div>

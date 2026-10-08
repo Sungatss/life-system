@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Check, Edit2, Trash2 } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Check, Edit2 } from 'lucide-react';
 import HabitEditModal from './HabitEditModal';
+import { addDays } from '../utils/date';
 
 export default function HabitItem({
   habit,
@@ -12,14 +13,23 @@ export default function HabitItem({
   showHistory = true,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const openerRef = useRef(null);
+  const openModal = (event) => {
+    openerRef.current = event.currentTarget;
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+    requestAnimationFrame(() => {
+      if (openerRef.current?.isConnected) openerRef.current.focus();
+      else document.querySelector('#new-habit-input, #today-new-habit-input')?.focus();
+    });
+  };
 
   // Generate date array for the history grid (from (today - days + 1) up to today)
   const historyDates = [];
-  const baseDate = new Date(todayDate);
   for (let i = daysHistory - 1; i >= 0; i--) {
-    const d = new Date(baseDate);
-    d.setDate(baseDate.getDate() - i);
-    historyDates.push(d.toISOString().split('T')[0]);
+    historyDates.push(addDays(todayDate, -i));
   }
 
   const isCompletedToday = Boolean(habit.completed_today);
@@ -28,15 +38,15 @@ export default function HabitItem({
     <>
       <div className="habit-card">
         <div className="habit-info">
-          <span
+          <button
+            type="button"
             className="habit-name"
-            onClick={() => setIsModalOpen(true)}
-            style={{ cursor: 'pointer' }}
-            title="Click to edit habit"
+            onClick={openModal}
+            aria-label={`Edit ${habit.name}`}
           >
             {habit.name}
-          </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
+          </button>
+          <div className="habit-history-row">
             {showHistory && (
               <div className="history-grid-container" title="Recent consistency">
                 {historyDates.map((dateStr) => {
@@ -59,7 +69,7 @@ export default function HabitItem({
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="habit-card-actions">
           <button
             type="button"
             className={`habit-check-btn ${isCompletedToday ? 'completed' : ''}`}
@@ -74,20 +84,11 @@ export default function HabitItem({
             <button
               type="button"
               className="action-btn-subtle"
-              onClick={() => setIsModalOpen(true)}
+              onClick={openModal}
               title="Edit habit"
               aria-label="Edit habit"
             >
               <Edit2 size={13} />
-            </button>
-            <button
-              type="button"
-              className="action-btn-subtle danger"
-              onClick={() => onDelete(habit.id)}
-              title="Delete habit"
-              aria-label="Delete habit"
-            >
-              <Trash2 size={13} />
             </button>
           </div>
         </div>
@@ -96,7 +97,7 @@ export default function HabitItem({
       <HabitEditModal
         habit={habit}
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         onSave={onUpdate}
         onDelete={onDelete}
       />

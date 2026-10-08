@@ -37,8 +37,12 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
   const debounceTimerRef = useRef(null);
   const textareaRef = useRef(null);
   const contentRef = useRef(initialContent || '');
+  const initializedDateRef = useRef(null);
+  const saveQueueRef = useRef(Promise.resolve());
 
   useEffect(() => {
+    if (initializedDateRef.current === date) return;
+    initializedDateRef.current = date;
     setContent(initialContent || '');
     contentRef.current = initialContent || '';
     const words = (initialContent || '').trim().split(/\s+/).filter(Boolean).length;
@@ -52,23 +56,28 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
         debounceTimerRef.current = null;
-        api.saveNote(date, contentRef.current).catch((e) => console.error('Unmount save failed', e));
+        const pendingText = contentRef.current;
+        saveQueueRef.current = saveQueueRef.current
+          .catch(() => {})
+          .then(() => api.saveNote(date, pendingText))
+          .catch((e) => console.error('Unmount save failed', e));
       }
     };
   }, [date]);
 
-  const performSave = async (textToSave) => {
+  const performSave = (textToSave) => {
     setSaveStatus('saving');
-    try {
-      await api.saveNote(date, textToSave);
-      setSaveStatus('saved');
-      if (onContentSaved) {
-        onContentSaved(textToSave);
+    saveQueueRef.current = saveQueueRef.current.catch(() => {}).then(async () => {
+      try {
+        await api.saveNote(date, textToSave);
+        if (textToSave === contentRef.current) setSaveStatus('saved');
+        if (onContentSaved) onContentSaved(textToSave);
+      } catch (err) {
+        console.error('Failed to save daily note:', err);
+        if (textToSave === contentRef.current) setSaveStatus('error');
       }
-    } catch (err) {
-      console.error('Failed to save daily note:', err);
-      setSaveStatus('error');
-    }
+    });
+    return saveQueueRef.current;
   };
 
   const updateAndSave = (newText) => {

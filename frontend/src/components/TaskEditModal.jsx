@@ -1,38 +1,70 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trash2, X } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
+import { trapDialogFocus } from '../utils/dialog';
 
 export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete }) {
   if (!isOpen || !task) return null;
 
+  return <TaskEditForm key={task.id} task={task} onClose={onClose} onSave={onSave} onDelete={onDelete} />;
+}
+
+function TaskEditForm({ task, onClose, onSave, onDelete }) {
   const [title, setTitle] = useState(task.title || '');
+  const [description, setDescription] = useState(task.description || '');
   const [priority, setPriority] = useState(task.priority || 'none');
   const [dueDate, setDueDate] = useState(task.due_date || '');
   const [category, setCategory] = useState(task.category || '');
   const [completed, setCompleted] = useState(Boolean(task.completed));
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-
-    onSave(task.id, {
-      title: title.trim(),
-      priority,
-      due_date: dueDate || null,
-      category: category.trim() || null,
-      completed,
-    });
-    onClose();
+    setBusy(true);
+    setFormError('');
+    try {
+      await onSave(task.id, {
+        title: title.trim(),
+        description: description.trim(),
+        priority,
+        due_date: dueDate || null,
+        category: category.trim() || null,
+        completed,
+      });
+      onClose();
+    } catch {
+      setFormError('Could not save this task. Try again.');
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!confirmDelete) {
       setConfirmDelete(true);
       return;
     }
-    onDelete(task.id);
-    onClose();
+    setBusy(true);
+    setFormError('');
+    try {
+      await onDelete(task.id);
+      onClose();
+    } catch {
+      setFormError('Could not delete this task. Try again.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   const setDueToday = () => {
@@ -47,7 +79,7 @@ export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete 
 
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-task-title">
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} onKeyDown={trapDialogFocus}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2 id="modal-task-title" className="modal-title">Edit task</h2>
           <button
@@ -72,6 +104,18 @@ export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete 
               placeholder="What needs to be done?"
               required
               autoFocus
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="edit-task-description">Description</label>
+            <textarea
+              id="edit-task-description"
+              className="task-input-field task-description-input"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Add details about this task (optional)"
+              rows={4}
             />
           </div>
 
@@ -161,12 +205,15 @@ export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete 
             </label>
           </div>
 
+          {formError && <p className="form-error" role="alert">{formError}</p>}
+
           <div className="modal-actions" style={{ justifyContent: 'space-between', marginTop: '8px' }}>
             <button
               type="button"
               className={`btn-secondary ${confirmDelete ? 'priority-high' : ''}`}
               style={confirmDelete ? { color: 'var(--danger)', borderColor: 'var(--danger)' } : {}}
               onClick={handleDelete}
+              disabled={busy}
             >
               <Trash2 size={13} style={{ marginRight: '4px' }} />
               {confirmDelete ? 'Click to confirm delete' : 'Delete'}
@@ -176,7 +223,7 @@ export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete 
               <button type="button" className="btn-secondary" onClick={onClose}>
                 Cancel
               </button>
-              <button type="submit" className="btn-primary" disabled={!title.trim()}>
+              <button type="submit" className="btn-primary" disabled={!title.trim() || busy}>
                 Save changes
               </button>
             </div>

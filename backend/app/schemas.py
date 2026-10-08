@@ -40,6 +40,7 @@ class DailyNoteSearchResult(BaseModel):
 # Task Schemas
 class TaskBase(BaseModel):
     title: str
+    description: str = ""
     priority: Optional[str] = "none"  # "none", "low", "medium", "high"
     due_date: Optional[str] = None    # YYYY-MM-DD or None
     category: Optional[str] = None    # Optional project/category tag
@@ -51,6 +52,7 @@ class TaskCreate(TaskBase):
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
+    description: Optional[str] = None
     completed: Optional[bool] = None
     priority: Optional[str] = None
     due_date: Optional[str] = None
@@ -173,5 +175,4 @@ class WeeklyCockpitResponse(BaseModel):
     total_words_written: int
     day_breakdown: List[WeeklyDayStat]
     review: Optional[WeeklyReviewResponse] = None
-
 

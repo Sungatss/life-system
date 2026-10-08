@@ -40,6 +40,7 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
+    description = Column(Text, default="", nullable=False)
     completed = Column(Boolean, default=False, nullable=False, index=True)
     priority = Column(String(20), default="none", nullable=False)  # "none", "low", "medium", "high"
     due_date = Column(String(10), nullable=True, index=True)  # Format: YYYY-MM-DD or None
@@ -84,4 +85,3 @@ class WeeklyReview(Base):
     next_focus = Column(Text, default="", nullable=False)
     created_at = Column(DateTime(timezone=True), default=utcnow)
     updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
-

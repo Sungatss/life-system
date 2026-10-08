@@ -62,7 +62,11 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
         print(f"  ! Warning checking remote tasks: {e}")
 
     # 2. Sync all authentic local tasks
-    local_tasks = c.execute("SELECT id, title, priority, due_date, category, completed FROM tasks ORDER BY id ASC").fetchall()
+    task_columns = {column[1] for column in c.execute("PRAGMA table_info(tasks)")}
+    description_column = "description" if "description" in task_columns else "'' AS description"
+    local_tasks = c.execute(
+        f"SELECT id, title, {description_column}, priority, due_date, category, completed FROM tasks ORDER BY id ASC"
+    ).fetchall()
     try:
         current_remote = api_call("/api/tasks") or []
         remote_titles = {t["title"].strip().lower() for t in current_remote}
@@ -70,11 +74,12 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
         remote_titles = set()
 
     synced_tasks_count = 0
-    for local_id, title, prio, due, cat, comp in local_tasks:
+    for local_id, title, description, prio, due, cat, comp in local_tasks:
         if title.strip().lower() not in remote_titles:
             try:
                 created = api_call("/api/tasks", method="POST", data={
                     "title": title,
+                    "description": description or "",
                     "priority": prio or "none",
                     "due_date": due,
                     "category": cat,

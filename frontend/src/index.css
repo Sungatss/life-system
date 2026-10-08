@@ -347,6 +347,27 @@ a {
   margin-bottom: 16px;
 }
 
+.task-capture-form {
+  flex-wrap: wrap;
+}
+
+.task-capture-form > .task-input-field:not(.task-description-input) {
+  min-width: 220px;
+}
+
+.task-description-input {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  font: inherit;
+  line-height: 1.45;
+}
+
+.task-capture-form > .task-description-input {
+  order: 3;
+  flex: 0 0 100%;
+}
+
 .task-input-field {
   flex: 1;
   background: var(--bg-surface);
@@ -476,6 +497,19 @@ a {
   font-size: 14.5px;
   color: var(--text-primary);
   word-break: break-word;
+}
+
+.task-copy {
+  min-width: 0;
+}
+
+.task-description {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .task-meta {
@@ -2215,5 +2249,4 @@ a {
     width: 100%;
   }
 }
-
 

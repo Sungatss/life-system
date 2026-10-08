@@ -53,6 +53,7 @@ export default function App() {
 
   return (
     <div className="app-container">
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <Header
         activeTab={activeTab}
         onNavigate={navigateTo}
@@ -61,12 +62,6 @@ export default function App() {
       />
 
       <main className="app-main" id="main-content">
-        {!['privacy', 'terms'].includes(activeTab) && (
-          <blockquote className="cockpit-quote">
-            "Figure out what you want, ignore the opinions of others, and do so much volume that it would be unreasonable to not be successful."
-          </blockquote>
-        )}
-
         {activeTab === 'today' && (
           <TodayPage
             onNavigateToTasks={() => navigateTo('tasks')}
@@ -76,7 +71,7 @@ export default function App() {
         {activeTab === 'tasks' && <TasksPage />}
         {activeTab === 'habits' && <HabitsPage />}
         {activeTab === 'review' && (
-          <WeeklyReviewPage onNavigateToToday={() => navigateTo('today')} />
+          <WeeklyReviewPage />
         )}
         {activeTab === 'privacy' && (
           <PrivacyPolicyPage onBack={() => navigateTo('today')} />

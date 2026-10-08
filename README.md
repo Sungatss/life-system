@@ -4,7 +4,7 @@ A minimalist personal productivity web application built for daily use.
 
 Focuses strictly on three primary areas:
 1. **Today**: Date, auto-saving daily note, today's tasks, and habit checklist.
-2. **Tasks**: Rapid brain dump with instant capture and quick filtering.
+2. **Tasks**: Rapid brain dump with instant capture, optional task descriptions, and quick filtering.
 3. **Habits**: Consistency tracking with a 14-day history grid and no gamification gimmicks.
 
 Includes dedicated Privacy Policy and Terms and Conditions pages.

@@ -16,6 +16,7 @@ if PROJECT_ROOT not in sys.path:
 
 from backend.app.models import Base, Task, Habit, HabitLog, DailyNote, WeeklyReview
 from backend.app.database import init_engine
+from backend.app.migrations import add_task_description_if_missing
 
 SQLITE_PATH = os.path.join(PROJECT_ROOT, "backend", "lifesystem.db")
 
@@ -37,6 +38,7 @@ def migrate(postgres_url: str):
     print("1. Connecting to PostgreSQL and creating tables...")
     pg_engine = init_engine(postgres_url)
     Base.metadata.create_all(bind=pg_engine)
+    add_task_description_if_missing(pg_engine)
     print("   ✓ PostgreSQL tables initialized.")
 
     # 2. Connect to SQLite
@@ -48,12 +50,14 @@ def migrate(postgres_url: str):
         # 3. Migrate Tasks
         print("\n2. Migrating Tasks...")
         tasks = sc.execute("SELECT * FROM tasks ORDER BY id ASC").fetchall()
+        task_columns = {column[1] for column in sc.execute("PRAGMA table_info(tasks)")}
         migrated_tasks = 0
         for row in tasks:
             exists = pg_session.query(Task).filter(Task.title == row["title"]).first()
             if not exists:
                 pg_task = Task(
                     title=row["title"],
+                    description=row["description"] if "description" in task_columns else "",
                     completed=bool(row["completed"]),
                     priority=row["priority"],
                     due_date=row["due_date"],

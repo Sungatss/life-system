@@ -62,7 +62,7 @@ export default function Footer({ onNavigate }) {
         </nav>
       </div>
       <div className="footer-note">
-        Personal daily cockpit. Minimalist, private, and distraction-free.
+        A clear place for tasks, habits, and reflection.
       </div>
     </footer>
   );

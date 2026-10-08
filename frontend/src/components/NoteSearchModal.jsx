@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../api/client';
+import { trapDialogFocus } from '../utils/dialog';
 import { Search, X, Calendar, FileText, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function NoteSearchModal({ isOpen, onClose, onSelectDate }) {
@@ -65,7 +66,7 @@ export default function NoteSearchModal({ isOpen, onClose, onSelectDate }) {
 
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Search notes">
-      <div className="modal-content note-search-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content note-search-modal" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { trapDialogFocus(e); if (e.key === 'Escape') onClose(); }}>
         {/* Header */}
         <div className="modal-header">
           <div className="modal-title-wrap">

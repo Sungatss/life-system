@@ -89,8 +89,15 @@ export default function DateNavigator({ currentDateStr, onDateChange, onOpenSear
         </button>
 
         <div className="date-title-picker-wrap">
-          <h1 className="cockpit-title" onClick={() => datePickerRef.current?.showPicker?.() || datePickerRef.current?.click()}>
-            {formattedDate}
+          <h1 className="cockpit-title">
+            <button
+              type="button"
+              className="date-title-button"
+              onClick={() => datePickerRef.current?.showPicker?.() || datePickerRef.current?.click()}
+              aria-label={`Choose date, currently ${formattedDate}`}
+            >
+              {formattedDate}
+            </button>
           </h1>
 
           <button

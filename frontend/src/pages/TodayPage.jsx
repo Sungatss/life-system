@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../api/client';
 import DailyNoteEditor from '../components/DailyNoteEditor';
 import QuickTaskInput from '../components/QuickTaskInput';
@@ -8,42 +8,42 @@ import ContributionGraph from '../components/ContributionGraph';
 import DateNavigator from '../components/DateNavigator';
 import TodayProgressRing from '../components/TodayProgressRing';
 import NoteSearchModal from '../components/NoteSearchModal';
-import { Check, ListTodo, Flame, PenLine, Plus, Search } from 'lucide-react';
+import { ListTodo, Flame, PenLine, Plus, Search } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
 
 export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const todayStr = getLocalDateStr();
   const [currentDateStr, setCurrentDateStr] = useState(todayStr);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchOpenerRef = useRef(null);
+  const openSearch = (event) => {
+    searchOpenerRef.current = event.currentTarget;
+    setIsSearchOpen(true);
+  };
+  const closeSearch = () => {
+    setIsSearchOpen(false);
+    requestAnimationFrame(() => searchOpenerRef.current?.focus());
+  };
   const [todayData, setTodayData] = useState(null);
   const [contributions, setContributions] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Friendly date formatting
-  const dateObj = new Date(currentDateStr + 'T00:00:00');
-  const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-  const formattedDate = dateObj.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const requestIdRef = useRef(0);
 
   const loadTodayData = async () => {
+    const requestId = ++requestIdRef.current;
     try {
-      setLoading(true);
       setError(null);
       const [data, contribData] = await Promise.all([
         api.getToday(currentDateStr),
         api.getContributions(112, currentDateStr),
       ]);
+      if (requestId !== requestIdRef.current) return;
       setTodayData(data);
       setContributions(contribData);
     } catch (err) {
+      if (requestId !== requestIdRef.current) return;
       console.error('Failed to load today data:', err);
-      setError('Could not connect to database. Make sure the backend is running.');
-    } finally {
-      setLoading(false);
+      setError('Could not load this day. Check your connection and try again.');
     }
   };
 
@@ -58,6 +58,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
 
   useEffect(() => {
     loadTodayData();
+    return () => { requestIdRef.current += 1; };
   }, [currentDateStr]);
 
   // Task actions
@@ -102,29 +103,26 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
           tasks: prev.tasks.map((t) => (t.id === taskId ? updated : t)),
         };
       });
+      loadTodayData();
     } catch (err) {
       console.error('Failed to update task:', err);
+      throw err;
     }
   };
 
   const handleDeleteTask = async (taskId) => {
-    setTodayData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        tasks: prev.tasks.filter((t) => t.id !== taskId),
-      };
-    });
     try {
       await api.deleteTask(taskId);
+      setTodayData((prev) => prev ? { ...prev, tasks: prev.tasks.filter((t) => t.id !== taskId) } : prev);
     } catch (err) {
       console.error('Failed to delete task:', err);
-      loadTodayData();
+      throw err;
     }
   };
 
   const [newHabitName, setNewHabitName] = useState('');
   const [isSubmittingHabit, setIsSubmittingHabit] = useState(false);
+  const [habitError, setHabitError] = useState('');
 
   // Habit actions
   const handleCreateHabit = async (e) => {
@@ -132,6 +130,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     if (!newHabitName.trim() || isSubmittingHabit) return;
 
     setIsSubmittingHabit(true);
+    setHabitError('');
     try {
       const created = await api.createHabit(newHabitName.trim());
       setTodayData((prev) => {
@@ -145,6 +144,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
       refreshContributions();
     } catch (err) {
       console.error('Failed to create habit:', err);
+      setHabitError('Could not add the habit. Try again.');
     } finally {
       setIsSubmittingHabit(false);
     }
@@ -157,29 +157,26 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         if (!prev) return prev;
         return {
           ...prev,
-          habits: prev.habits.map((h) => (h.id === habitId ? { ...h, ...updated } : h)),
+          habits: prev.habits
+            .map((h) => (h.id === habitId ? { ...h, ...updated } : h))
+            .filter((h) => h.active),
         };
       });
       refreshContributions();
     } catch (err) {
       console.error('Failed to update habit:', err);
+      throw err;
     }
   };
 
   const handleDeleteHabit = async (habitId) => {
-    setTodayData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        habits: prev.habits.filter((h) => h.id !== habitId),
-      };
-    });
     try {
       await api.deleteHabit(habitId);
+      setTodayData((prev) => prev ? { ...prev, habits: prev.habits.filter((h) => h.id !== habitId) } : prev);
       refreshContributions();
     } catch (err) {
       console.error('Failed to delete habit:', err);
-      loadTodayData();
+      throw err;
     }
   };
 
@@ -203,7 +200,9 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     }
   };
 
-  if (loading && !todayData) {
+  const hasCurrentData = todayData?.date === currentDateStr;
+
+  if (!hasCurrentData && !error) {
     return (
       <div className="empty-state">
         <p>Loading today...</p>
@@ -211,7 +210,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     );
   }
 
-  if (error && !todayData) {
+  if (error && !hasCurrentData) {
     return (
       <div className="empty-state" style={{ color: 'var(--danger)' }}>
         <p>{error}</p>
@@ -226,9 +225,9 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     );
   }
 
-  const tasks = todayData?.tasks || [];
-  const habits = todayData?.habits || [];
-  const noteContent = todayData?.daily_note?.content || '';
+  const tasks = hasCurrentData ? todayData.tasks : [];
+  const habits = hasCurrentData ? todayData.habits : [];
+  const noteContent = hasCurrentData ? todayData.daily_note?.content || '' : '';
 
   const completedTasksCount = tasks.filter((t) => t.completed).length;
   const completedHabitsCount = habits.filter((h) => h.completed_today).length;
@@ -239,7 +238,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
       <DateNavigator
         currentDateStr={currentDateStr}
         onDateChange={setCurrentDateStr}
-        onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenSearch={openSearch}
       />
 
       {/* 2. Today Completion Progress Ring */}
@@ -259,7 +258,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
             <button
               type="button"
               className="btn-note-search"
-              onClick={() => setIsSearchOpen(true)}
+              onClick={openSearch}
               title="Search across all notes"
             >
               <Search size={13} />
@@ -273,7 +272,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
           initialContent={noteContent}
           onContentSaved={(newContent) => {
             setTodayData((prev) =>
-              prev
+              prev?.date === currentDateStr
                 ? {
                     ...prev,
                     daily_note: prev.daily_note
@@ -378,6 +377,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
             <span>Add</span>
           </button>
         </form>
+        {habitError && <p className="form-error" role="alert">{habitError}</p>}
 
         {habits.length === 0 ? (
           <div className="empty-state">
@@ -412,7 +412,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
       {/* Note Search Modal */}
       <NoteSearchModal
         isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
+        onClose={closeSearch}
         onSelectDate={(targetDate) => {
           setCurrentDateStr(targetDate);
         }}

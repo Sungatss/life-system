@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, Flame, Award, ArrowUpRight } from 'lucide-react';
+import { CheckCircle2, Flame } from 'lucide-react';
 
 export default function TodayProgressRing({ tasks = [], habits = [] }) {
   const completedTasks = tasks.filter((t) => t.completed).length;
@@ -21,43 +21,43 @@ export default function TodayProgressRing({ tasks = [], habits = [] }) {
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-  // Motivational message and color theme
+  // Short, factual progress cue.
   let statusBadge = {
-    text: 'Set intentions for the day',
+    text: 'Nothing planned yet',
     color: 'var(--text-muted)',
-    bg: 'rgba(255, 255, 255, 0.05)',
+    bg: 'var(--bg-subtle)',
   };
 
   if (totalItems > 0) {
     if (percentage === 100) {
       statusBadge = {
-        text: 'All priorities cleared! 🏆',
-        color: '#10b981',
-        bg: 'rgba(16, 185, 129, 0.15)',
+        text: 'Everything complete',
+        color: 'var(--success)',
+        bg: 'var(--success-subtle)',
       };
     } else if (percentage >= 75) {
       statusBadge = {
-        text: 'Crushing it! Almost done ⚡',
-        color: '#06b6d4',
-        bg: 'rgba(6, 182, 212, 0.15)',
+        text: 'Almost finished',
+        color: 'var(--accent)',
+        bg: 'var(--accent-subtle)',
       };
     } else if (percentage >= 50) {
       statusBadge = {
-        text: 'Great momentum! Keep pushing 🚀',
-        color: '#3b82f6',
-        bg: 'rgba(59, 130, 246, 0.15)',
+        text: 'More than halfway',
+        color: 'var(--accent)',
+        bg: 'var(--accent-subtle)',
       };
     } else if (percentage > 0) {
       statusBadge = {
-        text: 'Off to a solid start 🌱',
-        color: '#f59e0b',
-        bg: 'rgba(245, 158, 11, 0.15)',
+        text: 'In progress',
+        color: 'var(--warning)',
+        bg: 'var(--bg-subtle)',
       };
     } else {
       statusBadge = {
-        text: 'Ready to conquer today 🎯',
+        text: 'Ready when you are',
         color: 'var(--text-muted)',
-        bg: 'rgba(255, 255, 255, 0.06)',
+        bg: 'var(--bg-subtle)',
       };
     }
   }
@@ -70,9 +70,8 @@ export default function TodayProgressRing({ tasks = [], habits = [] }) {
           <svg width={size} height={size} className="progress-ring-svg">
             <defs>
               <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="60%" stopColor="#06b6d4" />
-                <stop offset="100%" stopColor="#10b981" />
+                <stop offset="0%" stopColor="var(--accent)" />
+                <stop offset="100%" stopColor="var(--success)" />
               </linearGradient>
             </defs>
             {/* Background Track */}
@@ -110,7 +109,7 @@ export default function TodayProgressRing({ tasks = [], habits = [] }) {
               <h3 className="progress-ring-headline">
                 {totalItems === 0
                   ? 'No tasks or habits scheduled for today'
-                  : `${completedItems} of ${totalItems} habits & priorities completed today`}
+                  : `${completedItems} of ${totalItems} tasks and habits complete`}
               </h3>
             </div>
             <div

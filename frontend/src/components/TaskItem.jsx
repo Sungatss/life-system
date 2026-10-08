@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
-import { Check, Trash2, Edit2, Calendar } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Check, Edit2, Calendar } from 'lucide-react';
 import TaskEditModal from './TaskEditModal';
 import { getLocalDateStr } from '../utils/date';
 
 export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const openerRef = useRef(null);
+  const openModal = (event) => {
+    openerRef.current = event.currentTarget;
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+    requestAnimationFrame(() => {
+      if (openerRef.current?.isConnected) openerRef.current.focus();
+      else document.querySelector('#quick-task-input')?.focus();
+    });
+  };
 
   const todayStr = getLocalDateStr();
   const isOverdue = !task.completed && task.due_date && task.due_date < todayStr;
@@ -22,14 +34,17 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
           >
             {task.completed && <Check size={12} strokeWidth={3} />}
           </button>
-          <span
-            className="task-title"
-            onClick={() => setIsModalOpen(true)}
-            style={{ cursor: 'pointer' }}
-            title="Click to edit task"
-          >
-            {task.title}
-          </span>
+          <div className="task-copy">
+            <button
+              type="button"
+              className="task-title"
+              onClick={openModal}
+              aria-label={`Edit ${task.title}`}
+            >
+              {task.title}
+            </button>
+            {task.description && <p className="task-description">{task.description}</p>}
+          </div>
         </div>
 
         <div className="task-meta">
@@ -56,20 +71,11 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
             <button
               type="button"
               className="action-btn-subtle"
-              onClick={() => setIsModalOpen(true)}
+              onClick={openModal}
               title="Edit task"
               aria-label="Edit task"
             >
               <Edit2 size={13} />
-            </button>
-            <button
-              type="button"
-              className="action-btn-subtle danger"
-              onClick={() => onDelete(task.id)}
-              title="Delete task"
-              aria-label="Delete task"
-            >
-              <Trash2 size={13} />
             </button>
           </div>
         </div>
@@ -78,7 +84,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
       <TaskEditModal
         task={task}
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         onSave={onUpdate}
         onDelete={onDelete}
       />
