@@ -67,15 +67,20 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
     local_tasks = c.execute(
         f"SELECT id, title, {description_column}, priority, due_date, category, completed FROM tasks ORDER BY id ASC"
     ).fetchall()
+    local_subtasks = {}
+    if c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='subtasks'").fetchone():
+        for step in c.execute("SELECT task_id, title, completed FROM subtasks ORDER BY id ASC"):
+            local_subtasks.setdefault(step[0], []).append({"title": step[1], "completed": bool(step[2])})
     try:
         current_remote = api_call("/api/tasks") or []
-        remote_titles = {t["title"].strip().lower() for t in current_remote}
+        remote_by_title = {t["title"].strip().lower(): t for t in current_remote}
     except Exception:
-        remote_titles = set()
+        remote_by_title = {}
 
     synced_tasks_count = 0
     for local_id, title, description, prio, due, cat, comp in local_tasks:
-        if title.strip().lower() not in remote_titles:
+        remote_task = remote_by_title.get(title.strip().lower())
+        if not remote_task:
             try:
                 created = api_call("/api/tasks", method="POST", data={
                     "title": title,
@@ -83,8 +88,10 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
                     "priority": prio or "none",
                     "due_date": due,
                     "category": cat,
-                    "completed": bool(comp)
+                    "completed": bool(comp),
+                    "subtasks": [{"title": step["title"]} for step in local_subtasks.get(local_id, [])]
                 })
+                remote_task = created
                 # If it was completed, make sure completed status is set
                 if bool(comp) and not created.get("completed"):
                     api_call(f"/api/tasks/{created['id']}", method="PUT", data={"completed": True})
@@ -93,6 +100,16 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
                 print(f"  ! Error syncing task '{title}': {e}")
         else:
             synced_tasks_count += 1
+        if remote_task:
+            available_steps = list(remote_task.get("subtasks", []))
+            for local_step in local_subtasks.get(local_id, []):
+                match = next((step for step in available_steps if step["title"] == local_step["title"]), None)
+                if match:
+                    available_steps.remove(match)
+                else:
+                    match = api_call(f"/api/tasks/{remote_task['id']}/subtasks", method="POST", data={"title": local_step["title"]})["subtasks"][-1]
+                if bool(match["completed"]) != local_step["completed"]:
+                    api_call(f"/api/tasks/{remote_task['id']}/subtasks/{match['id']}", method="PUT", data={"completed": local_step["completed"]})
     print(f"✓ Tasks restored: {synced_tasks_count} tasks in cloud")
 
     # 3. Clean up starter seed habits if present

@@ -1,6 +1,6 @@
 import datetime
 from typing import Optional, List, Dict
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # Daily Note Schemas
@@ -38,6 +38,24 @@ class DailyNoteSearchResult(BaseModel):
 
 
 # Task Schemas
+class SubtaskCreate(BaseModel):
+    title: str
+
+
+class SubtaskUpdate(BaseModel):
+    title: Optional[str] = None
+    completed: Optional[bool] = None
+
+
+class SubtaskResponse(BaseModel):
+    id: int
+    task_id: int
+    title: str
+    completed: bool
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class TaskBase(BaseModel):
     title: str
     description: str = ""
@@ -48,6 +66,7 @@ class TaskBase(BaseModel):
 
 class TaskCreate(TaskBase):
     completed: Optional[bool] = False
+    subtasks: List[SubtaskCreate] = Field(default_factory=list)
 
 
 class TaskUpdate(BaseModel):
@@ -64,6 +83,7 @@ class TaskResponse(TaskBase):
     completed: bool
     created_at: datetime.datetime
     completed_at: Optional[datetime.datetime] = None
+    subtasks: List[SubtaskResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -175,4 +195,3 @@ class WeeklyCockpitResponse(BaseModel):
     total_words_written: int
     day_breakdown: List[WeeklyDayStat]
     review: Optional[WeeklyReviewResponse] = None
-

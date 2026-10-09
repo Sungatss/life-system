@@ -129,6 +129,10 @@ def create_task(db: Session, task_in: schemas.TaskCreate) -> models.Task:
         completed_at=completed_at
     )
     db.add(task)
+    for subtask in task_in.subtasks:
+        title = subtask.title.strip()
+        if title:
+            task.subtasks.append(models.Subtask(title=title, completed=False, created_at=now))
     db.commit()
     db.refresh(task)
     return task
@@ -175,6 +179,46 @@ def delete_task(db: Session, task_id: int) -> bool:
     db.delete(task)
     db.commit()
     return True
+
+
+def create_subtask(db: Session, task_id: int, title: str) -> Optional[models.Task]:
+    task = get_task(db, task_id)
+    if not task:
+        return None
+    task.subtasks.append(models.Subtask(title=title.strip(), completed=False, created_at=models.utcnow()))
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+def update_subtask(db: Session, task_id: int, subtask_id: int, update: schemas.SubtaskUpdate) -> Optional[models.Task]:
+    task = get_task(db, task_id)
+    if not task:
+        return None
+    subtask = next((item for item in task.subtasks if item.id == subtask_id), None)
+    if not subtask:
+        return None
+    data = update.model_dump(exclude_unset=True)
+    if "title" in data and data["title"] is not None:
+        subtask.title = data["title"].strip()
+    if "completed" in data and data["completed"] is not None:
+        subtask.completed = data["completed"]
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+def delete_subtask(db: Session, task_id: int, subtask_id: int) -> Optional[models.Task]:
+    task = get_task(db, task_id)
+    if not task:
+        return None
+    subtask = next((item for item in task.subtasks if item.id == subtask_id), None)
+    if not subtask:
+        return None
+    db.delete(subtask)
+    db.commit()
+    db.refresh(task)
+    return task
 
 
 def get_habits(db: Session, active_only: bool = True) -> List[models.Habit]:
@@ -559,4 +603,3 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
         day_breakdown=days_breakdown,
         review=review_schema
     )
-

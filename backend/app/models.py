@@ -48,6 +48,20 @@ class Task(Base):
     created_at = Column(DateTime(timezone=True), default=utcnow)
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
+    subtasks = relationship("Subtask", back_populates="task", cascade="all, delete-orphan", order_by="Subtask.id")
+
+
+class Subtask(Base):
+    __tablename__ = "subtasks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey("tasks.id", ondelete="CASCADE"), nullable=False, index=True)
+    title = Column(String(255), nullable=False)
+    completed = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
+    task = relationship("Task", back_populates="subtasks")
+
 
 class Habit(Base):
     __tablename__ = "habits"

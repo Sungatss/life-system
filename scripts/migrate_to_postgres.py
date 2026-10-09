@@ -14,7 +14,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from backend.app.models import Base, Task, Habit, HabitLog, DailyNote, WeeklyReview
+from backend.app.models import Base, Task, Subtask, Habit, HabitLog, DailyNote, WeeklyReview
 from backend.app.database import init_engine
 from backend.app.migrations import add_task_description_if_missing
 
@@ -52,6 +52,7 @@ def migrate(postgres_url: str):
         tasks = sc.execute("SELECT * FROM tasks ORDER BY id ASC").fetchall()
         task_columns = {column[1] for column in sc.execute("PRAGMA table_info(tasks)")}
         migrated_tasks = 0
+        task_id_map = {}
         for row in tasks:
             exists = pg_session.query(Task).filter(Task.title == row["title"]).first()
             if not exists:
@@ -66,9 +67,25 @@ def migrate(postgres_url: str):
                     completed_at=row["completed_at"]
                 )
                 pg_session.add(pg_task)
+                pg_session.flush()
                 migrated_tasks += 1
+            task_id_map[row["id"]] = exists.id if exists else pg_task.id
         pg_session.commit()
         print(f"   ✓ {migrated_tasks} tasks migrated (total {len(tasks)} in local DB).")
+
+        if sc.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='subtasks'").fetchone():
+            existing_steps = {}
+            for step in pg_session.query(Subtask).order_by(Subtask.id.asc()).all():
+                existing_steps.setdefault((step.task_id, step.title), []).append(step)
+            for row in sc.execute("SELECT * FROM subtasks ORDER BY id ASC"):
+                parent_id = task_id_map.get(row["task_id"])
+                if parent_id:
+                    matches = existing_steps.get((parent_id, row["title"]), [])
+                    if matches:
+                        matches.pop(0)
+                    else:
+                        pg_session.add(Subtask(task_id=parent_id, title=row["title"], completed=bool(row["completed"])))
+            pg_session.commit()
 
         # 4. Migrate Habits
         print("\n3. Migrating Habits & Logs...")
@@ -159,7 +176,7 @@ def migrate(postgres_url: str):
 
         # 7. Reset sequences in PostgreSQL for auto-increment IDs
         try:
-            for table_name in ["tasks", "habits", "habit_logs", "daily_notes", "weekly_reviews"]:
+            for table_name in ["subtasks", "tasks", "habits", "habit_logs", "daily_notes", "weekly_reviews"]:
                 pg_session.execute(text(f"""
                     SELECT setval(
                         pg_get_serial_sequence('{table_name}', 'id'),

@@ -70,6 +70,20 @@ export const api = {
     request(`/api/tasks/${id}`, {
       method: 'DELETE',
     }),
+  createSubtask: (taskId, title) =>
+    request(`/api/tasks/${taskId}/subtasks`, {
+      method: 'POST',
+      body: JSON.stringify({ title }),
+    }),
+  updateSubtask: (taskId, subtaskId, data) =>
+    request(`/api/tasks/${taskId}/subtasks/${subtaskId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deleteSubtask: (taskId, subtaskId) =>
+    request(`/api/tasks/${taskId}/subtasks/${subtaskId}`, {
+      method: 'DELETE',
+    }),
 
   // Habits
   getHabits: (days = 14, date) => {

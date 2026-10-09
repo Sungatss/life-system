@@ -180,6 +180,26 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 }
 .task-title:hover, .habit-name:hover { color: var(--accent); }
 .task-description { margin-top: 5px; color: var(--text-secondary); }
+.task-steps-input { grid-column: 1 / -1; }
+.task-card-with-steps { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.task-card-with-steps.completed { opacity: 1; }
+.task-main-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.subtask-section { margin: 10px 0 0 34px; padding-left: 13px; border-left: 1px solid var(--border-subtle); }
+.subtask-progress { color: var(--text-muted); font-size: 11px; margin: 0 0 6px; }
+.subtask-list { list-style: none; display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; }
+.subtask-row { display: flex; align-items: center; gap: 10px; min-height: 30px; min-width: 0; }
+.subtask-checkbox { width: 18px; height: 18px; border-radius: 5px; }
+.subtask-title { flex: 1; min-width: 0; color: var(--text-primary); font-size: 13px; overflow-wrap: anywhere; }
+.subtask-title.completed { color: var(--text-muted); text-decoration: line-through; }
+.subtask-action { min-width: 28px; min-height: 28px; opacity: 0.45; }
+.subtask-row:hover .subtask-action, .subtask-action:focus-visible { opacity: 1; }
+.subtask-add-button { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin: 9px 0 0 32px; padding: 3px 5px; border: 0; border-radius: 5px; background: transparent; color: var(--text-muted); font-size: 12px; cursor: pointer; }
+.subtask-add-button:hover { color: var(--accent); background: var(--bg-subtle); }
+.subtask-add-form { display: flex; align-items: center; gap: 6px; margin: 10px 0 0 32px; }
+.subtask-input { flex: 1; min-width: 0; min-height: 34px; }
+.subtask-add-form .btn-secondary { min-height: 34px; white-space: nowrap; }
+.subtask-edit-form { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; }
+.subtask-error { margin: 8px 0 0 32px; }
 .task-meta { flex-wrap: wrap; justify-content: flex-end; }
 .custom-checkbox { width: 22px; height: 22px; border-radius: 7px; }
 .habit-info { min-width: 0; }
@@ -261,6 +281,8 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   .task-capture-form > .task-input-field, .task-capture-form > .quick-options, .task-details-fields { width: 100%; }
   .task-details-fields { grid-template-columns: 1fr; }
   .task-card, .habit-card { flex-direction: column; align-items: stretch; }
+  .task-main-row { flex-wrap: wrap; }
+  .task-main-row .task-meta { margin-left: 32px; justify-content: flex-start; }
   .task-meta { justify-content: flex-end; }
   .habit-card-actions { justify-content: space-between; }
   .history-grid-container { display: flex; overflow-x: auto; max-width: 100%; }

@@ -4,6 +4,7 @@ import { Plus, AlignLeft, ChevronDown } from 'lucide-react';
 export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [stepsText, setStepsText] = useState('');
   const [showDetails, setShowDetails] = useState(false);
   const [priority, setPriority] = useState('none');
   const [category, setCategory] = useState('');
@@ -21,6 +22,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
       await onAddTask({
         title: title.trim(),
         description: description.trim(),
+        subtasks: stepsText.split('\n').map((line) => line.trim()).filter(Boolean).map((stepTitle) => ({ title: stepTitle })),
         priority: priority !== 'none' ? priority : 'none',
         due_date: dueDate || null,
         category: category.trim() || null,
@@ -28,6 +30,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
       });
       setTitle('');
       setDescription('');
+      setStepsText('');
       setCategory('');
       setShowDetails(false);
       setPriority('none');
@@ -95,7 +98,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
         aria-expanded={showDetails}
       >
         <AlignLeft size={14} />
-        {showDetails ? 'Hide details' : 'Add details or project'}
+        {showDetails ? 'Hide details' : 'Add details, steps or project'}
         <ChevronDown size={13} className={showDetails ? 'rotated' : ''} />
       </button>
 
@@ -118,6 +121,15 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             disabled={isSubmitting}
+          />
+          <textarea
+            className="task-input-field task-description-input task-steps-input"
+            placeholder="Add steps, one per line (optional)"
+            aria-label="Task steps, one per line"
+            value={stepsText}
+            onChange={(e) => setStepsText(e.target.value)}
+            disabled={isSubmitting}
+            rows={3}
           />
         </div>
       )}

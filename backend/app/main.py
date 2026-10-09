@@ -170,6 +170,34 @@ def remove_task(task_id: int, db: Session = Depends(get_db)):
     return None
 
 
+@app.post("/api/tasks/{task_id}/subtasks", response_model=schemas.TaskResponse, status_code=status.HTTP_201_CREATED)
+def create_new_subtask(task_id: int, subtask_in: schemas.SubtaskCreate, db: Session = Depends(get_db)):
+    if not subtask_in.title.strip():
+        raise HTTPException(status_code=400, detail="Step title cannot be empty")
+    task = crud.create_subtask(db, task_id, subtask_in.title)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return schemas.TaskResponse.model_validate(task)
+
+
+@app.put("/api/tasks/{task_id}/subtasks/{subtask_id}", response_model=schemas.TaskResponse)
+def update_subtask_item(task_id: int, subtask_id: int, subtask_in: schemas.SubtaskUpdate, db: Session = Depends(get_db)):
+    if subtask_in.title is not None and not subtask_in.title.strip():
+        raise HTTPException(status_code=400, detail="Step title cannot be empty")
+    task = crud.update_subtask(db, task_id, subtask_id, subtask_in)
+    if not task:
+        raise HTTPException(status_code=404, detail="Step not found")
+    return schemas.TaskResponse.model_validate(task)
+
+
+@app.delete("/api/tasks/{task_id}/subtasks/{subtask_id}", response_model=schemas.TaskResponse)
+def remove_subtask(task_id: int, subtask_id: int, db: Session = Depends(get_db)):
+    task = crud.delete_subtask(db, task_id, subtask_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Step not found")
+    return schemas.TaskResponse.model_validate(task)
+
+
 # Habits
 @app.get("/api/habits", response_model=List[schemas.HabitItemResponse])
 def read_habits(

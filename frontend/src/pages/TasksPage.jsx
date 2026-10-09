@@ -136,6 +136,7 @@ export default function TasksPage() {
                 onToggle={handleToggleTask}
                 onDelete={handleDeleteTask}
                 onUpdate={handleUpdateTask}
+                onSubtasksChange={(updated) => setTasks((prev) => prev.map((item) => item.id === updated.id ? updated : item))}
               />
             ))}
           </div>

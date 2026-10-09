@@ -328,6 +328,10 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
                 onToggle={handleToggleTask}
                 onDelete={handleDeleteTask}
                 onUpdate={handleUpdateTask}
+                onSubtasksChange={(updated) => setTodayData((prev) => prev ? {
+                  ...prev,
+                  tasks: prev.tasks.map((item) => item.id === updated.id ? updated : item),
+                } : prev)}
               />
             ))}
           </div>
