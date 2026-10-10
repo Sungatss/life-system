@@ -5,7 +5,9 @@ A minimalist personal productivity web application built for daily use.
 Focuses strictly on three primary areas:
 1. **Today**: Date, auto-saving daily note, today's tasks, and habit checklist.
 2. **Tasks**: Rapid brain dump with instant capture, optional descriptions, and nested steps with their own checkboxes. Add steps while creating a task (one per line under details) or from any existing task card.
-3. **Habits**: Consistency tracking with a 14-day history grid and no gamification gimmicks.
+3. **Habits**: Consistency tracking with a 14-day history grid.
+
+A compact progress card on Today, Tasks, and Habits rewards each completed task or daily habit with 10 XP. The daily goal is 30 XP, each 100 XP adds a level, and one completion per day maintains a streak. An unfinished day keeps yesterday’s streak until the day ends. Dates follow the device’s timezone. Progress is calculated from saved completions, including existing history: undoing or deleting activity removes its XP, archived habits retain theirs, and subtasks do not earn separate XP. There are no new tables or migrations.
 
 Includes dedicated Privacy Policy and Terms and Conditions pages.
 

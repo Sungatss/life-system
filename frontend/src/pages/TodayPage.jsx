@@ -6,7 +6,6 @@ import TaskItem from '../components/TaskItem';
 import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
 import DateNavigator from '../components/DateNavigator';
-import TodayProgressRing from '../components/TodayProgressRing';
 import NoteSearchModal from '../components/NoteSearchModal';
 import { ListTodo, Flame, PenLine, Plus, Search } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
@@ -239,12 +238,6 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         currentDateStr={currentDateStr}
         onDateChange={setCurrentDateStr}
         onOpenSearch={openSearch}
-      />
-
-      {/* 2. Today Completion Progress Ring */}
-      <TodayProgressRing
-        tasks={tasks}
-        habits={habits}
       />
 
       {/* 3. Daily Note */}

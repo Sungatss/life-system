@@ -129,6 +129,16 @@ class HabitToggleRequest(BaseModel):
 
 
 # Today Overview
+class ProgressResponse(BaseModel):
+    date: str
+    total_xp: int
+    today_xp: int
+    daily_goal: int
+    streak: int
+    level: int
+    xp_to_next_level: int
+
+
 class TodayOverview(BaseModel):
     date: str
     daily_note: Optional[DailyNoteResponse] = None

@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_URL || '';
+export const PROGRESS_CHANGED = 'life-system:progress-changed';
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
@@ -25,14 +26,15 @@ async function request(endpoint, options = {}) {
     throw new Error(errorDetail);
   }
 
-  if (response.status === 204) {
-    return null;
+  const data = response.status === 204 ? null : await response.json();
+  if (options.method && options.method !== 'GET' && /^\/api\/(tasks|habits)(\/|$)/.test(endpoint)) {
+    window.dispatchEvent(new Event(PROGRESS_CHANGED));
   }
-
-  return response.json();
+  return data;
 }
 
 export const api = {
+  getProgress: () => request(`/api/progress?timezone=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')}`),
   // Today overview
   getToday: (date) => {
     const query = date ? `?date=${encodeURIComponent(date)}` : '';

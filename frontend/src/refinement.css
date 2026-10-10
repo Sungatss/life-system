@@ -237,7 +237,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 
 @media (min-width: 980px) {
   .today-page { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(360px, 1fr); gap: 0 20px; align-items: start; }
-  .today-page > .cockpit-date-banner { grid-column: 1; }
+  .today-page > .cockpit-date-banner { grid-column: 1 / -1; }
   .today-page > .progress-ring-section { grid-column: 2; }
   .today-page > .cockpit-section[aria-label='Daily note section'] { grid-column: 1; }
   .today-page > .cockpit-section[aria-label='Today tasks section'] { grid-column: 2; }

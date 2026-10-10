@@ -7,6 +7,7 @@ import HabitsPage from './pages/HabitsPage';
 import WeeklyReviewPage from './pages/WeeklyReviewPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsPage from './pages/TermsPage';
+import ProgressCard from './components/ProgressCard';
 
 export default function App() {
   // Sync view state with URL hash
@@ -62,6 +63,7 @@ export default function App() {
       />
 
       <main className="app-main" id="main-content">
+        {['today', 'tasks', 'habits'].includes(activeTab) && <ProgressCard />}
         {activeTab === 'today' && (
           <TodayPage
             onNavigateToTasks={() => navigateTo('tasks')}

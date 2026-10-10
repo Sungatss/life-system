@@ -2,13 +2,14 @@ import os
 import datetime
 from typing import Optional, List
 from contextlib import asynccontextmanager
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from fastapi import FastAPI, Depends, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from sqlalchemy.orm import Session
 
-from . import models, schemas, crud, migrations
+from . import models, schemas, crud, migrations, progress
 from .database import engine, get_db, Base
 
 
@@ -79,6 +80,15 @@ def health_check():
         "service": "life-system-api",
         "db_status": "connected"
     }
+
+
+@app.get("/api/progress", response_model=schemas.ProgressResponse)
+def get_progress(timezone: str = "UTC", db: Session = Depends(get_db)):
+    try:
+        zone = ZoneInfo(timezone)
+    except (ZoneInfoNotFoundError, ValueError):
+        raise HTTPException(status_code=400, detail="Unknown timezone")
+    return progress.get_progress(db, zone)
 
 
 # Today Overview
