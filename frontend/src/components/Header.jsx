@@ -1,7 +1,37 @@
-import { Sun, Moon, CheckSquare } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Check, CheckSquare, Palette } from 'lucide-react';
+import { themes } from '../theme';
 
-export default function Header({ onNavigate, theme, onToggleTheme }) {
-  const nextTheme = theme === 'dark' ? 'White & Brown' : 'Dark & Purple';
+export default function Header({ onNavigate, theme, onSelectTheme }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const triggerRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const closeOnOutsideClick = (event) => {
+      if (!menuRef.current?.contains(event.target)) setMenuOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [menuOpen]);
+
+  const selectTheme = (id) => {
+    onSelectTheme(id);
+    setMenuOpen(false);
+    triggerRef.current?.focus();
+  };
+
   return (
     <header className="app-header">
       <button type="button" className="brand" onClick={() => onNavigate('today')} aria-label="Life System home">
@@ -9,16 +39,36 @@ export default function Header({ onNavigate, theme, onToggleTheme }) {
         <span>Life System</span>
       </button>
 
-      <div className="header-actions">
+      <div className="header-actions" ref={menuRef}>
         <button
           className="icon-btn"
-          onClick={onToggleTheme}
+          onClick={() => setMenuOpen((open) => !open)}
           type="button"
-          title={`Switch to ${nextTheme} theme`}
-          aria-label={`Switch to ${nextTheme} theme`}
+          title="Choose theme"
+          aria-label="Choose theme"
+          aria-expanded={menuOpen}
+          aria-controls={menuOpen ? 'theme-menu' : undefined}
+          ref={triggerRef}
         >
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          <Palette size={17} aria-hidden="true" />
         </button>
+        {menuOpen && (
+          <div className="theme-menu" id="theme-menu" role="group" aria-label="Color theme">
+            {themes.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`theme-option${theme === option.id ? ' active' : ''}`}
+                aria-pressed={theme === option.id}
+                onClick={() => selectTheme(option.id)}
+              >
+                <span className="theme-swatch" style={{ '--swatch-bg': option.background, '--swatch-accent': option.accent }} aria-hidden="true"><i /></span>
+                <span>{option.label}</span>
+                {theme === option.id && <Check size={16} className="theme-option-check" aria-hidden="true" />}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </header>
   );

@@ -11,6 +11,7 @@ import ProgressCard from './components/ProgressCard';
 import InboxPage from './pages/InboxPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProfilePage from './pages/ProfilePage';
+import { getTheme } from './theme';
 
 const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'profile', 'privacy', 'terms'];
 const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
@@ -23,14 +24,12 @@ export default function App() {
   };
 
   const [activeTab, setActiveTab] = useState(getInitialView);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('life-system-theme') === 'light' ? 'light' : 'dark';
-  });
+  const [theme, setTheme] = useState(() => getTheme(localStorage.getItem('life-system-theme')).id);
 
   // Apply theme to document element
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#120e1b' : '#fcfaf7');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getTheme(theme).background);
     localStorage.setItem('life-system-theme', theme);
   }, [theme]);
 
@@ -50,17 +49,13 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
-
   return (
     <div className="app-container">
       <a className="skip-link" href="#main-content">Skip to content</a>
       <Header
         onNavigate={navigateTo}
         theme={theme}
-        onToggleTheme={toggleTheme}
+        onSelectTheme={setTheme}
       />
 
       <main className="app-main" id="main-content">

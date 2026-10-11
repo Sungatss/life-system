@@ -39,7 +39,7 @@ export default function PrivacyPolicyPage({ onBack }) {
 
         <h2>3. Local Storage</h2>
         <p>
-          The application uses browser local storage exclusively for your interface preferences, such as your chosen light or dark theme mode.
+          The application uses browser local storage exclusively for your interface preferences, such as your chosen color theme.
         </p>
 
         <h2>4. Data Retention and Control</h2>
