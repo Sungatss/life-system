@@ -34,6 +34,8 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
+  getProfile: () => request('/api/profile'),
+  updateProfile: (data) => request('/api/profile', { method: 'PUT', body: JSON.stringify(data) }),
   getProgress: () => request(`/api/progress?timezone=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')}`),
   getInbox: () => request('/api/inbox'),
   createInboxEntry: (content) => request('/api/inbox', {

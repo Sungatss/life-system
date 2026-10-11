@@ -16,7 +16,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
     return null;
   }
 
-  const { days, total_notes_written, total_habits_completed } = contributions;
+  const { days, total_notes_written, total_habits_completed, total_tasks_completed } = contributions;
 
   // Build a lookup map by YYYY-MM-DD
   const dayMap = {};
@@ -97,6 +97,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
     // 'all' combined mode
     let score = 0;
     if (item.has_note) score += 2;
+    if (item.tasks_completed > 0) score += Math.min(item.tasks_completed, 2);
     if (item.habits_completed > 0) {
       const ratio = item.total_habits > 0 ? item.habits_completed / item.total_habits : 0;
       score += ratio >= 0.6 ? 2 : 1;
@@ -108,7 +109,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
   const activeDaysCount = days.filter((d) => {
     if (mode === 'notes') return d.has_note;
     if (mode === 'habits') return d.habits_completed > 0;
-    return d.has_note || d.habits_completed > 0;
+    return d.has_note || d.habits_completed > 0 || d.tasks_completed > 0;
   }).length;
 
   return (
@@ -119,9 +120,11 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
           <div className="contribution-stats">
             <span>{activeDaysCount} active days</span>
             <span>&bull;</span>
-            <span>{total_notes_written} notes written</span>
-            <span>&bull;</span>
-            <span>{total_habits_completed} habits checked</span>
+          <span>{total_notes_written} notes written</span>
+          <span>&bull;</span>
+          <span>{total_habits_completed} habits checked</span>
+          <span>&bull;</span>
+          <span>{total_tasks_completed} tasks finished</span>
           </div>
         </div>
 
@@ -208,7 +211,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
                         }}
                         role={day.inRange ? 'button' : undefined}
                         tabIndex={day.inRange ? 0 : -1}
-                        aria-label={day.inRange ? `${day.dateStr}: ${day.item.note_words} note words, ${day.item.habits_completed} habits completed` : undefined}
+                        aria-label={day.inRange ? `${day.dateStr}: ${day.item.note_words} note words, ${day.item.habits_completed} habits completed, ${day.item.tasks_completed} tasks finished` : undefined}
                       />
                     );
                   })}
@@ -225,7 +228,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
           {hoveredDay ? (
             <span>
               <strong>{hoveredDay.date}</strong>: {hoveredDay.has_note ? `${hoveredDay.note_words} words noted` : 'No daily note'},{' '}
-              {hoveredDay.habits_completed} / {hoveredDay.total_habits} habits completed
+              {hoveredDay.habits_completed} / {hoveredDay.total_habits} habits completed, {hoveredDay.tasks_completed} tasks finished
             </span>
           ) : null}
         </div>

@@ -3,6 +3,18 @@ from typing import Optional, List, Dict
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class ProfileUpdate(BaseModel):
+    name: str = Field(..., max_length=100)
+    bio: str = Field(default="", max_length=1000)
+
+
+class ProfileResponse(ProfileUpdate):
+    id: int
+    created_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 # Daily Note Schemas
 class DailyNoteBase(BaseModel):
     content: str = ""

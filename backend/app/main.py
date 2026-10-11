@@ -24,6 +24,7 @@ async def lifespan(app: FastAPI):
         Base.metadata.create_all(bind=engine)
         migrations.add_task_description_if_missing(engine)
         migrations.add_task_project_if_missing(engine)
+        migrations.add_user_bio_if_missing(engine)
         # Seed starter defaults if brand new db
         with Session(bind=engine) as db:
             crud.seed_default_data_if_empty(db)
@@ -90,6 +91,30 @@ def get_progress(timezone: str = "UTC", db: Session = Depends(get_db)):
     except (ZoneInfoNotFoundError, ValueError):
         raise HTTPException(status_code=400, detail="Unknown timezone")
     return progress.get_progress(db, zone)
+
+
+@app.get("/api/profile", response_model=schemas.ProfileResponse)
+def get_profile(db: Session = Depends(get_db)):
+    profile = db.query(models.User).order_by(models.User.id).first()
+    if profile is None:
+        profile = models.User(name="Your name", bio="")
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
+    return profile
+
+
+@app.put("/api/profile", response_model=schemas.ProfileResponse)
+def update_profile(profile_in: schemas.ProfileUpdate, db: Session = Depends(get_db)):
+    name = profile_in.name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Name cannot be empty")
+    profile = get_profile(db)
+    profile.name = name
+    profile.bio = profile_in.bio.strip()
+    db.commit()
+    db.refresh(profile)
+    return profile
 
 
 @app.get("/api/inbox", response_model=List[schemas.InboxEntryResponse])

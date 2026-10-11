@@ -22,6 +22,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False, default="Default User")
+    bio = Column(Text, nullable=False, default="")
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
 

@@ -172,7 +172,7 @@ export default function WeeklyReviewPage() {
       <section className="cockpit-section review-nav-section" aria-label="Week navigation">
         <div className="review-nav-container">
           <div className="review-nav-left">
-            <h1 className="review-title">Weekly review</h1>
+            <h2 className="review-title">Weekly review</h2>
           </div>
 
           <div className="review-nav-controls">

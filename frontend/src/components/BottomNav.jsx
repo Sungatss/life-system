@@ -1,4 +1,4 @@
-import { Calendar, Inbox, FolderKanban, ListTodo, Flame, BarChart2 } from 'lucide-react';
+import { Calendar, Inbox, FolderKanban, ListTodo, Flame, UserRound } from 'lucide-react';
 
 const items = [
   { id: 'today', label: 'Today', icon: Calendar },
@@ -6,7 +6,7 @@ const items = [
   { id: 'projects', label: 'Projects', icon: FolderKanban },
   { id: 'tasks', label: 'Tasks', icon: ListTodo },
   { id: 'habits', label: 'Habits', icon: Flame },
-  { id: 'review', label: 'Review', icon: BarChart2 },
+  { id: 'profile', label: 'Profile', icon: UserRound },
 ];
 
 export default function BottomNav({ activeTab, onNavigate }) {

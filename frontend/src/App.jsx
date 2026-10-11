@@ -5,23 +5,21 @@ import Footer from './components/Footer';
 import TodayPage from './pages/TodayPage';
 import TasksPage from './pages/TasksPage';
 import HabitsPage from './pages/HabitsPage';
-import WeeklyReviewPage from './pages/WeeklyReviewPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsPage from './pages/TermsPage';
 import ProgressCard from './components/ProgressCard';
 import InboxPage from './pages/InboxPage';
 import ProjectsPage from './pages/ProjectsPage';
+import ProfilePage from './pages/ProfilePage';
 
-const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'review', 'privacy', 'terms'];
+const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'profile', 'privacy', 'terms'];
+const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
 
 export default function App() {
   // Sync view state with URL hash
   const getInitialView = () => {
     const hash = window.location.hash.replace('#', '');
-    if (views.includes(hash)) {
-      return hash;
-    }
-    return 'today';
+    return resolveView(hash);
   };
 
   const [activeTab, setActiveTab] = useState(getInitialView);
@@ -39,9 +37,7 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      if (views.includes(hash)) {
-        setActiveTab(hash);
-      }
+      setActiveTab(resolveView(hash));
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
@@ -78,9 +74,7 @@ export default function App() {
         {activeTab === 'projects' && <ProjectsPage />}
         {activeTab === 'tasks' && <TasksPage />}
         {activeTab === 'habits' && <HabitsPage />}
-        {activeTab === 'review' && (
-          <WeeklyReviewPage />
-        )}
+        {activeTab === 'profile' && <ProfilePage />}
         {activeTab === 'privacy' && (
           <PrivacyPolicyPage onBack={() => navigateTo('today')} />
         )}
