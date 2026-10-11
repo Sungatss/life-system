@@ -2,48 +2,6 @@
 :root {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-  /* Dark Theme (Default) */
-  --bg-primary: #0d0f12;
-  --bg-surface: #14171d;
-  --bg-surface-hover: #1a1e26;
-  --bg-subtle: #1e222b;
-  --border-subtle: #242933;
-  --border-strong: #363d4d;
-  --text-primary: #f0f3f6;
-  --text-secondary: #9aa2b1;
-  --text-muted: #626b7a;
-  --accent: #3b82f6;
-  --accent-subtle: rgba(59, 130, 246, 0.12);
-  --success: #10b981;
-  --success-subtle: rgba(16, 185, 129, 0.12);
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --danger-subtle: rgba(239, 68, 68, 0.12);
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-[data-theme='light'] {
-  --bg-primary: #f7f8fa;
-  --bg-surface: #ffffff;
-  --bg-surface-hover: #f1f3f6;
-  --bg-subtle: #eaedf2;
-  --border-subtle: #dce0e8;
-  --border-strong: #b8c0cc;
-  --text-primary: #14171d;
-  --text-secondary: #4b5565;
-  --text-muted: #828d9e;
-  --accent: #2563eb;
-  --accent-subtle: rgba(37, 99, 235, 0.08);
-  --success: #059669;
-  --success-subtle: rgba(5, 150, 105, 0.08);
-  --warning: #d97706;
-  --danger: #dc2626;
-  --danger-subtle: rgba(220, 38, 38, 0.08);
-  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -490,7 +448,7 @@ a {
 .custom-checkbox.checked {
   background: var(--success);
   border-color: var(--success);
-  color: #ffffff;
+  color: var(--bg-primary);
 }
 
 .task-title {
@@ -531,13 +489,13 @@ a {
 .priority-high {
   background: var(--danger-subtle);
   color: var(--danger);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--danger);
 }
 
 .priority-medium {
-  background: rgba(245, 158, 11, 0.12);
+  background: var(--warning-subtle);
   color: var(--warning);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  border: 1px solid var(--warning);
 }
 
 .priority-low {
@@ -1117,49 +1075,23 @@ a {
 }
 
 .heatmap-cell.level-1 {
-  background: #0e4429;
-  border-color: #0e4429;
+  background: var(--heatmap-1);
+  border-color: var(--heatmap-1);
 }
 
 .heatmap-cell.level-2 {
-  background: #006d32;
-  border-color: #006d32;
+  background: var(--heatmap-2);
+  border-color: var(--heatmap-2);
 }
 
 .heatmap-cell.level-3 {
-  background: #26a641;
-  border-color: #26a641;
+  background: var(--heatmap-3);
+  border-color: var(--heatmap-3);
 }
 
 .heatmap-cell.level-4 {
-  background: #39d353;
-  border-color: #39d353;
-}
-
-/* GitHub Heatmap Levels - Light Theme */
-[data-theme='light'] .heatmap-cell.level-0 {
-  background: #ebedf0;
-  border-color: #d0d7de;
-}
-
-[data-theme='light'] .heatmap-cell.level-1 {
-  background: #9be9a8;
-  border-color: #9be9a8;
-}
-
-[data-theme='light'] .heatmap-cell.level-2 {
-  background: #40c463;
-  border-color: #40c463;
-}
-
-[data-theme='light'] .heatmap-cell.level-3 {
-  background: #30a14e;
-  border-color: #30a14e;
-}
-
-[data-theme='light'] .heatmap-cell.level-4 {
-  background: #216e39;
-  border-color: #216e39;
+  background: var(--heatmap-4);
+  border-color: var(--heatmap-4);
 }
 
 .heatmap-footer {
@@ -1236,7 +1168,7 @@ a {
 
 .btn-today-return:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--bg-primary);
 }
 
 .btn-search-trigger,
@@ -1817,7 +1749,7 @@ a {
 .progress-mini-bar-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981);
+  background: linear-gradient(90deg, var(--accent), var(--success));
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1898,9 +1830,9 @@ a {
 .active-week-indicator {
   font-size: 12px;
   font-weight: 600;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--success);
+  background: var(--success-subtle);
+  border: 1px solid var(--success);
   padding: 3px 9px;
   border-radius: 999px;
 }
@@ -1997,7 +1929,7 @@ a {
 }
 
 .weekly-day-card.active-day {
-  border-left: 3px solid #10b981;
+  border-left: 3px solid var(--success);
 }
 
 .day-card-header {
@@ -2085,8 +2017,8 @@ a {
 }
 
 .reflection-prompt-card.highlight-focus {
-  border-color: rgba(59, 130, 246, 0.4);
-  background: rgba(59, 130, 246, 0.03);
+  border-color: var(--accent);
+  background: var(--accent-subtle);
 }
 
 .prompt-header {
@@ -2108,18 +2040,18 @@ a {
 }
 
 .prompt-badge.win-badge {
-  background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
+  background: var(--success-subtle);
+  color: var(--success);
 }
 
 .prompt-badge.blocker-badge {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  background: var(--danger-subtle);
+  color: var(--danger);
 }
 
 .prompt-badge.focus-badge {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  background: var(--accent-subtle);
+  color: var(--accent);
 }
 
 .prompt-hint {
@@ -2163,7 +2095,7 @@ a {
 }
 
 .status-saved {
-  color: #10b981;
+  color: var(--success);
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -2249,4 +2181,3 @@ a {
     width: 100%;
   }
 }
-

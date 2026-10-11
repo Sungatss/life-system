@@ -24,12 +24,13 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState(getInitialView);
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('life-system-theme') || 'dark';
+    return localStorage.getItem('life-system-theme') === 'light' ? 'light' : 'dark';
   });
 
   // Apply theme to document element
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#120e1b' : '#fcfaf7');
     localStorage.setItem('life-system-theme', theme);
   }, [theme]);
 

@@ -1,6 +1,7 @@
 import { Sun, Moon, CheckSquare } from 'lucide-react';
 
 export default function Header({ onNavigate, theme, onToggleTheme }) {
+  const nextTheme = theme === 'dark' ? 'White & Brown' : 'Dark & Purple';
   return (
     <header className="app-header">
       <button type="button" className="brand" onClick={() => onNavigate('today')} aria-label="Life System home">
@@ -12,8 +13,9 @@ export default function Header({ onNavigate, theme, onToggleTheme }) {
         <button
           className="icon-btn"
           onClick={onToggleTheme}
-          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          type="button"
+          title={`Switch to ${nextTheme} theme`}
+          aria-label={`Switch to ${nextTheme} theme`}
         >
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>

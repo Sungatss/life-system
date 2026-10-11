@@ -248,7 +248,7 @@ export default function WeeklyReviewPage() {
             <div className="weekly-kpi-card">
               <div className="kpi-card-header">
                 <span className="kpi-label">TASKS FINISHED</span>
-                <div className="kpi-icon-wrap" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981' }}>
+                <div className="kpi-icon-wrap" style={{ background: 'var(--success-subtle)', color: 'var(--success)' }}>
                   <CheckCircle2 size={18} />
                 </div>
               </div>
@@ -259,7 +259,7 @@ export default function WeeklyReviewPage() {
             <div className="weekly-kpi-card">
               <div className="kpi-card-header">
                 <span className="kpi-label">HABIT CONSISTENCY</span>
-                <div className="kpi-icon-wrap" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b' }}>
+                <div className="kpi-icon-wrap" style={{ background: 'var(--warning-subtle)', color: 'var(--warning)' }}>
                   <Flame size={18} />
                 </div>
               </div>
@@ -270,7 +270,7 @@ export default function WeeklyReviewPage() {
             <div className="weekly-kpi-card">
               <div className="kpi-card-header">
                 <span className="kpi-label">DAYS ACTIVE</span>
-                <div className="kpi-icon-wrap" style={{ background: 'rgba(59, 130, 246, 0.12)', color: '#3b82f6' }}>
+                <div className="kpi-icon-wrap" style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}>
                   <Activity size={18} />
                 </div>
               </div>
@@ -283,7 +283,7 @@ export default function WeeklyReviewPage() {
             <div className="weekly-kpi-card">
               <div className="kpi-card-header">
                 <span className="kpi-label">WORDS WRITTEN</span>
-                <div className="kpi-icon-wrap" style={{ background: 'rgba(168, 85, 247, 0.12)', color: '#a855f7' }}>
+                <div className="kpi-icon-wrap" style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}>
                   <BookOpen size={18} />
                 </div>
               </div>
@@ -322,7 +322,7 @@ export default function WeeklyReviewPage() {
                         <span className="day-metric-label">Tasks:</span>
                         <span className="day-metric-value">
                           {day.tasks_completed > 0 ? (
-                            <strong style={{ color: '#10b981' }}>{day.tasks_completed}</strong>
+                            <strong style={{ color: 'var(--success)' }}>{day.tasks_completed}</strong>
                           ) : (
                             <span className="text-dim">0</span>
                           )}
@@ -360,7 +360,7 @@ export default function WeeklyReviewPage() {
                         className="day-progress-fill"
                         style={{
                           width: `${Math.max(habitPct, day.tasks_completed > 0 ? 50 : 0)}%`,
-                          backgroundColor: habitPct === 100 ? '#10b981' : habitPct > 0 ? '#3b82f6' : 'transparent',
+                          backgroundColor: habitPct === 100 ? 'var(--success)' : habitPct > 0 ? 'var(--accent)' : 'transparent',
                         }}
                       />
                     </div>
@@ -374,7 +374,7 @@ export default function WeeklyReviewPage() {
           <section className="cockpit-section reflection-section" aria-label="Weekly reflection journal">
             <div className="section-header">
               <div className="section-title-wrap">
-                <Sparkles size={16} style={{ color: '#f59e0b' }} />
+                <Sparkles size={16} style={{ color: 'var(--warning)' }} />
                 <h2 className="section-title">Weekly reflection</h2>
               </div>
               <div className="section-header-actions">
@@ -415,7 +415,7 @@ export default function WeeklyReviewPage() {
               <div className="reflection-preview-container">
                 <div className="preview-block">
                   <h3 className="preview-title">
-                    <Trophy size={16} color="#10b981" /> Wins
+                    <Trophy size={16} color="var(--success)" /> Wins
                   </h3>
                   <div
                     className="markdown-body preview-content"
@@ -425,7 +425,7 @@ export default function WeeklyReviewPage() {
 
                 <div className="preview-block">
                   <h3 className="preview-title">
-                    <AlertCircle size={16} color="#ef4444" /> Challenges
+                    <AlertCircle size={16} color="var(--danger)" /> Challenges
                   </h3>
                   <div
                     className="markdown-body preview-content"
@@ -435,7 +435,7 @@ export default function WeeklyReviewPage() {
 
                 <div className="preview-block">
                   <h3 className="preview-title">
-                    <Target size={16} color="#3b82f6" /> Next focus
+                    <Target size={16} color="var(--accent)" /> Next focus
                   </h3>
                   <div
                     className="markdown-body preview-content"
