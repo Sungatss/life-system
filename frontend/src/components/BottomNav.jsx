@@ -18,11 +18,12 @@ export default function BottomNav({ activeTab, onNavigate }) {
           type="button"
           className={`nav-button ${activeTab === id ? 'active' : ''}`}
           onClick={() => onNavigate(id)}
+          aria-label={label}
           aria-current={activeTab === id ? 'page' : undefined}
+          title={label}
           id={`nav-${id}-btn`}
         >
-          <Icon size={16} aria-hidden="true" />
-          <span>{label}</span>
+          <Icon size={20} aria-hidden="true" />
         </button>
       ))}
     </nav>
