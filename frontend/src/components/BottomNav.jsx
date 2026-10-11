@@ -23,7 +23,7 @@ export default function BottomNav({ activeTab, onNavigate }) {
           title={label}
           id={`nav-${id}-btn`}
         >
-          <Icon size={20} aria-hidden="true" />
+          <Icon size={18} aria-hidden="true" />
         </button>
       ))}
     </nav>

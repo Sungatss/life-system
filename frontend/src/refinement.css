@@ -98,9 +98,9 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   left: 50%;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  width: min(420px, calc(100vw - 32px));
-  gap: 4px;
-  padding: 6px;
+  width: min(390px, calc(100vw - 36px));
+  gap: 3px;
+  padding: 5px;
   border: 1px solid var(--border-strong);
   border-radius: 17px;
   background: color-mix(in srgb, var(--bg-surface) 93%, transparent);
@@ -108,7 +108,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   backdrop-filter: blur(20px);
   transform: translateX(-50%);
 }
-.nav-button { min-height: 50px; justify-content: center; border-radius: 10px; padding: 8px 6px; }
+.nav-button { min-height: 48px; justify-content: center; border-radius: 10px; padding: 7px 5px; }
 .nav-button.active { border-color: transparent; background: var(--accent-subtle); color: var(--accent); }
 .icon-btn { width: 40px; height: 40px; border-radius: 11px; background: var(--bg-surface); }
 .app-main { min-width: 0; padding-bottom: 28px; }
@@ -264,8 +264,8 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 @media (max-width: 760px) {
   .app-container { padding: 0 16px; }
   .app-header { position: static; margin-bottom: 18px; padding: 16px 0; background: transparent; backdrop-filter: none; }
-  .nav-links { bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100vw - 24px); gap: 2px; }
-  .nav-button { min-height: 54px; padding: 5px 2px; }
+  .nav-links { bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100vw - 36px); gap: 1px; }
+  .nav-button { min-height: 50px; padding: 5px 2px; }
   .cockpit-date-banner { padding: 22px; }
   .weekly-days-grid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(150px, 38%); overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
   .weekly-day-card { scroll-snap-align: start; }
