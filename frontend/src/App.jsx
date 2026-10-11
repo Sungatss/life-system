@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
+import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
 import TodayPage from './pages/TodayPage';
 import TasksPage from './pages/TasksPage';
@@ -60,7 +61,6 @@ export default function App() {
     <div className="app-container">
       <a className="skip-link" href="#main-content">Skip to content</a>
       <Header
-        activeTab={activeTab}
         onNavigate={navigateTo}
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -90,6 +90,7 @@ export default function App() {
       </main>
 
       <Footer onNavigate={navigateTo} />
+      <BottomNav activeTab={activeTab} onNavigate={navigateTo} />
     </div>
   );
 }

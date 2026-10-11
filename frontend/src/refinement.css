@@ -92,16 +92,26 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   stroke: var(--accent);
 }
 .nav-links {
-  gap: 5px;
-  padding: 4px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 13px;
-  background: var(--bg-surface);
+  position: fixed;
+  z-index: 60;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  left: 50%;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  width: min(680px, calc(100vw - 32px));
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 17px;
+  background: color-mix(in srgb, var(--bg-surface) 93%, transparent);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(20px);
+  transform: translateX(-50%);
 }
-.nav-button { min-height: 38px; border-radius: 9px; padding: 8px 13px; }
+.nav-button { min-height: 46px; justify-content: center; border-radius: 10px; padding: 8px 6px; }
 .nav-button.active { border-color: transparent; background: var(--accent-subtle); color: var(--accent); }
 .icon-btn { width: 40px; height: 40px; border-radius: 11px; background: var(--bg-surface); }
-.app-main { min-width: 0; padding-bottom: 72px; }
+.app-main { min-width: 0; padding-bottom: 28px; }
 
 .cockpit-date-banner {
   min-width: 0;
@@ -231,8 +241,9 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .empty-state .btn-secondary { margin-top: 14px; }
 .error-state { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--danger); }
 .form-error { order: 5; width: 100%; margin: 2px 0 8px; color: var(--danger); font-size: 13px; }
-.app-footer { padding: 24px 0 40px; }
+.app-footer { padding: 24px 0 calc(104px + env(safe-area-inset-bottom)); }
 .footer-nav { flex-wrap: wrap; gap: 10px 18px; }
+.footer-link { border: 0; padding: 0; background: transparent; font: inherit; }
 .legal-page { max-width: 840px; margin: 0 auto 30px; padding: 36px; border-radius: var(--radius-lg); }
 
 @media (min-width: 980px) {
@@ -253,23 +264,8 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 @media (max-width: 760px) {
   .app-container { padding: 0 16px; }
   .app-header { position: static; margin-bottom: 18px; padding: 16px 0; background: transparent; backdrop-filter: none; }
-  .nav-links {
-    position: fixed;
-    z-index: 60;
-    right: 12px;
-    bottom: max(10px, env(safe-area-inset-bottom));
-    left: 12px;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 2px;
-    border-color: var(--border-strong);
-    border-radius: 17px;
-    box-shadow: 0 14px 44px rgba(0, 0, 0, 0.34);
-    backdrop-filter: blur(20px);
-  }
+  .nav-links { bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100vw - 24px); gap: 2px; }
   .nav-button { min-height: 54px; flex-direction: column; justify-content: center; gap: 1px; padding: 5px 2px; font-size: 11px; }
-  .app-main { padding-bottom: 86px; }
-  .app-footer { padding-bottom: 112px; }
   .cockpit-date-banner { padding: 22px; }
   .weekly-days-grid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(150px, 38%); overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
   .weekly-day-card { scroll-snap-align: start; }

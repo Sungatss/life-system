@@ -1,70 +1,12 @@
-import React from 'react';
-import { Sun, Moon, CheckSquare, Calendar, Inbox, FolderKanban, ListTodo, Flame, BarChart2 } from 'lucide-react';
+import { Sun, Moon, CheckSquare } from 'lucide-react';
 
-export default function Header({ activeTab, onNavigate, theme, onToggleTheme }) {
+export default function Header({ onNavigate, theme, onToggleTheme }) {
   return (
     <header className="app-header">
       <button type="button" className="brand" onClick={() => onNavigate('today')} aria-label="Life System home">
         <CheckSquare className="brand-icon" />
         <span>Life System</span>
       </button>
-
-      <nav className="nav-links" aria-label="Main Navigation">
-        <button
-          className={`nav-button ${activeTab === 'today' ? 'active' : ''}`}
-          onClick={() => onNavigate('today')}
-          aria-current={activeTab === 'today' ? 'page' : undefined}
-          id="nav-today-btn"
-        >
-          <Calendar size={16} />
-          <span>Today</span>
-        </button>
-        <button
-          className={`nav-button ${activeTab === 'inbox' ? 'active' : ''}`}
-          onClick={() => onNavigate('inbox')}
-          aria-current={activeTab === 'inbox' ? 'page' : undefined}
-          id="nav-inbox-btn"
-        >
-          <Inbox size={16} />
-          <span>Inbox</span>
-        </button>
-        <button
-          className={`nav-button ${activeTab === 'projects' ? 'active' : ''}`}
-          onClick={() => onNavigate('projects')}
-          aria-current={activeTab === 'projects' ? 'page' : undefined}
-          id="nav-projects-btn"
-        >
-          <FolderKanban size={16} />
-          <span>Projects</span>
-        </button>
-        <button
-          className={`nav-button ${activeTab === 'tasks' ? 'active' : ''}`}
-          onClick={() => onNavigate('tasks')}
-          aria-current={activeTab === 'tasks' ? 'page' : undefined}
-          id="nav-tasks-btn"
-        >
-          <ListTodo size={16} />
-          <span>Tasks</span>
-        </button>
-        <button
-          className={`nav-button ${activeTab === 'habits' ? 'active' : ''}`}
-          onClick={() => onNavigate('habits')}
-          aria-current={activeTab === 'habits' ? 'page' : undefined}
-          id="nav-habits-btn"
-        >
-          <Flame size={16} />
-          <span>Habits</span>
-        </button>
-        <button
-          className={`nav-button ${activeTab === 'review' ? 'active' : ''}`}
-          onClick={() => onNavigate('review')}
-          aria-current={activeTab === 'review' ? 'page' : undefined}
-          id="nav-review-btn"
-        >
-          <BarChart2 size={16} />
-          <span>Review</span>
-        </button>
-      </nav>
 
       <div className="header-actions">
         <button

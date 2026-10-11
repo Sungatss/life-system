@@ -1,80 +1,11 @@
-import React from 'react';
-
 export default function Footer({ onNavigate }) {
   return (
     <footer className="app-footer">
       <div className="footer-top">
-        <div className="brand" style={{ fontSize: '14px' }}>
-          Life System
-        </div>
-        <nav className="footer-nav" aria-label="Footer Navigation">
-          <button
-            type="button"
-            className="footer-link"
-            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
-            onClick={() => onNavigate('today')}
-          >
-            Today
-          </button>
-          <button
-            type="button"
-            className="footer-link"
-            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
-            onClick={() => onNavigate('inbox')}
-          >
-            Inbox
-          </button>
-          <button
-            type="button"
-            className="footer-link"
-            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
-            onClick={() => onNavigate('projects')}
-          >
-            Projects
-          </button>
-          <button
-            type="button"
-            className="footer-link"
-            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
-            onClick={() => onNavigate('tasks')}
-          >
-            Tasks
-          </button>
-          <button
-            type="button"
-            className="footer-link"
-            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
-            onClick={() => onNavigate('habits')}
-          >
-            Habits
-          </button>
-          <button
-            type="button"
-            className="footer-link"
-            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
-            onClick={() => onNavigate('review')}
-            id="footer-review-btn"
-          >
-            Weekly Review
-          </button>
-          <button
-            type="button"
-            className="footer-link"
-            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
-            onClick={() => onNavigate('privacy')}
-            id="footer-privacy-btn"
-          >
-            Privacy Policy
-          </button>
-          <button
-            type="button"
-            className="footer-link"
-            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
-            onClick={() => onNavigate('terms')}
-            id="footer-terms-btn"
-          >
-            Terms and Conditions
-          </button>
+        <div className="brand" style={{ fontSize: '14px' }}>Life System</div>
+        <nav className="footer-nav" aria-label="Legal pages">
+          <button type="button" className="footer-link" onClick={() => onNavigate('privacy')} id="footer-privacy-btn">Privacy Policy</button>
+          <button type="button" className="footer-link" onClick={() => onNavigate('terms')} id="footer-terms-btn">Terms and Conditions</button>
         </nav>
       </div>
     </footer>
