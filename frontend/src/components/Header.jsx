@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, CheckSquare, Palette } from 'lucide-react';
+import { Check, CheckSquare, Palette, Volume2, VolumeX } from 'lucide-react';
 import { themes } from '../theme';
 
-export default function Header({ onNavigate, theme, onSelectTheme }) {
+export default function Header({ onNavigate, theme, onSelectTheme, soundEnabled, onToggleSound }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -40,6 +40,16 @@ export default function Header({ onNavigate, theme, onSelectTheme }) {
       </button>
 
       <div className="header-actions" ref={menuRef}>
+        <button
+          className="icon-btn sound-toggle"
+          onClick={() => { setMenuOpen(false); onToggleSound(); }}
+          type="button"
+          title={soundEnabled ? 'Mute sound effects' : 'Turn on sound effects'}
+          aria-label="Sound effects"
+          aria-pressed={soundEnabled}
+        >
+          {soundEnabled ? <Volume2 size={17} aria-hidden="true" /> : <VolumeX size={17} aria-hidden="true" />}
+        </button>
         <button
           className="icon-btn"
           onClick={() => setMenuOpen((open) => !open)}

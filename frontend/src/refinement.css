@@ -178,6 +178,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .nav-button { min-height: 48px; justify-content: center; border-radius: 10px; padding: 7px 5px; }
 .nav-button.active { border-color: transparent; background: var(--accent-subtle); color: var(--accent); }
 .icon-btn { width: 40px; height: 40px; border-radius: 11px; background: var(--bg-surface); }
+.sound-toggle[aria-pressed='true'] { color: var(--accent); }
 .header-actions { position: relative; }
 .theme-menu {
   position: absolute;

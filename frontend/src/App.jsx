@@ -13,6 +13,7 @@ import ProjectsPage from './pages/ProjectsPage';
 import ProfilePage from './pages/ProfilePage';
 import RewardFeedback from './components/RewardFeedback';
 import { getTheme } from './theme';
+import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
 
 const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'profile', 'privacy', 'terms'];
 const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
@@ -26,6 +27,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState(getInitialView);
   const [theme, setTheme] = useState(() => getTheme(localStorage.getItem('life-system-theme')).id);
+  const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('life-system-sound') !== 'off');
 
   // Apply theme to document element
   useEffect(() => {
@@ -33,6 +35,21 @@ export default function App() {
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getTheme(theme).background);
     localStorage.setItem('life-system-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('life-system-sound', soundEnabled ? 'on' : 'off');
+    if (!soundEnabled) return undefined;
+
+    const unlockOnKey = (event) => {
+      if (event.key === 'Enter' || event.key === ' ') unlockRewardAudio();
+    };
+    window.addEventListener('pointerdown', unlockRewardAudio, { capture: true, passive: true });
+    window.addEventListener('keydown', unlockOnKey, true);
+    return () => {
+      window.removeEventListener('pointerdown', unlockRewardAudio, true);
+      window.removeEventListener('keydown', unlockOnKey, true);
+    };
+  }, [soundEnabled]);
 
   // Listen to hash changes for browser back/forward buttons
   useEffect(() => {
@@ -57,6 +74,12 @@ export default function App() {
         onNavigate={navigateTo}
         theme={theme}
         onSelectTheme={setTheme}
+        soundEnabled={soundEnabled}
+        onToggleSound={() => {
+          if (soundEnabled) stopRewardAudio();
+          else unlockRewardAudio();
+          setSoundEnabled((enabled) => !enabled);
+        }}
       />
 
       <main className="app-main" id="main-content">
@@ -82,7 +105,7 @@ export default function App() {
 
       <Footer onNavigate={navigateTo} />
       <BottomNav activeTab={activeTab} onNavigate={navigateTo} />
-      <RewardFeedback />
+      <RewardFeedback soundEnabled={soundEnabled} />
     </div>
   );
 }

@@ -1,10 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Sparkles, Trophy, X, Zap } from 'lucide-react';
 import { api, PROGRESS_CHANGED } from '../api/client';
+import { playRewardSound } from '../utils/rewardSound';
 import './RewardFeedback.css';
 
-export default function RewardFeedback() {
+export default function RewardFeedback({ soundEnabled }) {
   const [reward, setReward] = useState(null);
+  const soundEnabledRef = useRef(soundEnabled);
+
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
 
   useEffect(() => {
     let active = true;
@@ -26,6 +32,7 @@ export default function RewardFeedback() {
           clearTimeout(timer);
           setReward({ id: Date.now(), gained, kind, level: next.level });
           timer = setTimeout(() => setReward(null), kind === 'level' ? 5000 : 3000);
+          if (soundEnabledRef.current) playRewardSound(kind);
 
           // Vibration is optional; unsupported browsers simply show the visual reward.
           if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
