@@ -86,9 +86,11 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     });
     try {
       await api.updateTask(taskId, { completed: newCompleted });
+      return true;
     } catch (err) {
       console.error('Failed to update task:', err);
       loadTodayData();
+      return false;
     }
   };
 
@@ -193,9 +195,11 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     try {
       await api.toggleHabit(habitId, currentDateStr, newCompleted);
       refreshContributions();
+      return true;
     } catch (err) {
       console.error('Failed to toggle habit:', err);
       loadTodayData();
+      return false;
     }
   };
 

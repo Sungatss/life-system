@@ -11,6 +11,7 @@ import ProgressCard from './components/ProgressCard';
 import InboxPage from './pages/InboxPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProfilePage from './pages/ProfilePage';
+import RewardFeedback from './components/RewardFeedback';
 import { getTheme } from './theme';
 
 const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'profile', 'privacy', 'terms'];
@@ -81,6 +82,7 @@ export default function App() {
 
       <Footer onNavigate={navigateTo} />
       <BottomNav activeTab={activeTab} onNavigate={navigateTo} />
+      <RewardFeedback />
     </div>
   );
 }

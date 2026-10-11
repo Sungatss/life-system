@@ -59,9 +59,11 @@ export default function TasksPage() {
       } else if (filter === 'completed' && !newCompleted) {
         setTasks((prev) => prev.filter((t) => t.id !== taskId));
       }
+      return true;
     } catch (err) {
       console.error('Failed to toggle task:', err);
       loadTasks();
+      return false;
     }
   };
 

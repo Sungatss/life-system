@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Check, Edit2 } from 'lucide-react';
 import HabitEditModal from './HabitEditModal';
 import { addDays } from '../utils/date';
+import { useCompletionFlash } from './useCompletionFlash';
 
 export default function HabitItem({
   habit,
@@ -13,6 +14,8 @@ export default function HabitItem({
   showHistory = true,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [toggleBusy, setToggleBusy] = useState(false);
+  const [completionFlash, flashCompletion] = useCompletionFlash();
   const openerRef = useRef(null);
   const openModal = (event) => {
     openerRef.current = event.currentTarget;
@@ -33,10 +36,21 @@ export default function HabitItem({
   }
 
   const isCompletedToday = Boolean(habit.completed_today);
+  const toggleCompletion = async () => {
+    if (toggleBusy) return;
+    setToggleBusy(true);
+    const completing = !isCompletedToday;
+    try {
+      const saved = await onToggleToday(habit.id, completing);
+      if (completing && saved) flashCompletion();
+    } finally {
+      setToggleBusy(false);
+    }
+  };
 
   return (
     <>
-      <div className="habit-card">
+      <div className={`habit-card${completionFlash ? ' completion-flash' : ''}`}>
         <div className="habit-info">
           <button
             type="button"
@@ -73,7 +87,8 @@ export default function HabitItem({
           <button
             type="button"
             className={`habit-check-btn ${isCompletedToday ? 'completed' : ''}`}
-            onClick={() => onToggleToday(habit.id, !isCompletedToday)}
+            onClick={toggleCompletion}
+            disabled={toggleBusy}
             aria-label={isCompletedToday ? 'Mark habit incomplete' : 'Mark habit complete'}
           >
             <Check size={14} strokeWidth={isCompletedToday ? 3 : 2} />

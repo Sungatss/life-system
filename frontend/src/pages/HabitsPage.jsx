@@ -87,9 +87,11 @@ export default function HabitsPage() {
     try {
       await api.toggleHabit(habitId, todayStr, newCompleted);
       refreshContributions();
+      return true;
     } catch (err) {
       console.error('Failed to toggle habit:', err);
       loadData();
+      return false;
     }
   };
 

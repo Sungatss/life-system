@@ -3,6 +3,7 @@ import { Check, Edit2, Calendar, Plus, Trash2, X } from 'lucide-react';
 import TaskEditModal from './TaskEditModal';
 import { getLocalDateStr } from '../utils/date';
 import { api } from '../api/client';
+import { useCompletionFlash } from './useCompletionFlash';
 
 export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtasksChange }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,7 +13,9 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
   const [editingTitle, setEditingTitle] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [stepBusy, setStepBusy] = useState(false);
+  const [toggleBusy, setToggleBusy] = useState(false);
   const [stepError, setStepError] = useState('');
+  const [completionFlash, flashCompletion] = useCompletionFlash();
   const openerRef = useRef(null);
   const openModal = (event) => { openerRef.current = event.currentTarget; setIsModalOpen(true); };
   const closeModal = () => {
@@ -63,14 +66,26 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
   const isDueToday = task.due_date === todayStr;
   const subtasks = task.subtasks || [];
   const completedSteps = subtasks.filter((step) => step.completed).length;
+  const toggleCompletion = async () => {
+    if (toggleBusy) return;
+    setToggleBusy(true);
+    const completing = !task.completed;
+    try {
+      const saved = await onToggle(task.id, completing);
+      if (completing && saved) flashCompletion();
+    } finally {
+      setToggleBusy(false);
+    }
+  };
 
   return (
     <>
-      <div className={`task-card task-card-with-steps ${task.completed ? 'completed' : ''}`}>
+      <div className={`task-card task-card-with-steps ${task.completed ? 'completed' : ''}${completionFlash ? ' completion-flash' : ''}`}>
         <div className="task-main-row">
           <div className="task-left">
             <button type="button" className={`custom-checkbox ${task.completed ? 'checked' : ''}`}
-              onClick={() => onToggle(task.id, !task.completed)}
+              onClick={toggleCompletion}
+              disabled={toggleBusy}
               aria-label={task.completed ? `Mark ${task.title} active` : `Mark ${task.title} completed`}
               aria-pressed={task.completed}>
               {task.completed && <Check size={12} strokeWidth={3} />}

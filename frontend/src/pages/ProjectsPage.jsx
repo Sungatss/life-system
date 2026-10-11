@@ -178,11 +178,13 @@ export default function ProjectsPage() {
     try {
       const updated = await api.updateTask(taskId, { completed });
       if (selectedIdRef.current === projectId) setTasks((previous) => previous.map((task) => task.id === taskId ? updated : task));
+      return true;
     } catch {
       if (selectedIdRef.current === projectId) {
         setTaskError('Could not update that task. Reload the project to try again.');
         setTasks((previous) => previous.map((task) => task.id === taskId ? { ...task, completed: !completed } : task));
       }
+      return false;
     }
   };
 

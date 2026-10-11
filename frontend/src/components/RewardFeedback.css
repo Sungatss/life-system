@@ -1,0 +1,121 @@
+.reward-feedback-layer {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.reward-feedback-xp, .reward-feedback-goal { align-items: flex-start; padding: max(18px, env(safe-area-inset-top)) 16px 0; }
+.reward-xp-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+  padding: 12px 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  background: var(--bg-surface);
+  color: var(--accent);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .22);
+  animation: reward-toast-in 380ms cubic-bezier(.2, 1.45, .4, 1) both;
+}
+.reward-xp-toast span { display: grid; line-height: 1.2; }
+.reward-xp-toast strong { font-size: 17px; font-variant-numeric: tabular-nums; }
+.reward-xp-toast small { margin-top: 3px; color: var(--text-secondary); font-size: 12px; }
+.reward-feedback-goal .reward-xp-toast { border-color: var(--success); color: var(--success); }
+
+.reward-feedback-level { align-items: center; background: rgba(0, 0, 0, .25); pointer-events: auto; }
+.reward-level-popup {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(320px, calc(100vw - 32px));
+  overflow: hidden;
+  padding: 30px 24px 28px;
+  border: 1px solid var(--border-strong);
+  border-radius: 26px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: 0 24px 75px rgba(0, 0, 0, .32);
+  pointer-events: auto;
+  animation: reward-level-in 520ms cubic-bezier(.17, 1.45, .35, 1) both;
+}
+.reward-dismiss {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.reward-dismiss:hover { color: var(--text-primary); }
+.reward-level-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 14px;
+  border-radius: 22px;
+  background: var(--accent-subtle);
+  color: var(--accent);
+  animation: reward-trophy-pop 780ms cubic-bezier(.2, 1.4, .4, 1) both;
+}
+.reward-eyebrow { color: var(--accent); font-size: 13px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.reward-level-popup > strong { margin-top: 3px; font-size: 31px; line-height: 1.1; letter-spacing: -.04em; }
+.reward-level-xp { margin-top: 11px; color: var(--text-secondary); font-size: 13px; }
+.reward-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.reward-confetti i {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 7px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0;
+  animation: reward-confetti-fly 1100ms ease-out both;
+}
+.reward-confetti i:nth-child(3n) { background: var(--success); }
+.reward-confetti i:nth-child(4n) { background: var(--warning); }
+.reward-confetti i:nth-child(1) { --x: -115px; --y: -86px; --r: 45deg; }
+.reward-confetti i:nth-child(2) { --x: -88px; --y: -115px; --r: -70deg; }
+.reward-confetti i:nth-child(3) { --x: -45px; --y: -100px; --r: 100deg; }
+.reward-confetti i:nth-child(4) { --x: 27px; --y: -122px; --r: 75deg; }
+.reward-confetti i:nth-child(5) { --x: 83px; --y: -98px; --r: -55deg; }
+.reward-confetti i:nth-child(6) { --x: 119px; --y: -47px; --r: 110deg; }
+.reward-confetti i:nth-child(7) { --x: -112px; --y: 24px; --r: -100deg; }
+.reward-confetti i:nth-child(8) { --x: -82px; --y: 100px; --r: 75deg; }
+.reward-confetti i:nth-child(9) { --x: -33px; --y: 120px; --r: -50deg; }
+.reward-confetti i:nth-child(10) { --x: 35px; --y: 108px; --r: 95deg; }
+.reward-confetti i:nth-child(11) { --x: 92px; --y: 86px; --r: -65deg; }
+.reward-confetti i:nth-child(12) { --x: 120px; --y: 14px; --r: 100deg; }
+
+@keyframes reward-toast-in {
+  from { opacity: 0; transform: translateY(-22px) scale(.85); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes reward-level-in {
+  from { opacity: 0; transform: translateY(25px) scale(.72); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes reward-trophy-pop {
+  from { transform: scale(.4) rotate(-25deg); }
+  55% { transform: scale(1.13) rotate(6deg); }
+  to { transform: scale(1) rotate(0); }
+}
+@keyframes reward-confetti-fly {
+  8% { opacity: 1; }
+  to { opacity: 0; transform: translate(var(--x), var(--y)) rotate(var(--r)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reward-feedback-layer * { animation: none !important; transition: none !important; }
+}
