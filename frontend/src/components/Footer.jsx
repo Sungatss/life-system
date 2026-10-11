@@ -28,6 +28,14 @@ export default function Footer({ onNavigate }) {
             type="button"
             className="footer-link"
             style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
+            onClick={() => onNavigate('projects')}
+          >
+            Projects
+          </button>
+          <button
+            type="button"
+            className="footer-link"
+            style={{ background: 'none', border: 'none', font: 'inherit', padding: 0 }}
             onClick={() => onNavigate('tasks')}
           >
             Tasks

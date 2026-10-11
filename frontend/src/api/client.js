@@ -45,6 +45,10 @@ export const api = {
     body: JSON.stringify({ content }),
   }),
   deleteInboxEntry: (id) => request(`/api/inbox/${id}`, { method: 'DELETE' }),
+  getProjects: () => request('/api/projects'),
+  createProject: (data) => request('/api/projects', { method: 'POST', body: JSON.stringify(data) }),
+  updateProject: (id, data) => request(`/api/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteProject: (id) => request(`/api/projects/${id}`, { method: 'DELETE' }),
   // Today overview
   getToday: (date) => {
     const query = date ? `?date=${encodeURIComponent(date)}` : '';
@@ -61,10 +65,11 @@ export const api = {
   searchNotes: (query) => request(`/api/notes/search?q=${encodeURIComponent(query)}`),
 
   // Tasks
-  getTasks: (filter, category) => {
+  getTasks: (filter, category, projectId) => {
     const params = new URLSearchParams();
     if (filter) params.append('filter', filter);
     if (category) params.append('category', category);
+    if (projectId) params.append('project_id', projectId);
     const query = params.toString() ? `?${params.toString()}` : '';
     return request(`/api/tasks${query}`);
   },

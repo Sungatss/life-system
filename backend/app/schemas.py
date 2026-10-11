@@ -48,6 +48,24 @@ class InboxEntryResponse(InboxEntryContent):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ProjectCreate(BaseModel):
+    name: str = Field(..., max_length=100)
+    plan: str = Field(default="", max_length=50000)
+
+
+class ProjectUpdate(BaseModel):
+    name: str = Field(..., max_length=100)
+    plan: str = Field(..., max_length=50000)
+
+
+class ProjectResponse(ProjectCreate):
+    id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 
 # Task Schemas
 class SubtaskCreate(BaseModel):
@@ -73,7 +91,8 @@ class TaskBase(BaseModel):
     description: str = ""
     priority: Optional[str] = "none"  # "none", "low", "medium", "high"
     due_date: Optional[str] = None    # YYYY-MM-DD or None
-    category: Optional[str] = None    # Optional project/category tag
+    category: Optional[str] = None    # Optional category tag
+    project_id: Optional[int] = Field(default=None, ge=1)
 
 
 class TaskCreate(TaskBase):
@@ -88,6 +107,7 @@ class TaskUpdate(BaseModel):
     priority: Optional[str] = None
     due_date: Optional[str] = None
     category: Optional[str] = None
+    project_id: Optional[int] = Field(default=None, ge=1)
 
 
 class TaskResponse(TaskBase):
@@ -95,6 +115,7 @@ class TaskResponse(TaskBase):
     completed: bool
     created_at: datetime.datetime
     completed_at: Optional[datetime.datetime] = None
+    project_name: Optional[str] = None
     subtasks: List[SubtaskResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)

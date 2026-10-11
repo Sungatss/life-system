@@ -23,6 +23,7 @@ async def lifespan(app: FastAPI):
         # Initialize tables
         Base.metadata.create_all(bind=engine)
         migrations.add_task_description_if_missing(engine)
+        migrations.add_task_project_if_missing(engine)
         # Seed starter defaults if brand new db
         with Session(bind=engine) as db:
             crud.seed_default_data_if_empty(db)
@@ -120,6 +121,41 @@ def delete_inbox_entry(entry_id: int, db: Session = Depends(get_db)):
     return None
 
 
+@app.get("/api/projects", response_model=List[schemas.ProjectResponse])
+def read_projects(db: Session = Depends(get_db)):
+    return crud.get_projects(db)
+
+
+@app.post("/api/projects", response_model=schemas.ProjectResponse, status_code=status.HTTP_201_CREATED)
+def create_project(project_in: schemas.ProjectCreate, db: Session = Depends(get_db)):
+    if not project_in.name.strip():
+        raise HTTPException(status_code=400, detail="Project name cannot be empty")
+    if crud.project_name_taken(db, project_in.name):
+        raise HTTPException(status_code=409, detail="A project with this name already exists")
+    return crud.create_project(db, project_in)
+
+
+@app.put("/api/projects/{project_id}", response_model=schemas.ProjectResponse)
+def update_project(project_id: int, project_in: schemas.ProjectUpdate, db: Session = Depends(get_db)):
+    project = crud.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if not project_in.name.strip():
+        raise HTTPException(status_code=400, detail="Project name cannot be empty")
+    if crud.project_name_taken(db, project_in.name, except_id=project_id):
+        raise HTTPException(status_code=409, detail="A project with this name already exists")
+    return crud.update_project(db, project, project_in)
+
+
+@app.delete("/api/projects/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_project(project_id: int, db: Session = Depends(get_db)):
+    project = crud.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    crud.delete_project(db, project)
+    return None
+
+
 # Today Overview
 @app.get("/api/today", response_model=schemas.TodayOverview)
 def get_today_overview(
@@ -171,9 +207,10 @@ def save_note(date_str: str, update: schemas.DailyNoteUpdate, db: Session = Depe
 def read_tasks(
     filter: Optional[str] = Query(None, description="all, active, completed, today, overdue, high"),
     category: Optional[str] = None,
+    project_id: Optional[int] = Query(None, ge=1),
     db: Session = Depends(get_db)
 ):
-    tasks = crud.get_tasks(db, filter_type=filter, category=category)
+    tasks = crud.get_tasks(db, filter_type=filter, category=category, project_id=project_id)
     return [schemas.TaskResponse.model_validate(t) for t in tasks]
 
 
@@ -181,6 +218,8 @@ def read_tasks(
 def create_new_task(task_in: schemas.TaskCreate, db: Session = Depends(get_db)):
     if not task_in.title.strip():
         raise HTTPException(status_code=400, detail="Task title cannot be empty")
+    if task_in.project_id is not None and not crud.get_project(db, task_in.project_id):
+        raise HTTPException(status_code=400, detail="Project not found")
     task = crud.create_task(db, task_in)
     return schemas.TaskResponse.model_validate(task)
 
@@ -195,6 +234,8 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
 
 @app.put("/api/tasks/{task_id}", response_model=schemas.TaskResponse)
 def update_task_item(task_id: int, task_in: schemas.TaskUpdate, db: Session = Depends(get_db)):
+    if task_in.project_id is not None and not crud.get_project(db, task_in.project_id):
+        raise HTTPException(status_code=400, detail="Project not found")
     task = crud.update_task(db, task_id, task_in)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")

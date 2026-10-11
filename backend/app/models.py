@@ -44,6 +44,18 @@ class InboxEntry(Base):
     updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
 
+class Project(Base):
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False, unique=True)
+    plan = Column(Text, nullable=False, default="")
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+    tasks = relationship("Task", back_populates="project")
+
+
 class Task(Base):
     __tablename__ = "tasks"
 
@@ -53,11 +65,17 @@ class Task(Base):
     completed = Column(Boolean, default=False, nullable=False, index=True)
     priority = Column(String(20), default="none", nullable=False)  # "none", "low", "medium", "high"
     due_date = Column(String(10), nullable=True, index=True)  # Format: YYYY-MM-DD or None
-    category = Column(String(100), nullable=True)  # Project or category
+    category = Column(String(100), nullable=True)
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="SET NULL"), nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), default=utcnow)
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
     subtasks = relationship("Subtask", back_populates="task", cascade="all, delete-orphan", order_by="Subtask.id")
+    project = relationship("Project", back_populates="tasks")
+
+    @property
+    def project_name(self):
+        return self.project.name if self.project else None
 
 
 class Subtask(Base):

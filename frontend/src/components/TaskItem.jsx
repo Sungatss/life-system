@@ -83,6 +83,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
           <div className="task-meta">
             {task.priority && task.priority !== 'none' && <span className={`priority-tag priority-${task.priority}`}>{task.priority}</span>}
             {task.category && <span className="category-tag">{task.category}</span>}
+            {task.project_name && <span className="category-tag">{task.project_name}</span>}
             {task.due_date && <span className={`due-tag ${isOverdue ? 'overdue' : ''}`}><Calendar size={12} />{isDueToday ? 'Today' : task.due_date}</span>}
             <div className="task-actions">
               <button type="button" className="action-btn-subtle" onClick={openModal} title="Edit task" aria-label={`Edit ${task.title}`}><Edit2 size={13} /></button>

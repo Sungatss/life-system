@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 sync_data.py - Full backup and restoration between local SQLite and Render cloud.
-Restores all authentic tasks, daily notes, habits, habit streaks, and weekly reviews.
+Restores projects, tasks, daily notes, habits, habit streaks, and weekly reviews.
 """
 import sys
 import json
@@ -61,11 +61,29 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
     except Exception as e:
         print(f"  ! Warning checking remote tasks: {e}")
 
+    # Restore projects first so task links can use the destination IDs.
+    local_to_remote_project = {}
+    if c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='projects'").fetchone():
+        remote_projects = api_call("/api/projects") or []
+        remote_by_name = {project["name"].strip().lower(): project for project in remote_projects}
+        for local_id, name, plan in c.execute("SELECT id, name, plan FROM projects ORDER BY id ASC"):
+            remote = remote_by_name.get(name.strip().lower())
+            try:
+                if remote is None:
+                    remote = api_call("/api/projects", method="POST", data={"name": name, "plan": plan or ""})
+                elif plan and remote.get("plan") != plan:
+                    remote = api_call(f"/api/projects/{remote['id']}", method="PUT", data={"name": remote["name"], "plan": plan})
+                local_to_remote_project[local_id] = remote["id"]
+            except Exception as e:
+                print(f"  ! Error syncing project '{name}': {e}")
+        print(f"✓ Projects restored: {len(local_to_remote_project)} projects in cloud")
+
     # 2. Sync all authentic local tasks
     task_columns = {column[1] for column in c.execute("PRAGMA table_info(tasks)")}
     description_column = "description" if "description" in task_columns else "'' AS description"
+    project_column = "project_id" if "project_id" in task_columns else "NULL AS project_id"
     local_tasks = c.execute(
-        f"SELECT id, title, {description_column}, priority, due_date, category, completed FROM tasks ORDER BY id ASC"
+        f"SELECT id, title, {description_column}, priority, due_date, category, completed, {project_column} FROM tasks ORDER BY id ASC"
     ).fetchall()
     local_subtasks = {}
     if c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='subtasks'").fetchone():
@@ -78,8 +96,9 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
         remote_by_title = {}
 
     synced_tasks_count = 0
-    for local_id, title, description, prio, due, cat, comp in local_tasks:
+    for local_id, title, description, prio, due, cat, comp, project_id in local_tasks:
         remote_task = remote_by_title.get(title.strip().lower())
+        remote_project_id = local_to_remote_project.get(project_id)
         if not remote_task:
             try:
                 created = api_call("/api/tasks", method="POST", data={
@@ -88,6 +107,7 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
                     "priority": prio or "none",
                     "due_date": due,
                     "category": cat,
+                    "project_id": remote_project_id,
                     "completed": bool(comp),
                     "subtasks": [{"title": step["title"]} for step in local_subtasks.get(local_id, [])]
                 })
@@ -100,6 +120,8 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
                 print(f"  ! Error syncing task '{title}': {e}")
         else:
             synced_tasks_count += 1
+            if remote_project_id and remote_task.get("project_id") != remote_project_id:
+                remote_task = api_call(f"/api/tasks/{remote_task['id']}", method="PUT", data={"project_id": remote_project_id})
         if remote_task:
             available_steps = list(remote_task.get("subtasks", []))
             for local_step in local_subtasks.get(local_id, []):

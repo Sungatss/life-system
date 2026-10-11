@@ -9,8 +9,9 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsPage from './pages/TermsPage';
 import ProgressCard from './components/ProgressCard';
 import InboxPage from './pages/InboxPage';
+import ProjectsPage from './pages/ProjectsPage';
 
-const views = ['today', 'inbox', 'tasks', 'habits', 'review', 'privacy', 'terms'];
+const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'review', 'privacy', 'terms'];
 
 export default function App() {
   // Sync view state with URL hash
@@ -74,6 +75,7 @@ export default function App() {
           />
         )}
         {activeTab === 'inbox' && <InboxPage />}
+        {activeTab === 'projects' && <ProjectsPage />}
         {activeTab === 'tasks' && <TasksPage />}
         {activeTab === 'habits' && <HabitsPage />}
         {activeTab === 'review' && (

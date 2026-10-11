@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, AlignLeft, ChevronDown } from 'lucide-react';
 
-export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
+export default function QuickTaskInput({ onAddTask, defaultDueDate = null, projectId = null }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [stepsText, setStepsText] = useState('');
@@ -26,6 +26,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
         priority: priority !== 'none' ? priority : 'none',
         due_date: dueDate || null,
         category: category.trim() || null,
+        project_id: projectId,
         completed: false,
       });
       setTitle('');
@@ -98,7 +99,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
         aria-expanded={showDetails}
       >
         <AlignLeft size={14} />
-        {showDetails ? 'Hide details' : 'Add details, steps or project'}
+        {showDetails ? 'Hide details' : 'Add details, steps or category'}
         <ChevronDown size={13} className={showDetails ? 'rotated' : ''} />
       </button>
 
@@ -116,8 +117,8 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null }) {
           <input
             type="text"
             className="task-input-field"
-            placeholder="Project or category (optional)"
-            aria-label="Task project or category"
+            placeholder="Category (optional)"
+            aria-label="Task category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             disabled={isSubmitting}

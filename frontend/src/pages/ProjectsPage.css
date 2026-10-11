@@ -1,0 +1,38 @@
+.project-create { margin-bottom: 20px; }
+.project-create-form { display: flex; gap: 10px; }
+.project-create-form .task-input-field { flex: 1; min-width: 0; }
+.project-create-form .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 7px; white-space: nowrap; padding: 10px 15px; }
+.projects-layout { display: grid; grid-template-columns: minmax(190px, 235px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.project-rail { position: sticky; top: 98px; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); background: var(--bg-surface); padding: 16px 10px; }
+.project-rail h2 { padding: 0 10px 10px; color: var(--text-secondary); font-size: 12px; font-weight: 650; }
+.project-rail-list { display: flex; flex-direction: column; gap: 4px; }
+.project-rail-item { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 42px; padding: 8px 10px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--text-secondary); text-align: left; cursor: pointer; }
+.project-rail-item span { min-width: 0; overflow-wrap: anywhere; }
+.project-rail-item.active { background: var(--accent-subtle); border-color: var(--border-subtle); color: var(--accent); }
+.project-rail-item:hover { background: var(--bg-subtle); color: var(--text-primary); }
+.project-detail { min-width: 0; }
+.project-plan-form { display: flex; flex-direction: column; gap: 9px; }
+.project-plan-form .task-input-field { width: 100%; min-width: 0; }
+.project-plan-textarea { min-height: 210px; padding: 13px 15px; resize: vertical; line-height: 1.65; }
+.project-plan-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 3px; }
+.project-plan-actions .btn-primary { padding: 9px 15px; white-space: nowrap; }
+.project-save-hint { color: var(--text-muted); font-size: 12px; }
+.project-detail .task-list { display: flex; flex-direction: column; gap: 10px; }
+.project-delete-row { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; margin: -4px 0 26px; font-size: 12px; color: var(--text-secondary); }
+.project-delete-row .btn-secondary { padding: 7px 12px; }
+.project-delete-button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--text-muted); padding: 8px; border-radius: var(--radius-sm); cursor: pointer; font-size: 12px; }
+.project-delete-button:hover, .project-delete-button.confirm { color: var(--danger); background: var(--danger-subtle); }
+.project-empty { display: flex; align-items: center; flex-direction: column; gap: 7px; text-align: center; }
+.project-empty svg { color: var(--accent); }
+@media (max-width: 760px) {
+  .projects-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .project-rail { position: static; padding: 12px; }
+  .project-rail h2 { padding: 0 2px 9px; }
+  .project-rail-list { flex-direction: row; overflow-x: auto; padding-bottom: 2px; }
+  .project-rail-item { width: auto; flex: 0 0 auto; white-space: nowrap; }
+}
+@media (max-width: 480px) {
+  .project-create-form { flex-direction: column; }
+  .project-plan-actions { align-items: stretch; flex-direction: column; }
+  .project-plan-actions .btn-primary { width: 100%; }
+}

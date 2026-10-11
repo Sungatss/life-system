@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Trash2, X } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
 import { trapDialogFocus } from '../utils/dialog';
+import { api } from '../api/client';
 
 export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete }) {
   if (!isOpen || !task) return null;
@@ -15,10 +16,19 @@ function TaskEditForm({ task, onClose, onSave, onDelete }) {
   const [priority, setPriority] = useState(task.priority || 'none');
   const [dueDate, setDueDate] = useState(task.due_date || '');
   const [category, setCategory] = useState(task.category || '');
+  const [projectId, setProjectId] = useState(task.project_id ? String(task.project_id) : '');
+  const [projects, setProjects] = useState([]);
+  const [projectsError, setProjectsError] = useState(false);
   const [completed, setCompleted] = useState(Boolean(task.completed));
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [formError, setFormError] = useState('');
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    api.getProjects().then((data) => { if (active) setProjects(data); }).catch(() => { if (active) setProjectsError(true); });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     const handleEscape = (event) => {
@@ -40,6 +50,7 @@ function TaskEditForm({ task, onClose, onSave, onDelete }) {
         priority,
         due_date: dueDate || null,
         category: category.trim() || null,
+        project_id: projectId ? Number(projectId) : null,
         completed,
       });
       onClose();
@@ -137,7 +148,7 @@ function TaskEditForm({ task, onClose, onSave, onDelete }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="edit-task-category">Project / Category</label>
+              <label className="form-label" htmlFor="edit-task-category">Category</label>
               <input
                 id="edit-task-category"
                 type="text"
@@ -148,6 +159,18 @@ function TaskEditForm({ task, onClose, onSave, onDelete }) {
                 onChange={(e) => setCategory(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="edit-task-project">Project</label>
+            <select id="edit-task-project" className="select-compact" style={{ width: '100%' }} value={projectId} onChange={(e) => setProjectId(e.target.value)}>
+              <option value="">No project</option>
+              {projectId && !projects.some((project) => String(project.id) === projectId) && (
+                <option value={projectId}>{task.project_name || 'Current project'}</option>
+              )}
+              {projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}
+            </select>
+            {projectsError && <span className="form-hint">Could not load project choices. Your current assignment is kept.</span>}
           </div>
 
           <div className="form-group">

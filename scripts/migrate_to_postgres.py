@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 migrate_to_postgres.py - One-command direct migration from local SQLite to Cloud PostgreSQL (Neon / Supabase).
-Transfers all your authentic tasks, daily notes, habits, streaks, and weekly reviews.
+Transfers projects, tasks, daily notes, habits, streaks, and weekly reviews.
 """
 import sys
 import os
@@ -14,9 +14,9 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from backend.app.models import Base, Task, Subtask, Habit, HabitLog, DailyNote, WeeklyReview
+from backend.app.models import Base, Project, Task, Subtask, Habit, HabitLog, DailyNote, WeeklyReview
 from backend.app.database import init_engine
-from backend.app.migrations import add_task_description_if_missing
+from backend.app.migrations import add_task_description_if_missing, add_task_project_if_missing
 
 SQLITE_PATH = os.path.join(PROJECT_ROOT, "backend", "lifesystem.db")
 
@@ -39,6 +39,7 @@ def migrate(postgres_url: str):
     pg_engine = init_engine(postgres_url)
     Base.metadata.create_all(bind=pg_engine)
     add_task_description_if_missing(pg_engine)
+    add_task_project_if_missing(pg_engine)
     print("   ✓ PostgreSQL tables initialized.")
 
     # 2. Connect to SQLite
@@ -47,6 +48,19 @@ def migrate(postgres_url: str):
     sc = sqlite_conn.cursor()
 
     with Session(bind=pg_engine) as pg_session:
+        project_id_map = {}
+        if sc.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='projects'").fetchone():
+            for row in sc.execute("SELECT * FROM projects ORDER BY id ASC"):
+                project = pg_session.query(Project).filter(Project.name == row["name"]).first()
+                if project is None:
+                    project = Project(name=row["name"], plan=row["plan"] or "")
+                    pg_session.add(project)
+                    pg_session.flush()
+                elif row["plan"] and not project.plan:
+                    project.plan = row["plan"]
+                project_id_map[row["id"]] = project.id
+            pg_session.commit()
+
         # 3. Migrate Tasks
         print("\n2. Migrating Tasks...")
         tasks = sc.execute("SELECT * FROM tasks ORDER BY id ASC").fetchall()
@@ -63,12 +77,15 @@ def migrate(postgres_url: str):
                     priority=row["priority"],
                     due_date=row["due_date"],
                     category=row["category"],
+                    project_id=project_id_map.get(row["project_id"]) if "project_id" in task_columns else None,
                     created_at=row["created_at"],
                     completed_at=row["completed_at"]
                 )
                 pg_session.add(pg_task)
                 pg_session.flush()
                 migrated_tasks += 1
+            elif "project_id" in task_columns and row["project_id"] in project_id_map and exists.project_id is None:
+                exists.project_id = project_id_map[row["project_id"]]
             task_id_map[row["id"]] = exists.id if exists else pg_task.id
         pg_session.commit()
         print(f"   ✓ {migrated_tasks} tasks migrated (total {len(tasks)} in local DB).")
@@ -176,7 +193,7 @@ def migrate(postgres_url: str):
 
         # 7. Reset sequences in PostgreSQL for auto-increment IDs
         try:
-            for table_name in ["subtasks", "tasks", "habits", "habit_logs", "daily_notes", "weekly_reviews"]:
+            for table_name in ["projects", "subtasks", "tasks", "habits", "habit_logs", "daily_notes", "weekly_reviews"]:
                 pg_session.execute(text(f"""
                     SELECT setval(
                         pg_get_serial_sequence('{table_name}', 'id'),

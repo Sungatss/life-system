@@ -1,8 +1,48 @@
 import datetime
 from typing import Optional, List, Dict
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, and_
+from sqlalchemy import desc, and_, func
 from . import models, schemas
+
+
+def get_projects(db: Session) -> List[models.Project]:
+    return db.query(models.Project).order_by(models.Project.id.desc()).all()
+
+
+def get_project(db: Session, project_id: int) -> Optional[models.Project]:
+    return db.get(models.Project, project_id)
+
+
+def project_name_taken(db: Session, name: str, except_id: Optional[int] = None) -> bool:
+    query = db.query(models.Project).filter(func.lower(models.Project.name) == name.strip().lower())
+    if except_id is not None:
+        query = query.filter(models.Project.id != except_id)
+    return query.first() is not None
+
+
+def create_project(db: Session, project_in: schemas.ProjectCreate) -> models.Project:
+    now = models.utcnow()
+    project = models.Project(name=project_in.name.strip(), plan=project_in.plan.strip(), created_at=now, updated_at=now)
+    db.add(project)
+    db.commit()
+    db.refresh(project)
+    return project
+
+
+def update_project(db: Session, project: models.Project, project_in: schemas.ProjectUpdate) -> models.Project:
+    project.name = project_in.name.strip()
+    project.plan = project_in.plan.strip()
+    project.updated_at = models.utcnow()
+    db.commit()
+    db.refresh(project)
+    return project
+
+
+def delete_project(db: Session, project: models.Project) -> None:
+    # Keep existing tasks and their steps when the enclosing plan is removed.
+    db.query(models.Task).filter(models.Task.project_id == project.id).update({models.Task.project_id: None}, synchronize_session=False)
+    db.delete(project)
+    db.commit()
 
 
 def get_inbox_entries(db: Session) -> List[models.InboxEntry]:
@@ -93,7 +133,8 @@ def search_daily_notes(db: Session, query_str: str, limit: int = 50) -> List[sch
 def get_tasks(
     db: Session,
     filter_type: Optional[str] = None,
-    category: Optional[str] = None
+    category: Optional[str] = None,
+    project_id: Optional[int] = None
 ) -> List[models.Task]:
     query = db.query(models.Task)
 
@@ -123,6 +164,8 @@ def get_tasks(
 
     if category:
         query = query.filter(models.Task.category == category)
+    if project_id is not None:
+        query = query.filter(models.Task.project_id == project_id)
 
     # Order: incomplete first, then by priority (high, medium, low, none), then created_at desc
     # In SQLite we can order by completed asc, created_at desc
@@ -158,6 +201,7 @@ def create_task(db: Session, task_in: schemas.TaskCreate) -> models.Task:
         priority=task_in.priority or "none",
         due_date=task_in.due_date or None,
         category=task_in.category.strip() if task_in.category else None,
+        project_id=task_in.project_id,
         created_at=now,
         completed_at=completed_at
     )
@@ -199,6 +243,8 @@ def update_task(db: Session, task_id: int, task_in: schemas.TaskUpdate) -> Optio
         task.due_date = data["due_date"] or None
     if "category" in data:
         task.category = data["category"].strip() if data["category"] else None
+    if "project_id" in data:
+        task.project_id = data["project_id"]
 
     db.commit()
     db.refresh(task)

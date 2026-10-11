@@ -240,46 +240,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         onOpenSearch={openSearch}
       />
 
-      {/* 3. Daily Note */}
-      <section className="cockpit-section" aria-label="Daily note section">
-        <div className="section-header">
-          <div className="section-title-wrap">
-            <PenLine size={16} />
-            <h2 className="section-title">Daily note</h2>
-          </div>
-          <div className="section-header-actions">
-            <button
-              type="button"
-              className="btn-note-search"
-              onClick={openSearch}
-              title="Search across all notes"
-            >
-              <Search size={13} />
-              <span>Search</span>
-            </button>
-            <span className="section-badge">Auto-save</span>
-          </div>
-        </div>
-        <DailyNoteEditor
-          date={currentDateStr}
-          initialContent={noteContent}
-          onContentSaved={(newContent) => {
-            setTodayData((prev) =>
-              prev?.date === currentDateStr
-                ? {
-                    ...prev,
-                    daily_note: prev.daily_note
-                      ? { ...prev.daily_note, content: newContent }
-                      : { id: 0, date: currentDateStr, content: newContent, created_at: '', updated_at: '' },
-                  }
-                : prev
-            );
-            refreshContributions();
-          }}
-        />
-      </section>
-
-      {/* 3. Today's Tasks */}
+      {/* Today's Tasks */}
       <section className="cockpit-section" aria-label="Today tasks section">
         <div className="section-header">
           <div className="section-title-wrap">
@@ -405,6 +366,45 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
           title="Daily consistency heatmap"
         />
       )}
+
+      {/* Daily note stays at the end of the day view. */}
+      <section className="cockpit-section" aria-label="Daily note section">
+        <div className="section-header">
+          <div className="section-title-wrap">
+            <PenLine size={16} />
+            <h2 className="section-title">Daily note</h2>
+          </div>
+          <div className="section-header-actions">
+            <button
+              type="button"
+              className="btn-note-search"
+              onClick={openSearch}
+              title="Search across all notes"
+            >
+              <Search size={13} />
+              <span>Search</span>
+            </button>
+            <span className="section-badge">Auto-save</span>
+          </div>
+        </div>
+        <DailyNoteEditor
+          date={currentDateStr}
+          initialContent={noteContent}
+          onContentSaved={(newContent) => {
+            setTodayData((prev) =>
+              prev?.date === currentDateStr
+                ? {
+                    ...prev,
+                    daily_note: prev.daily_note
+                      ? { ...prev.daily_note, content: newContent }
+                      : { id: 0, date: currentDateStr, content: newContent, created_at: '', updated_at: '' },
+                  }
+                : prev
+            );
+            refreshContributions();
+          }}
+        />
+      </section>
 
       {/* Note Search Modal */}
       <NoteSearchModal

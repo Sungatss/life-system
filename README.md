@@ -2,13 +2,14 @@
 
 A minimalist personal productivity web application built for daily use.
 
-Four primary areas:
-1. **Today**: Date, auto-saving daily note, today's tasks, and habit checklist.
+Primary areas:
+1. **Today**: Date, today's tasks and habits, progress, and daily notes at the bottom.
 2. **Inbox**: An empty-at-start capture list for thoughts and tasks, with multiline entries you can edit or delete. Draft text remains in the browser until saved.
 3. **Tasks**: Structured tasks with optional descriptions and nested steps with their own checkboxes. Add steps while creating a task (one per line under details) or from any existing task card.
-4. **Habits**: Consistency tracking with a 14-day history grid.
+4. **Projects**: A simple project plan or roadmap with its own tasks and nested steps. Existing tasks can be assigned through Edit. Deleting a project leaves its tasks in Tasks.
+5. **Habits**: Consistency tracking with a 14-day history grid.
 
-A compact progress card on Today, Tasks, and Habits rewards each completed task or daily habit with 10 XP. The daily goal is 30 XP, each 100 XP adds a level, and one completion per day maintains a streak. An unfinished day keeps yesterday’s streak until the day ends. Dates follow the device’s timezone. Progress is calculated from saved completions, including existing history: undoing or deleting activity removes its XP, archived habits retain theirs, and subtasks do not earn separate XP. There are no new tables or migrations.
+A compact progress card on Today, Tasks, and Habits rewards each completed task or daily habit with 10 XP. The daily goal is 30 XP, each 100 XP adds a level, and one completion per day maintains a streak. An unfinished day keeps yesterday’s streak until the day ends. Dates follow the device’s timezone. Progress is calculated from saved completions, including existing history: undoing or deleting activity removes its XP, archived habits retain theirs, and subtasks do not earn separate XP.
 
 Includes dedicated Privacy Policy and Terms and Conditions pages.
 
