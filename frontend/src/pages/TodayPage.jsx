@@ -271,7 +271,6 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         {tasks.length === 0 ? (
           <div className="empty-state">
             <p>No tasks scheduled for today.</p>
-            <p className="empty-state-sub">Type a task above and press Enter to capture it.</p>
           </div>
         ) : (
           <div className="task-list">
@@ -319,7 +318,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
           <input
             type="text"
             className="task-input-field"
-            placeholder="Add a habit (e.g. Study or code, Walk or exercise)..."
+            placeholder="New habit"
             value={newHabitName}
             onChange={(e) => setNewHabitName(e.target.value)}
             disabled={isSubmittingHabit}
@@ -340,7 +339,6 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         {habits.length === 0 ? (
           <div className="empty-state">
             <p>No habits configured yet.</p>
-            <p className="empty-state-sub">Type a habit above to add it to your daily routine.</p>
           </div>
         ) : (
           <div className="habit-list">

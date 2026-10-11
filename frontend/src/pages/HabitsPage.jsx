@@ -117,9 +117,7 @@ export default function HabitsPage() {
   return (
     <div className="habits-page">
       <div className="cockpit-date-banner">
-        <div className="cockpit-weekday">Daily consistency</div>
         <h1 className="cockpit-title">Habits</h1>
-        <p className="page-intro">Build a rhythm, one completed day at a time.</p>
       </div>
 
       {/* GitHub-style Contribution Heatmap for Habits & Notes */}
@@ -144,7 +142,7 @@ export default function HabitsPage() {
           <input
             type="text"
             className="task-input-field"
-            placeholder="Add a habit (e.g. Study or code, Walk or exercise)..."
+            placeholder="New habit"
             value={newHabitName}
             onChange={(e) => setNewHabitName(e.target.value)}
             disabled={isSubmitting}
@@ -175,7 +173,6 @@ export default function HabitsPage() {
         ) : habits.length === 0 ? (
           <div className="empty-state">
             <p>No habits tracked yet.</p>
-            <p className="empty-state-sub">Add a habit above to start tracking daily consistency.</p>
           </div>
         ) : (
           <div className="habit-list">

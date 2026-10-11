@@ -172,13 +172,7 @@ export default function WeeklyReviewPage() {
       <section className="cockpit-section review-nav-section" aria-label="Week navigation">
         <div className="review-nav-container">
           <div className="review-nav-left">
-            <span className="section-badge" style={{ color: '#06b6d4', borderColor: 'rgba(6, 182, 212, 0.3)' }}>
-              Weekly overview
-            </span>
             <h1 className="review-title">Weekly review</h1>
-            <p className="review-subtitle">
-              See what you completed, reflect on the week, and choose what to focus on next.
-            </p>
           </div>
 
           <div className="review-nav-controls">
@@ -223,17 +217,17 @@ export default function WeeklyReviewPage() {
             <div className="week-range-badge">
               <Calendar size={14} />
               <span>
-                Week: {formatFriendlyDate(data.week_start)} — {formatFriendlyDate(data.week_end)}
+                {formatFriendlyDate(data.week_start)} — {formatFriendlyDate(data.week_end)}
               </span>
             </div>
-            {isCurrentWeek && <span className="active-week-indicator">Active Week (In Progress)</span>}
+            {isCurrentWeek && <span className="active-week-indicator">Current week</span>}
           </div>
         )}
       </section>
 
       {loading && !data && (
         <div className="empty-state">
-          <p>Analyzing weekly performance...</p>
+          <p>Loading week…</p>
         </div>
       )}
 
@@ -259,9 +253,6 @@ export default function WeeklyReviewPage() {
                 </div>
               </div>
               <div className="kpi-number">{data.total_tasks_completed}</div>
-              <div className="kpi-caption">
-                {data.total_tasks_completed === 1 ? '1 task completed' : `${data.total_tasks_completed} tasks completed this week`}
-              </div>
             </div>
 
             {/* Card 2: Habit Consistency Rate */}
@@ -273,9 +264,6 @@ export default function WeeklyReviewPage() {
                 </div>
               </div>
               <div className="kpi-number">{data.habit_consistency_rate}%</div>
-              <div className="kpi-caption">
-                {data.total_habits_completed} of {data.total_habits_possible} habit logs completed
-              </div>
             </div>
 
             {/* Card 3: Days Active */}
@@ -289,21 +277,17 @@ export default function WeeklyReviewPage() {
               <div className="kpi-number">
                 {data.days_active} <span className="kpi-sub-total">/ 7</span>
               </div>
-              <div className="kpi-caption">
-                {data.days_active >= 5 ? 'High daily engagement ⚡' : 'Days with logged notes or habits'}
-              </div>
             </div>
 
             {/* Card 4: Reflection & Journal Volume */}
             <div className="weekly-kpi-card">
               <div className="kpi-card-header">
-                <span className="kpi-label">REFLECTION VOLUME</span>
+                <span className="kpi-label">WORDS WRITTEN</span>
                 <div className="kpi-icon-wrap" style={{ background: 'rgba(168, 85, 247, 0.12)', color: '#a855f7' }}>
                   <BookOpen size={18} />
                 </div>
               </div>
               <div className="kpi-number">{data.total_words_written}</div>
-              <div className="kpi-caption">Total words captured in daily notes</div>
             </div>
           </div>
 
@@ -312,7 +296,7 @@ export default function WeeklyReviewPage() {
             <div className="section-header">
               <div className="section-title-wrap">
                 <Calendar size={16} />
-                <h2 className="section-title">7-Day Execution Breakdown</h2>
+                <h2 className="section-title">This week</h2>
               </div>
               <span className="section-badge">Mon – Sun</span>
             </div>
@@ -338,7 +322,7 @@ export default function WeeklyReviewPage() {
                         <span className="day-metric-label">Tasks:</span>
                         <span className="day-metric-value">
                           {day.tasks_completed > 0 ? (
-                            <strong style={{ color: '#10b981' }}>{day.tasks_completed} done</strong>
+                            <strong style={{ color: '#10b981' }}>{day.tasks_completed}</strong>
                           ) : (
                             <span className="text-dim">0</span>
                           )}
@@ -431,7 +415,7 @@ export default function WeeklyReviewPage() {
               <div className="reflection-preview-container">
                 <div className="preview-block">
                   <h3 className="preview-title">
-                    <Trophy size={16} color="#10b981" /> 1. Wins & Highlights
+                    <Trophy size={16} color="#10b981" /> Wins
                   </h3>
                   <div
                     className="markdown-body preview-content"
@@ -441,7 +425,7 @@ export default function WeeklyReviewPage() {
 
                 <div className="preview-block">
                   <h3 className="preview-title">
-                    <AlertCircle size={16} color="#ef4444" /> 2. Blockers, Friction & Lessons
+                    <AlertCircle size={16} color="#ef4444" /> Challenges
                   </h3>
                   <div
                     className="markdown-body preview-content"
@@ -451,7 +435,7 @@ export default function WeeklyReviewPage() {
 
                 <div className="preview-block">
                   <h3 className="preview-title">
-                    <Target size={16} color="#3b82f6" /> 3. Next Week's #1 Focus (The Lever)
+                    <Target size={16} color="#3b82f6" /> Next focus
                   </h3>
                   <div
                     className="markdown-body preview-content"
@@ -466,13 +450,12 @@ export default function WeeklyReviewPage() {
                   <div className="prompt-header">
                     <div className="prompt-badge win-badge">
                       <Trophy size={14} />
-                      <span>1. Wins & Breakthroughs</span>
+                      <span>Wins</span>
                     </div>
-                    <span className="prompt-hint">What went exceptionally well? What progress are you proud of?</span>
                   </div>
                   <textarea
                     className="reflection-textarea"
-                    placeholder="e.g. Completed the core feature ahead of schedule, stuck to morning workouts 4 times, shipped the release..."
+                    aria-label="Wins"
                     value={wins}
                     onChange={handleFieldChange('wins', setWins)}
                     rows={4}
@@ -485,13 +468,12 @@ export default function WeeklyReviewPage() {
                   <div className="prompt-header">
                     <div className="prompt-badge blocker-badge">
                       <AlertCircle size={14} />
-                      <span>2. Friction & Lessons Learned</span>
+                      <span>Challenges</span>
                     </div>
-                    <span className="prompt-hint">Where did you procrastinate, hit resistance, or lose momentum?</span>
                   </div>
                   <textarea
                     className="reflection-textarea"
-                    placeholder="e.g. Got distracted on social media on Wednesday afternoon, skipped reading before bed, need to time-box email..."
+                    aria-label="Challenges"
                     value={blockers}
                     onChange={handleFieldChange('blockers', setBlockers)}
                     rows={4}
@@ -504,13 +486,12 @@ export default function WeeklyReviewPage() {
                   <div className="prompt-header">
                     <div className="prompt-badge focus-badge">
                       <Target size={14} />
-                      <span>3. Next Week's #1 Non-Negotiable Lever</span>
+                      <span>Next focus</span>
                     </div>
-                    <span className="prompt-hint">If you only accomplished one high-leverage outcome, what must it be?</span>
                   </div>
                   <textarea
                     className="reflection-textarea focus-textarea"
-                    placeholder="e.g. Ship the customer dashboard by Thursday 5pm, maintain a 7-day workout streak..."
+                    aria-label="Next focus"
                     value={nextFocus}
                     onChange={handleFieldChange('next_focus', setNextFocus)}
                     rows={3}

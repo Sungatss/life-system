@@ -21,13 +21,13 @@ marked.use({
   breaks: true,
 });
 
-const REFLECTION_EXAMPLES = [
-  '#### What exactly did I do today that will help me achieve my goal?',
-  '#### What has prevented me from being productive and needs to be changed?',
-  '#### "Am I fully unlocking the potential inside me?"',
+const REFLECTION_PROMPTS = [
+  '### Progress',
+  '### Blockers',
+  '### Next step',
 ];
 
-const FULL_TEMPLATE = `${REFLECTION_EXAMPLES[0]}\n\n\n${REFLECTION_EXAMPLES[1]}\n\n\n${REFLECTION_EXAMPLES[2]}\n\n`;
+const FULL_TEMPLATE = `${REFLECTION_PROMPTS[0]}\n\n\n${REFLECTION_PROMPTS[1]}\n\n\n${REFLECTION_PROMPTS[2]}\n\n`;
 
 export default function DailyNoteEditor({ date, initialContent, onContentSaved }) {
   const [content, setContent] = useState(initialContent || '');
@@ -193,8 +193,6 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
     }
   };
 
-  const placeholderText = `Write your note using Markdown...\n\n# Today's Focus\n- [ ] Priority goal\n- Key thought\n\n${REFLECTION_EXAMPLES[0]}\n${REFLECTION_EXAMPLES[1]}`;
-
   const renderedHtml = activeTab === 'preview' ? marked.parse(content || '') : '';
 
   return (
@@ -228,7 +226,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
               type="button"
               className="toolbar-btn"
               onClick={() => applyMarkdown('**', '**', 'bold')}
-              title="Bold (**text**)"
+              title="Bold"
             >
               <Bold size={13} />
             </button>
@@ -236,7 +234,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
               type="button"
               className="toolbar-btn"
               onClick={() => applyMarkdown('*', '*', 'italic')}
-              title="Italic (*text*)"
+              title="Italic"
             >
               <Italic size={13} />
             </button>
@@ -244,7 +242,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
               type="button"
               className="toolbar-btn"
               onClick={() => applyMarkdown('### ', '', 'Heading')}
-              title="Heading (### Header)"
+              title="Heading"
             >
               <Heading2 size={13} />
             </button>
@@ -252,7 +250,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
               type="button"
               className="toolbar-btn"
               onClick={() => applyMarkdown('- ', '', 'List item')}
-              title="Bullet List (- item)"
+              title="Bullet list"
             >
               <List size={13} />
             </button>
@@ -260,7 +258,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
               type="button"
               className="toolbar-btn"
               onClick={() => applyMarkdown('- [ ] ', '', 'Task item')}
-              title="Checklist (- [ ] task)"
+              title="Checklist"
             >
               <CheckSquare size={13} />
             </button>
@@ -268,7 +266,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
               type="button"
               className="toolbar-btn"
               onClick={() => applyMarkdown('> ', '', 'Quote')}
-              title="Quote (> quote)"
+              title="Quote"
             >
               <Quote size={13} />
             </button>
@@ -276,7 +274,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
               type="button"
               className="toolbar-btn"
               onClick={() => applyMarkdown('`', '`', 'code')}
-              title="Code (`code`)"
+              title="Code"
             >
               <Code size={13} />
             </button>
@@ -286,7 +284,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
 
       {/* Reflection Prompts Quick Inserters */}
       <div className="note-prompts-bar">
-        <span className="note-prompts-label">Reflection prompts:</span>
+        <span className="note-prompts-label">Prompts</span>
         <button
           type="button"
           className="note-prompt-btn"
@@ -299,29 +297,29 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
         <button
           type="button"
           className="note-prompt-btn"
-          onClick={() => insertPrompt(REFLECTION_EXAMPLES[0])}
-          title="Insert goal achievement prompt"
+          onClick={() => insertPrompt(REFLECTION_PROMPTS[0])}
+          title="Insert progress heading"
         >
           <Plus size={11} />
-          <span>1. Goal progress</span>
+          <span>Progress</span>
         </button>
         <button
           type="button"
           className="note-prompt-btn"
-          onClick={() => insertPrompt(REFLECTION_EXAMPLES[1])}
-          title="Insert productivity blockers prompt"
+          onClick={() => insertPrompt(REFLECTION_PROMPTS[1])}
+          title="Insert blockers heading"
         >
           <Plus size={11} />
-          <span>2. Blockers</span>
+          <span>Blockers</span>
         </button>
         <button
           type="button"
           className="note-prompt-btn"
-          onClick={() => insertPrompt(REFLECTION_EXAMPLES[2])}
-          title="Insert unlocking potential prompt"
+          onClick={() => insertPrompt(REFLECTION_PROMPTS[2])}
+          title="Insert next step heading"
         >
           <Plus size={11} />
-          <span>3. Unlocking potential</span>
+          <span>Next step</span>
         </button>
       </div>
 
@@ -334,7 +332,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
           onChange={handleChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          placeholder={placeholderText}
+          placeholder="Write a note"
           aria-label="Daily note content"
           rows={9}
         />
@@ -345,7 +343,7 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
           dangerouslySetInnerHTML={{
             __html:
               renderedHtml ||
-              '<p class="preview-empty"><em>Nothing written for this date yet. Switch to "Write" to add notes.</em></p>',
+              '<p class="preview-empty">No note yet.</p>',
           }}
         />
       )}
@@ -362,7 +360,6 @@ export default function DailyNoteEditor({ date, initialContent, onContentSaved }
         </div>
         <div className="note-footer-meta">
           <span>{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
-          <span className="markdown-badge">Markdown supported</span>
         </div>
       </div>
     </div>

@@ -131,7 +131,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
         {isAddingStep ? (
           <form className="subtask-add-form" onSubmit={addStep}>
             <input className="task-input-field subtask-input" value={newStepTitle}
-              onChange={(event) => setNewStepTitle(event.target.value)} placeholder="Next step..."
+              onChange={(event) => setNewStepTitle(event.target.value)} placeholder="Step"
               aria-label={`New step for ${task.title}`} maxLength={255} autoFocus />
             <button type="submit" className="btn-secondary" disabled={!newStepTitle.trim() || stepBusy}>Add step</button>
             <button type="button" className="action-btn-subtle" onClick={() => { setIsAddingStep(false); setNewStepTitle(''); }} aria-label="Cancel adding step"><X size={16} /></button>

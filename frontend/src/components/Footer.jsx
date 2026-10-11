@@ -77,9 +77,6 @@ export default function Footer({ onNavigate }) {
           </button>
         </nav>
       </div>
-      <div className="footer-note">
-        A clear place for tasks, habits, and reflection.
-      </div>
     </footer>
   );
 }

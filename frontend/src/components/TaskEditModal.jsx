@@ -112,7 +112,6 @@ function TaskEditForm({ task, onClose, onSave, onDelete }) {
               className="task-input-field"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="What needs to be done?"
               required
               autoFocus
             />
@@ -125,7 +124,6 @@ function TaskEditForm({ task, onClose, onSave, onDelete }) {
               className="task-input-field task-description-input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Add details about this task (optional)"
               rows={4}
             />
           </div>
@@ -154,7 +152,6 @@ function TaskEditForm({ task, onClose, onSave, onDelete }) {
                 type="text"
                 className="select-compact"
                 style={{ width: '100%' }}
-                placeholder="e.g. University, Career"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               />

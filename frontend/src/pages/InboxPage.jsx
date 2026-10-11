@@ -121,9 +121,7 @@ export default function InboxPage() {
   return (
     <div className="inbox-page">
       <div className="cockpit-date-banner inbox-banner">
-        <div className="cockpit-weekday">CLEAR YOUR MIND</div>
         <h1 className="cockpit-title">Inbox</h1>
-        <p className="page-intro">Drop thoughts and tasks here as they come. No date or plan needed.</p>
       </div>
 
       <section className="cockpit-section inbox-section" aria-labelledby="inbox-capture-heading">
@@ -139,7 +137,7 @@ export default function InboxPage() {
             id="inbox-capture"
             ref={captureRef}
             className="task-input-field inbox-textarea"
-            placeholder="What’s on your mind?"
+            placeholder="Thought or task"
             value={draft}
             onChange={(event) => updateDraft(event.target.value)}
             rows={3}
@@ -147,7 +145,7 @@ export default function InboxPage() {
             disabled={submitting || loading}
           />
           <div className="inbox-capture-bottom">
-            <span className="inbox-hint">Your draft stays here until saved.</span>
+            <span className="inbox-hint">Draft saved in this browser</span>
             <button type="submit" className="btn-primary inbox-add-button" disabled={!draft.trim() || submitting || loading}>
               <Plus size={17} aria-hidden="true" />
               {submitting ? 'Saving…' : 'Add to Inbox'}
@@ -175,7 +173,6 @@ export default function InboxPage() {
             <div className="empty-state inbox-empty">
               <Inbox size={24} aria-hidden="true" />
               <p>Nothing in your Inbox yet.</p>
-              <p className="empty-state-sub">Write anything above to get it off your mind.</p>
             </div>
           ) : (
             <ul className="inbox-list">

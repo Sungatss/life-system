@@ -89,9 +89,7 @@ export default function TasksPage() {
   return (
     <div className="tasks-page">
       <div className="cockpit-date-banner">
-        <div className="cockpit-weekday">Brain dump and task list</div>
         <h1 className="cockpit-title">Tasks</h1>
-        <p className="page-intro">Capture what matters, then keep your next actions in view.</p>
       </div>
 
       <section className="cockpit-section">
@@ -118,9 +116,6 @@ export default function TasksPage() {
         ) : tasks.length === 0 ? (
           <div className="empty-state">
             <p>No tasks found in this view.</p>
-            <p className="empty-state-sub">
-              {filter !== 'all' ? 'Try switching filter or add a new task.' : 'Add your first task above.'}
-            </p>
             {(filter !== 'all' || selectedCategory) && (
               <button type="button" className="btn-secondary" onClick={() => { setFilter('all'); setSelectedCategory(null); }}>
                 Clear filters

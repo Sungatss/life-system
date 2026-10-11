@@ -79,7 +79,6 @@ function HabitEditForm({ habit, onClose, onSave, onDelete }) {
               className="task-input-field"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Study or code, Walk or exercise"
               required
               autoFocus
             />

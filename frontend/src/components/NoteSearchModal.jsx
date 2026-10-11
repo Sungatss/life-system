@@ -85,7 +85,8 @@ export default function NoteSearchModal({ isOpen, onClose, onSelectDate }) {
             ref={inputRef}
             type="text"
             className="note-search-field"
-            placeholder="Search past thoughts, ideas, decisions..."
+            placeholder="Search notes"
+            aria-label="Search daily notes"
             value={query}
             onChange={handleChange}
             onKeyDown={(e) => {
@@ -100,7 +101,7 @@ export default function NoteSearchModal({ isOpen, onClose, onSelectDate }) {
           {results.length > 0 ? (
             <div className="note-search-list">
               <div className="note-search-count">
-                Found {results.length} {results.length === 1 ? 'note' : 'notes'} matching "{query}"
+                {results.length} {results.length === 1 ? 'note' : 'notes'} found
               </div>
               {results.map((item) => (
                 <button
@@ -127,12 +128,11 @@ export default function NoteSearchModal({ isOpen, onClose, onSelectDate }) {
           ) : hasSearched && !loading ? (
             <div className="note-search-empty">
               <FileText size={32} />
-              <p>No notes found containing "{query}"</p>
-              <span>Try searching for different keywords or reflections</span>
+              <p>No notes found.</p>
             </div>
           ) : !hasSearched ? (
             <div className="note-search-placeholder">
-              <p>Type keywords to search across all your daily notes, journal entries, and reflections.</p>
+              <p>Search daily notes.</p>
             </div>
           ) : null}
         </div>

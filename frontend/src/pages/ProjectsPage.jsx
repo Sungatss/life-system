@@ -201,15 +201,13 @@ export default function ProjectsPage() {
   return (
     <div className="projects-page">
       <div className="cockpit-date-banner">
-        <div className="cockpit-weekday">FROM PLAN TO ACTION</div>
         <h1 className="cockpit-title">Projects</h1>
-        <p className="page-intro">Keep each plan, task, and step together. Start with a name like “Exams.”</p>
       </div>
 
       <section className="cockpit-section project-create" aria-label="Create a project">
         <form onSubmit={createProject} className="project-create-form">
           <label className="sr-only" htmlFor="new-project-name">Project name</label>
-          <input id="new-project-name" className="task-input-field" placeholder="New project name, e.g. Exams" value={newName} onChange={(event) => { setNewName(event.target.value); setCreateError(''); }} maxLength={100} disabled={creating || loading} />
+          <input id="new-project-name" className="task-input-field" placeholder="Project name" value={newName} onChange={(event) => { setNewName(event.target.value); setCreateError(''); }} maxLength={100} disabled={creating || loading} />
           <button type="submit" className="btn-primary" disabled={!newName.trim() || creating || loading}><Plus size={16} /> Create project</button>
         </form>
         {createError && <p className="form-error" role="alert">{createError}</p>}
@@ -218,7 +216,7 @@ export default function ProjectsPage() {
       {loading ? <div className="empty-state">Loading projects…</div> : loadError ? (
         <div className="empty-state error-state" role="alert"><p>{loadError}</p><button type="button" className="btn-secondary" onClick={() => loadProjects()}>Retry</button></div>
       ) : projects.length === 0 ? (
-        <div className="empty-state project-empty"><FolderKanban size={28} aria-hidden="true" /><p>No projects yet.</p><p className="empty-state-sub">Name one above, then add its plan and tasks.</p></div>
+        <div className="empty-state project-empty"><FolderKanban size={28} aria-hidden="true" /><p>No projects yet.</p></div>
       ) : (
         <div className="projects-layout">
           <nav className="project-rail" aria-label="Your projects">
@@ -239,7 +237,7 @@ export default function ProjectsPage() {
                 <label className="form-label" htmlFor="project-name">Project name</label>
                 <input id="project-name" className="task-input-field" value={name} onChange={(event) => updateDraft(event.target.value, plan)} maxLength={100} disabled={saving} />
                 <label className="form-label" htmlFor="project-plan">Your plan or roadmap</label>
-                <textarea id="project-plan" className="task-input-field project-plan-textarea" placeholder="What is your goal? Write the steps, ideas, or anything you want to remember…" value={plan} onChange={(event) => updateDraft(name, event.target.value)} maxLength={50000} rows={8} disabled={saving} />
+                <textarea id="project-plan" className="task-input-field project-plan-textarea" value={plan} onChange={(event) => updateDraft(name, event.target.value)} maxLength={50000} rows={8} disabled={saving} />
                 <div className="project-plan-actions">
                   <span className="project-save-hint">{hasChanges ? 'Unsaved draft kept in this browser' : 'Saved'}</span>
                   <button type="submit" className="btn-primary" disabled={!name.trim() || !hasChanges || saving}>{saving ? 'Saving…' : 'Save project'}</button>
@@ -253,7 +251,7 @@ export default function ProjectsPage() {
               {!tasksLoading && <QuickTaskInput key={selectedId} onAddTask={addTask} projectId={selectedId} />}
               {taskError && <p className="form-error" role="alert">{taskError}</p>}
               {tasksLoading ? <div className="empty-state">Loading tasks…</div> : tasks.length === 0 ? (
-                <div className="empty-state"><p>No tasks in this project yet.</p><p className="empty-state-sub">Add a task above. You can add steps to it now or later.</p></div>
+                <div className="empty-state"><p>No tasks in this project yet.</p></div>
               ) : <div className="task-list">{tasks.map((task) => <TaskItem key={task.id} task={task} onToggle={toggleTask} onUpdate={updateTask} onDelete={removeTask} onSubtasksChange={(updated) => setTasks((previous) => previous.map((item) => item.id === updated.id ? updated : item))} />)}</div>}
             </section>
 

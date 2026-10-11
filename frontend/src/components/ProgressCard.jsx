@@ -27,9 +27,8 @@ export default function ProgressCard() {
           const kind = next.level > previous.level ? 'level'
             : previous.today_xp < next.daily_goal && next.today_xp >= next.daily_goal ? 'goal'
               : 'xp';
-          const message = kind === 'level' ? `Level ${next.level}! Keep growing.`
-            : kind === 'goal' ? 'Daily goal complete. Nicely done!'
-              : 'One small step forward.';
+          const message = kind === 'level' ? `Level ${next.level}`
+            : kind === 'goal' ? 'Daily goal complete' : '';
           reward = { id: ++celebrationId, gained, kind, message };
         }
         previous = next;
@@ -74,11 +73,7 @@ export default function ProgressCard() {
   );
 
   const goalMet = progress.today_xp >= progress.daily_goal;
-  const remaining = (progress.daily_goal - progress.today_xp) / 10;
   const goalPercent = Math.min(100, (progress.today_xp / progress.daily_goal) * 100);
-  const prompt = goalMet ? 'Daily goal complete. Every extra step is a bonus.'
-    : progress.today_xp > 0 ? `${remaining} more ${remaining === 1 ? 'completion' : 'completions'} to your daily goal.`
-    : 'Complete 3 tasks or habits today. Start with one.';
 
   return (
     <section className={`progress-card${goalMet ? ' progress-card-complete' : ''}${celebration ? ` progress-card-reward-${celebration.kind}` : ''}`} aria-label="Your progress">
@@ -92,7 +87,7 @@ export default function ProgressCard() {
               </span>
             )}
           </span>
-          <div><h2>Small steps, every day</h2><p>{prompt}</p></div>
+          <div><h2>Progress</h2></div>
         </div>
         <div className="progress-card-stats">
           <span className={`progress-streak${progress.streak ? ' is-active' : ''}`}>
@@ -116,7 +111,7 @@ export default function ProgressCard() {
           {celebration && (
             <span key={celebration.id} className="progress-feedback-content">
               <strong className="progress-xp-burst">+{celebration.gained} XP</strong>
-              <span>{celebration.message}</span>
+              {celebration.message && <span>{celebration.message}</span>}
             </span>
           )}
         </div>

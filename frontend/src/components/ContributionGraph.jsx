@@ -227,9 +227,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
               <strong>{hoveredDay.date}</strong>: {hoveredDay.has_note ? `${hoveredDay.note_words} words noted` : 'No daily note'},{' '}
               {hoveredDay.habits_completed} / {hoveredDay.total_habits} habits completed
             </span>
-          ) : (
-            <span>Hover or tap a cell to inspect daily details</span>
-          )}
+          ) : null}
         </div>
 
         <div className="heatmap-legend">

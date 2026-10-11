@@ -51,7 +51,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null, proje
       <input
         type="text"
         className="task-input-field"
-        placeholder="Add a task..."
+        placeholder="New task"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         disabled={isSubmitting}
@@ -99,7 +99,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null, proje
         aria-expanded={showDetails}
       >
         <AlignLeft size={14} />
-        {showDetails ? 'Hide details' : 'Add details, steps or category'}
+        {showDetails ? 'Hide details' : 'Details'}
         <ChevronDown size={13} className={showDetails ? 'rotated' : ''} />
       </button>
 
@@ -107,7 +107,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null, proje
         <div className="task-details-fields">
           <textarea
             className="task-input-field task-description-input"
-            placeholder="Description (optional)"
+            placeholder="Description"
             aria-label="Task description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -117,7 +117,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null, proje
           <input
             type="text"
             className="task-input-field"
-            placeholder="Category (optional)"
+            placeholder="Category"
             aria-label="Task category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -125,7 +125,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null, proje
           />
           <textarea
             className="task-input-field task-description-input task-steps-input"
-            placeholder="Add steps, one per line (optional)"
+            placeholder="Steps, one per line"
             aria-label="Task steps, one per line"
             value={stepsText}
             onChange={(e) => setStepsText(e.target.value)}
