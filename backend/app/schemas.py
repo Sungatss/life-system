@@ -36,6 +36,18 @@ class DailyNoteSearchResult(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class InboxEntryContent(BaseModel):
+    content: str = Field(..., max_length=10000)
+
+
+class InboxEntryResponse(InboxEntryContent):
+    id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 
 # Task Schemas
 class SubtaskCreate(BaseModel):

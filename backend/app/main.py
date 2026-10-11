@@ -91,6 +91,35 @@ def get_progress(timezone: str = "UTC", db: Session = Depends(get_db)):
     return progress.get_progress(db, zone)
 
 
+@app.get("/api/inbox", response_model=List[schemas.InboxEntryResponse])
+def read_inbox(db: Session = Depends(get_db)):
+    return crud.get_inbox_entries(db)
+
+
+@app.post("/api/inbox", response_model=schemas.InboxEntryResponse, status_code=status.HTTP_201_CREATED)
+def create_inbox_entry(entry_in: schemas.InboxEntryContent, db: Session = Depends(get_db)):
+    if not entry_in.content.strip():
+        raise HTTPException(status_code=400, detail="Inbox entry cannot be empty")
+    return crud.create_inbox_entry(db, entry_in.content)
+
+
+@app.put("/api/inbox/{entry_id}", response_model=schemas.InboxEntryResponse)
+def update_inbox_entry(entry_id: int, entry_in: schemas.InboxEntryContent, db: Session = Depends(get_db)):
+    if not entry_in.content.strip():
+        raise HTTPException(status_code=400, detail="Inbox entry cannot be empty")
+    entry = crud.update_inbox_entry(db, entry_id, entry_in.content)
+    if not entry:
+        raise HTTPException(status_code=404, detail="Inbox entry not found")
+    return entry
+
+
+@app.delete("/api/inbox/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_inbox_entry(entry_id: int, db: Session = Depends(get_db)):
+    if not crud.delete_inbox_entry(db, entry_id):
+        raise HTTPException(status_code=404, detail="Inbox entry not found")
+    return None
+
+
 # Today Overview
 @app.get("/api/today", response_model=schemas.TodayOverview)
 def get_today_overview(

@@ -35,6 +35,16 @@ async function request(endpoint, options = {}) {
 
 export const api = {
   getProgress: () => request(`/api/progress?timezone=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')}`),
+  getInbox: () => request('/api/inbox'),
+  createInboxEntry: (content) => request('/api/inbox', {
+    method: 'POST',
+    body: JSON.stringify({ content }),
+  }),
+  updateInboxEntry: (id, content) => request(`/api/inbox/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ content }),
+  }),
+  deleteInboxEntry: (id) => request(`/api/inbox/${id}`, { method: 'DELETE' }),
   // Today overview
   getToday: (date) => {
     const query = date ? `?date=${encodeURIComponent(date)}` : '';

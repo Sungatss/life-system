@@ -8,12 +8,15 @@ import WeeklyReviewPage from './pages/WeeklyReviewPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsPage from './pages/TermsPage';
 import ProgressCard from './components/ProgressCard';
+import InboxPage from './pages/InboxPage';
+
+const views = ['today', 'inbox', 'tasks', 'habits', 'review', 'privacy', 'terms'];
 
 export default function App() {
   // Sync view state with URL hash
   const getInitialView = () => {
     const hash = window.location.hash.replace('#', '');
-    if (['today', 'tasks', 'habits', 'review', 'privacy', 'terms'].includes(hash)) {
+    if (views.includes(hash)) {
       return hash;
     }
     return 'today';
@@ -34,7 +37,7 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      if (['today', 'tasks', 'habits', 'review', 'privacy', 'terms'].includes(hash)) {
+      if (views.includes(hash)) {
         setActiveTab(hash);
       }
     };
@@ -70,6 +73,7 @@ export default function App() {
             onNavigateToHabits={() => navigateTo('habits')}
           />
         )}
+        {activeTab === 'inbox' && <InboxPage />}
         {activeTab === 'tasks' && <TasksPage />}
         {activeTab === 'habits' && <HabitsPage />}
         {activeTab === 'review' && (

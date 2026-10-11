@@ -260,7 +260,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
     bottom: max(10px, env(safe-area-inset-bottom));
     left: 12px;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 2px;
     border-color: var(--border-strong);
     border-radius: 17px;

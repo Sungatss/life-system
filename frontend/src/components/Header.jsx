@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, CheckSquare, Calendar, ListTodo, Flame, BarChart2 } from 'lucide-react';
+import { Sun, Moon, CheckSquare, Calendar, Inbox, ListTodo, Flame, BarChart2 } from 'lucide-react';
 
 export default function Header({ activeTab, onNavigate, theme, onToggleTheme }) {
   return (
@@ -18,6 +18,15 @@ export default function Header({ activeTab, onNavigate, theme, onToggleTheme }) 
         >
           <Calendar size={16} />
           <span>Today</span>
+        </button>
+        <button
+          className={`nav-button ${activeTab === 'inbox' ? 'active' : ''}`}
+          onClick={() => onNavigate('inbox')}
+          aria-current={activeTab === 'inbox' ? 'page' : undefined}
+          id="nav-inbox-btn"
+        >
+          <Inbox size={16} />
+          <span>Inbox</span>
         </button>
         <button
           className={`nav-button ${activeTab === 'tasks' ? 'active' : ''}`}

@@ -5,6 +5,39 @@ from sqlalchemy import desc, and_
 from . import models, schemas
 
 
+def get_inbox_entries(db: Session) -> List[models.InboxEntry]:
+    return db.query(models.InboxEntry).order_by(models.InboxEntry.id.desc()).all()
+
+
+def create_inbox_entry(db: Session, content: str) -> models.InboxEntry:
+    now = models.utcnow()
+    entry = models.InboxEntry(content=content.strip(), created_at=now, updated_at=now)
+    db.add(entry)
+    db.commit()
+    db.refresh(entry)
+    return entry
+
+
+def update_inbox_entry(db: Session, entry_id: int, content: str) -> Optional[models.InboxEntry]:
+    entry = db.get(models.InboxEntry, entry_id)
+    if not entry:
+        return None
+    entry.content = content.strip()
+    entry.updated_at = models.utcnow()
+    db.commit()
+    db.refresh(entry)
+    return entry
+
+
+def delete_inbox_entry(db: Session, entry_id: int) -> bool:
+    entry = db.get(models.InboxEntry, entry_id)
+    if not entry:
+        return False
+    db.delete(entry)
+    db.commit()
+    return True
+
+
 def get_daily_note_by_date(db: Session, date_str: str) -> Optional[models.DailyNote]:
     return db.query(models.DailyNote).filter(models.DailyNote.date == date_str).first()
 
