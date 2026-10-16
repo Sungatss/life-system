@@ -9,7 +9,6 @@ WorkingDirectory=/home/sungat/Antigravity/life system
 ExecStart="/home/sungat/Antigravity/life system/run-tunnel.sh"
 Restart=always
 RestartSec=10s
-EnvironmentFile=-/home/sungat/Antigravity/life system/.env
 
 [Install]
 WantedBy=default.target

@@ -3,6 +3,10 @@ from typing import Optional, List, Dict
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class LoginRequest(BaseModel):
+    password: str = Field(..., min_length=1, max_length=1024)
+
+
 class ProfileUpdate(BaseModel):
     name: str = Field(..., max_length=100)
     bio: str = Field(default="", max_length=1000)

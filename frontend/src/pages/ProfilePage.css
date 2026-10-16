@@ -1,4 +1,5 @@
 .profile-page { display: grid; gap: 20px; }
+.profile-title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .profile-page-title { margin: 0; font-size: 28px; letter-spacing: -0.03em; }
 .profile-hero, .profile-stats > div, .profile-loading {
   background: var(--bg-surface);

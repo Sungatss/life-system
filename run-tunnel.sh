@@ -5,10 +5,21 @@ set -e
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"
 
-# Load environment variables if .env exists
+# Read only the tunnel token. The app's login and Groq secrets stay out of this process.
+CLOUDFLARE_TUNNEL_TOKEN=""
 if [ -f "$DIR/.env" ]; then
-    # shellcheck disable=SC1091
-    source "$DIR/.env"
+    while IFS= read -r line || [ -n "$line" ]; do
+        case "$line" in
+            CLOUDFLARE_TUNNEL_TOKEN=*)
+                CLOUDFLARE_TUNNEL_TOKEN="${line#CLOUDFLARE_TUNNEL_TOKEN=}"
+                CLOUDFLARE_TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN#\"}"
+                CLOUDFLARE_TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN%\"}"
+                CLOUDFLARE_TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN#\'}"
+                CLOUDFLARE_TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN%\'}"
+                break
+                ;;
+        esac
+    done < "$DIR/.env"
 fi
 
 CLOUDFLARED="$DIR/.bin/cloudflared"

@@ -1,0 +1,34 @@
+.assistant-header-button { min-height: 37px; padding: 6px 11px; display: flex; align-items: center; gap: 6px; white-space: nowrap; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--accent); color: var(--bg-primary); font-size: 12px; font-weight: 700; cursor: pointer; }
+.assistant-header-button:hover { filter: brightness(1.08); }
+.assistant-dialog { width: min(94vw, 590px); max-height: min(88vh, 800px); margin: auto; padding: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-surface); color: var(--text-primary); box-shadow: 0 22px 80px rgba(0,0,0,.35); }
+.assistant-dialog::backdrop { background: rgba(3, 8, 14, .72); }
+.assistant-panel { display: flex; flex-direction: column; max-height: min(88vh, 800px); }
+.assistant-header { padding: 18px 20px 10px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.assistant-header h2 { display: flex; align-items: center; gap: 8px; font-size: 20px; }
+.assistant-close { border: 0; background: transparent; color: var(--text-secondary); padding: 5px; border-radius: 8px; cursor: pointer; }
+.assistant-close:hover { background: var(--bg-subtle); }
+.assistant-notice { margin: 0 20px 14px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--accent-subtle); font-size: 12px; color: var(--text-secondary); }
+.assistant-body { overflow-y: auto; padding: 0 20px 14px; min-height: 120px; }
+.assistant-shortcuts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 15px; }
+.assistant-shortcuts label { font-size: 13px; color: var(--text-secondary); margin-left: 4px; }
+.assistant-shortcuts select { min-width: 150px; max-width: 100%; flex: 1; }
+.assistant-shortcuts button, .assistant-shortcuts select { min-height: 39px; padding: 7px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--bg-primary); color: var(--text-primary); }
+.assistant-shortcuts button { cursor: pointer; }
+.assistant-shortcuts button:hover { background: var(--bg-subtle); }
+.assistant-error { margin: 10px 20px; color: var(--danger); font-size: 13px; }
+.assistant-body .assistant-error { margin: 10px 0; }
+.assistant-muted { color: var(--text-muted); font-size: 13px; }
+.assistant-answer { white-space: pre-wrap; line-height: 1.6; padding: 14px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-elevated); }
+.assistant-proposals { margin-top: 17px; }
+.assistant-proposals h3 { font-size: 14px; margin-bottom: 10px; }
+.assistant-proposal { padding: 13px; margin-bottom: 9px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+.assistant-proposal h4 { font-size: 14px; margin-bottom: 8px; }
+.assistant-proposal dl { font-size: 12px; margin-bottom: 10px; }
+.assistant-proposal dl div { display: flex; gap: 8px; margin: 5px 0; overflow-wrap: anywhere; }
+.assistant-proposal dt { min-width: 80px; color: var(--text-muted); }
+.assistant-proposal dd { margin: 0; white-space: pre-wrap; }
+.assistant-proposal button, .assistant-form button { min-height: 38px; padding: 7px 15px; border: 0; border-radius: var(--radius-sm); background: var(--accent); color: var(--bg-primary); font-weight: 700; cursor: pointer; }
+.assistant-form { display: grid; grid-template-columns: 1fr auto; gap: 7px 10px; align-items: end; padding: 14px 20px 20px; border-top: 1px solid var(--border-subtle); }
+.assistant-form label { grid-column: 1 / -1; font-size: 13px; font-weight: 600; }
+.assistant-form textarea { width: 100%; min-height: 56px; resize: vertical; padding: 9px 11px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--bg-primary); }
+@media (max-width: 520px) { .assistant-dialog { width: 100vw; max-height: 94vh; margin: auto 0 0; border-radius: 18px 18px 0 0; } .assistant-panel { max-height: 94vh; } .assistant-header-button { padding: 6px 8px; font-size: 11px; } }

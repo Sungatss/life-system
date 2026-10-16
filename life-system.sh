@@ -42,8 +42,9 @@ cmd_setup() {
     # 2. Ensure .env exists
     if [ ! -f "$ENV_FILE" ]; then
         echo "Creating default .env from .env.example..."
-        cp "$DIR/.env.example" "$ENV_FILE"
+        install -m 600 "$DIR/.env.example" "$ENV_FILE"
     fi
+    chmod 600 "$ENV_FILE"
 
     # 3. Create systemd user service directory
     mkdir -p "$SYSTEMD_USER_DIR"
@@ -105,7 +106,7 @@ cmd_logs() {
 cmd_url() {
     echo ""
     echo "🌐 Access Details:"
-    echo "  Local Network: http://127.0.0.1:8000"
+    echo "  Local browser: http://127.0.0.1:8000"
     
     if [ -f "$ENV_FILE" ]; then
         TOKEN=$(grep -E '^CLOUDFLARE_TUNNEL_TOKEN=' "$ENV_FILE" | cut -d '=' -f2- | tr -d '"' | tr -d "'" || true)
@@ -131,8 +132,9 @@ cmd_set_token() {
     fi
 
     if [ ! -f "$ENV_FILE" ]; then
-        cp "$DIR/.env.example" "$ENV_FILE"
+        install -m 600 "$DIR/.env.example" "$ENV_FILE"
     fi
+    chmod 600 "$ENV_FILE"
 
     if grep -q "^CLOUDFLARE_TUNNEL_TOKEN=" "$ENV_FILE"; then
         sed -i "s|^CLOUDFLARE_TUNNEL_TOKEN=.*|CLOUDFLARE_TUNNEL_TOKEN=$TOKEN|" "$ENV_FILE"

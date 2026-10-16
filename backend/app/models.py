@@ -117,3 +117,16 @@ class WeeklyReview(Base):
     next_focus = Column(Text, default="", nullable=False)
     created_at = Column(DateTime(timezone=True), default=utcnow)
     updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class AssistantProposal(Base):
+    """Pending one-action approval. Creating this table does not change existing rows."""
+
+    __tablename__ = "assistant_proposals"
+
+    id = Column(String(32), primary_key=True)
+    action_json = Column(Text, nullable=False)
+    before_json = Column(Text, nullable=False)
+    preview_json = Column(Text, nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    applied_at = Column(DateTime(timezone=True), nullable=True)

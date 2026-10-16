@@ -3,15 +3,17 @@
 A minimalist personal productivity web application built for daily use.
 
 Primary areas:
-1. **Today**: Date, today's tasks and habits, progress, and activity history.
+1. **Today**: Date, today's tasks and habits.
 2. **Inbox**: An empty-at-start capture list for thoughts and tasks, with multiline entries you can edit or delete. Draft text remains in the browser until saved.
 3. **Tasks**: Structured tasks with optional descriptions and nested steps with their own checkboxes. Add steps while creating a task (one per line under details) or from any existing task card.
 4. **Projects**: A simple project plan or roadmap with its own tasks and nested steps. Existing tasks can be assigned through Edit. Deleting a project leaves its tasks in Tasks.
 5. **Habits**: Consistency tracking with a 14-day history grid.
 
-A compact progress card on Today, Tasks, and Habits rewards each completed task or daily habit with 10 XP. The daily goal is 30 XP, each 100 XP adds a level, and one completion per day maintains a streak. An unfinished day keeps yesterday’s streak until the day ends. Dates follow the device’s timezone. Progress is calculated from saved completions, including existing history: undoing or deleting activity removes its XP, archived habits retain theirs, and subtasks do not earn separate XP.
+A compact progress card on Tasks and Habits rewards each completed task or daily habit with 10 XP. The daily goal is 30 XP, each 100 XP adds a level, and one completion per day maintains a streak. An unfinished day keeps yesterday’s streak until the day ends. Dates follow the device’s timezone. Progress is calculated from saved completions, including existing history: undoing or deleting activity removes its XP, archived habits retain theirs, and subtasks do not earn separate XP.
 
 The compact top navigation keeps Today, Tasks, Habits, and Profile visible. Inbox and Projects are available from the More menu.
+
+**Ask Lock In** opens an assistant panel from any page. It answers questions about relevant saved tasks, habits, projects, and Inbox items, suggests a plan for today, and breaks a chosen task or project into steps. It shows each proposed task change before you approve it. The assistant cannot delete records or edit multiple records with one click.
 
 ---
 
@@ -36,9 +38,12 @@ source .venv/bin/activate
 # Install dependencies
 pip install -r backend/requirements.txt
 
+# If needed, create .env and complete the login setup below before starting.
+cp -n .env.example .env
+
 # Run the FastAPI server
 cd backend
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --env-file ../.env --reload
 ```
 
 The backend API will be available at `http://127.0.0.1:8000`.
@@ -52,6 +57,18 @@ npm run dev
 ```
 
 The frontend will be running at `http://127.0.0.1:5173` with automatic API proxying to `http://127.0.0.1:8000`.
+
+### Private login and free Groq setup
+
+All personal-data API routes require the single-user password, including when the Cloudflare tunnel is active. They return a configuration error until the password hash and session secret are set. Existing saved records are preserved.
+The bundled systemd service and Docker Compose port mapping listen on the host's loopback address, so remote access goes through your configured HTTPS tunnel or reverse proxy.
+
+1. In the project root, run `.venv/bin/python backend/create_login.py`. Enter a new password of at least 12 characters twice. Copy the generated `LOCK_IN_PASSWORD_HASH` and `LOCK_IN_SESSION_SECRET` lines into the ignored `.env` file. Keep the hash's `$` characters exactly as printed. Never put the password itself in `.env`. Run `chmod 600 .env` so only your account can read it.
+2. Create a GroqCloud account at [console.groq.com](https://console.groq.com/). Open [API Keys](https://console.groq.com/keys), choose **Create API Key**, and copy the new key into `.env` as `GROQ_API_KEY=...`. Choose the free plan; do not enable billing or paid fallback. If a key was shared in chat or elsewhere, revoke it in the Groq console and use a new one.
+3. Set `GROQ_MODEL=openai/gpt-oss-20b` in `.env`. This is the verified default free-plan model. The server also permits `openai/gpt-oss-120b`, currently listed on Groq's free plan. Other models are refused so no paid fallback is possible. Set `ALLOWED_ORIGINS` to your exact public origin (including `https://`) and local development origins; do not use `*`.
+4. For an existing background installation, run `./life-system.sh setup` once to install the updated loopback-only service unit, then restart after future `.env` changes with `./life-system.sh restart`. For local development, restart the `uvicorn` process. Open the app and sign in. The assistant's status message explains if its key is still missing.
+
+The browser receives only a signed HttpOnly session cookie and a per-session request token. The Groq key is read only by the FastAPI process. Each assistant call sends a small relevant subset of app records to Groq, with at most four short conversation messages. Requests are limited to three per minute and 60 per day locally, in addition to Groq's free-plan limits. Suggestions expire after 15 minutes and need individual **Apply** clicks. Live Groq usage should be verified manually after you configure your new key; automated tests use a fake key and mocked responses.
 
 ---
 

@@ -1,15 +1,17 @@
 import os
 import datetime
+import hmac
 from typing import Optional, List
 from contextlib import asynccontextmanager
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-from fastapi import FastAPI, Depends, HTTPException, Query, status
+from fastapi import FastAPI, Depends, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from sqlalchemy.orm import Session
 
-from . import models, schemas, crud, migrations, progress
+from . import models, schemas, crud, migrations, progress, auth, assistant
 from .database import engine, get_db, Base
 
 
@@ -45,16 +47,98 @@ app = FastAPI(
 )
 
 # CORS setup for local dev and custom domain deployment
-allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "*")
-origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip() and origin.strip() != "*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins if origins else ["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def require_single_user_session(request: Request, call_next):
+    path = request.url.path
+    if path.startswith("/api/") and request.method != "OPTIONS":
+        if path == "/api/assistant/ask":
+            length = request.headers.get("content-length", "0")
+            if not length.isdigit() or int(length) > 16000:
+                return JSONResponse({"detail": "Assistant request is too large."}, status_code=413)
+            body = bytearray()
+            async for chunk in request.stream():
+                body.extend(chunk)
+                if len(body) > 16000:
+                    return JSONResponse({"detail": "Assistant request is too large."}, status_code=413)
+            request._body = bytes(body)
+        origin = request.headers.get("origin")
+        if origin:
+            scheme = request.headers.get("x-forwarded-proto", request.url.scheme)
+            same_origin = origin == f"{scheme}://{request.headers.get('host')}"
+            if not same_origin and origin not in origins:
+                return JSONResponse({"detail": "Origin is not allowed"}, status_code=403)
+        if path not in ("/api/auth/login", "/api/auth/session"):
+            if not auth.configured():
+                return JSONResponse({"detail": "Lock In login is not configured on the server."}, status_code=503)
+            session = auth.read_session(request.cookies.get(auth.COOKIE_NAME))
+            if session is None:
+                return JSONResponse({"detail": "Sign in to Lock In first."}, status_code=401)
+            if request.method not in ("GET", "HEAD"):
+                csrf = request.headers.get("x-lock-in-csrf", "")
+                if not hmac.compare_digest(csrf, session["csrf"]):
+                    return JSONResponse({"detail": "Session check failed. Refresh and sign in again."}, status_code=403)
+            request.state.session = session
+    return await call_next(request)
+
+
+@app.get("/api/auth/session")
+def read_login_session(request: Request):
+    session = auth.read_session(request.cookies.get(auth.COOKIE_NAME))
+    return {"authenticated": session is not None, "configured": auth.configured(), "csrf": session["csrf"] if session else None}
+
+
+@app.post("/api/auth/login")
+def login(credentials: schemas.LoginRequest, request: Request):
+    if not auth.configured():
+        raise HTTPException(503, "Lock In login is not configured on the server.")
+    client_ip = request.client.host if request.client else "unknown"
+    auth.login_limit(client_ip)
+    if not auth.verify_password(credentials.password):
+        raise HTTPException(401, "Incorrect password.")
+    auth.clear_login_limit(client_ip)
+    token, csrf = auth.issue_session()
+    response = JSONResponse({"authenticated": True, "csrf": csrf})
+    response.set_cookie(
+        auth.COOKIE_NAME, token, max_age=auth.SESSION_SECONDS, httponly=True,
+        secure=request.headers.get("x-forwarded-proto") == "https" or request.url.hostname not in ("localhost", "127.0.0.1", "::1"),
+        samesite="strict", path="/api",
+    )
+    return response
+
+
+@app.post("/api/auth/logout")
+def logout():
+    response = JSONResponse({"authenticated": False})
+    response.delete_cookie(auth.COOKIE_NAME, path="/api", samesite="strict")
+    return response
+
+
+@app.get("/api/assistant/status")
+def assistant_status():
+    model = os.getenv("GROQ_MODEL", assistant.DEFAULT_MODEL).strip()
+    return {"available": bool(os.getenv("GROQ_API_KEY", "").strip()) and model in assistant.FREE_MODELS, "model": model}
+
+
+@app.post("/api/assistant/ask")
+def ask_assistant(payload: assistant.AskRequest, db: Session = Depends(get_db)):
+    return assistant.ask(db, payload)
+
+
+@app.post("/api/assistant/proposals/{proposal_id}/apply")
+def apply_assistant_proposal(proposal_id: str, db: Session = Depends(get_db)):
+    return assistant.apply(db, proposal_id)
 
 
 @app.middleware("http")

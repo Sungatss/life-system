@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, Palette, Volume2, VolumeX } from 'lucide-react';
+import { Check, Palette, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { themes } from '../theme';
 import TopNav from './TopNav';
 
-export default function Header({ activeTab, onNavigate, theme, onSelectTheme, soundEnabled, onToggleSound }) {
+export default function Header({ activeTab, onNavigate, theme, onSelectTheme, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -43,6 +43,9 @@ export default function Header({ activeTab, onNavigate, theme, onSelectTheme, so
       <TopNav activeTab={activeTab} onNavigate={onNavigate} />
 
       <div className="header-actions" ref={menuRef}>
+        <button type="button" className="assistant-header-button" onClick={onOpenAssistant} aria-haspopup="dialog" aria-expanded={assistantOpen} aria-controls={assistantOpen ? 'ask-lock-in-panel' : undefined}>
+          <Sparkles size={16} aria-hidden="true" /> <span>Ask Lock In</span>
+        </button>
         <button
           className="icon-btn sound-toggle"
           onClick={() => { setMenuOpen(false); onToggleSound(); }}

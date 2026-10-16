@@ -1,10 +1,16 @@
 const API_BASE = import.meta.env.VITE_API_URL || '';
 export const PROGRESS_CHANGED = 'life-system:progress-changed';
+let csrfToken = null;
+
+export function setCsrfToken(token) {
+  csrfToken = token;
+}
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
   const config = {
     cache: 'no-store',
+    credentials: 'include',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -13,9 +19,16 @@ async function request(endpoint, options = {}) {
       ...options.headers,
     },
   };
+  if (options.method && !['GET', 'HEAD'].includes(options.method) && csrfToken && endpoint !== '/api/auth/login') {
+    config.headers['X-Lock-In-CSRF'] = csrfToken;
+  }
 
   const response = await fetch(url, config);
   if (!response.ok) {
+    if (response.status === 401 && !['/api/auth/login', '/api/auth/session'].includes(endpoint)) {
+      setCsrfToken(null);
+      window.dispatchEvent(new Event('lock-in:auth-required'));
+    }
     let errorDetail = 'Request failed';
     try {
       const errJson = await response.json();
@@ -34,6 +47,26 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
+  getSession: async () => {
+    const session = await request('/api/auth/session');
+    setCsrfToken(session.csrf);
+    return session;
+  },
+  login: async (password) => {
+    const session = await request('/api/auth/login', { method: 'POST', body: JSON.stringify({ password }) });
+    setCsrfToken(session.csrf);
+    return session;
+  },
+  logout: async () => {
+    try {
+      return await request('/api/auth/logout', { method: 'POST' });
+    } finally {
+      setCsrfToken(null);
+    }
+  },
+  assistantStatus: () => request('/api/assistant/status'),
+  askAssistant: (data) => request('/api/assistant/ask', { method: 'POST', body: JSON.stringify(data) }),
+  applyAssistantProposal: (id) => request(`/api/assistant/proposals/${encodeURIComponent(id)}/apply`, { method: 'POST' }),
   getProfile: () => request('/api/profile'),
   updateProfile: (data) => request('/api/profile', { method: 'PUT', body: JSON.stringify(data) }),
   getProgress: () => request(`/api/progress?timezone=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')}`),

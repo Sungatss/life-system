@@ -5,7 +5,7 @@ import ContributionGraph from '../components/ContributionGraph';
 import WeeklyReviewPage from './WeeklyReviewPage';
 import './ProfilePage.css';
 
-export default function ProfilePage() {
+export default function ProfilePage({ onSignOut }) {
   const [profile, setProfile] = useState(null);
   const [progress, setProgress] = useState(null);
   const [contributions, setContributions] = useState(null);
@@ -61,7 +61,10 @@ export default function ProfilePage() {
 
   return (
     <div className="profile-page">
-      <h1 className="profile-page-title">Profile</h1>
+      <div className="profile-title-row">
+        <h1 className="profile-page-title">Profile</h1>
+        <button type="button" className="btn-secondary" onClick={onSignOut}>Sign out</button>
+      </div>
 
       {loadError && <p className="profile-error" role="alert">{loadError}</p>}
       {!profile && !loadError && <div className="profile-loading" aria-busy="true">Loading profile…</div>}
