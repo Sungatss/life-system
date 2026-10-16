@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, CheckSquare, Palette, Volume2, VolumeX } from 'lucide-react';
+import { Check, Palette, Volume2, VolumeX } from 'lucide-react';
 import { themes } from '../theme';
 import TopNav from './TopNav';
 
@@ -35,9 +35,9 @@ export default function Header({ activeTab, onNavigate, theme, onSelectTheme, so
 
   return (
     <header className="app-header">
-      <button type="button" className="brand" onClick={() => onNavigate('today')} aria-label="Life System home">
-        <CheckSquare className="brand-icon" />
-        <span>Life System</span>
+      <button type="button" className="brand" onClick={() => onNavigate('today')} aria-label="Lock In home">
+        <img className="brand-avatar" src="/lock-in-logo.png" alt="" width="32" height="32" />
+        <span>Lock In</span>
       </button>
 
       <TopNav activeTab={activeTab} onNavigate={onNavigate} />

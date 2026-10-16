@@ -1,10 +1,11 @@
-// Service Worker for Life System (v4 - refresh the navigation layout)
-const CACHE_NAME = 'life-system-v4';
+// Service Worker for Lock In
+const CACHE_NAME = 'lock-in-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/favicon.svg',
+  '/favicon-32.png',
+  '/lock-in-logo.png',
   '/apple-touch-icon.png',
   '/icon-192.png',
   '/icon-512.png'

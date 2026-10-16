@@ -80,7 +80,7 @@ export default function App() {
       />
 
       <main className="app-main" id="main-content">
-        {['today', 'tasks', 'habits'].includes(activeTab) && <ProgressCard />}
+        {['tasks', 'habits'].includes(activeTab) && <ProgressCard />}
         {activeTab === 'today' && (
           <TodayPage
             onNavigateToTasks={() => navigateTo('tasks')}

@@ -60,12 +60,6 @@ a {
   letter-spacing: -0.01em;
 }
 
-.brand-icon {
-  width: 20px;
-  height: 20px;
-  stroke: var(--text-primary);
-}
-
 .nav-links {
   display: flex;
   align-items: center;
