@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, CheckSquare, Palette, Volume2, VolumeX } from 'lucide-react';
 import { themes } from '../theme';
+import TopNav from './TopNav';
 
-export default function Header({ onNavigate, theme, onSelectTheme, soundEnabled, onToggleSound }) {
+export default function Header({ activeTab, onNavigate, theme, onSelectTheme, soundEnabled, onToggleSound }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -38,6 +39,8 @@ export default function Header({ onNavigate, theme, onSelectTheme, soundEnabled,
         <CheckSquare className="brand-icon" />
         <span>Life System</span>
       </button>
+
+      <TopNav activeTab={activeTab} onNavigate={onNavigate} />
 
       <div className="header-actions" ref={menuRef}>
         <button

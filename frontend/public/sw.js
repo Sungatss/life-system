@@ -1,5 +1,5 @@
-// Service Worker for Life System (v3 - clear old app-shell assets)
-const CACHE_NAME = 'life-system-v3';
+// Service Worker for Life System (v4 - refresh the navigation layout)
+const CACHE_NAME = 'life-system-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

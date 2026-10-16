@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
-import BottomNav from './components/BottomNav';
-import Footer from './components/Footer';
 import TodayPage from './pages/TodayPage';
 import TasksPage from './pages/TasksPage';
 import HabitsPage from './pages/HabitsPage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import TermsPage from './pages/TermsPage';
 import ProgressCard from './components/ProgressCard';
 import InboxPage from './pages/InboxPage';
 import ProjectsPage from './pages/ProjectsPage';
@@ -15,7 +11,7 @@ import RewardFeedback from './components/RewardFeedback';
 import { getTheme } from './theme';
 import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
 
-const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'profile', 'privacy', 'terms'];
+const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'profile'];
 const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
 
 export default function App() {
@@ -71,6 +67,7 @@ export default function App() {
     <div className="app-container">
       <a className="skip-link" href="#main-content">Skip to content</a>
       <Header
+        activeTab={activeTab}
         onNavigate={navigateTo}
         theme={theme}
         onSelectTheme={setTheme}
@@ -95,16 +92,8 @@ export default function App() {
         {activeTab === 'tasks' && <TasksPage />}
         {activeTab === 'habits' && <HabitsPage />}
         {activeTab === 'profile' && <ProfilePage />}
-        {activeTab === 'privacy' && (
-          <PrivacyPolicyPage onBack={() => navigateTo('today')} />
-        )}
-        {activeTab === 'terms' && (
-          <TermsPage onBack={() => navigateTo('today')} />
-        )}
       </main>
 
-      <Footer onNavigate={navigateTo} />
-      <BottomNav activeTab={activeTab} onNavigate={navigateTo} />
       <RewardFeedback soundEnabled={soundEnabled} />
     </div>
   );

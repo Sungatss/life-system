@@ -134,9 +134,9 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   position: sticky;
   top: 0;
   z-index: 40;
-  gap: 20px;
-  margin: 0 0 30px;
-  padding: 18px 0;
+  gap: 16px;
+  margin: 0 0 22px;
+  padding: 11px 0;
   background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
   backdrop-filter: blur(18px);
 }
@@ -146,38 +146,64 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   background: transparent;
   color: var(--text-primary);
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.035em;
 }
 .brand-icon {
-  width: 31px;
-  height: 31px;
-  padding: 7px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  border-radius: 9px;
   background: var(--accent-subtle);
   stroke: var(--accent);
 }
 .nav-links {
-  position: fixed;
-  z-index: 60;
-  bottom: max(14px, env(safe-area-inset-bottom));
-  left: 50%;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  width: min(390px, calc(100vw - 36px));
-  gap: 3px;
+  position: relative;
+  z-index: 45;
+  display: flex;
+  width: auto;
+  margin: 0 auto;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--bg-surface);
+}
+.nav-button { min-height: 36px; justify-content: center; border-radius: 8px; padding: 6px 9px; font-size: 12px; white-space: nowrap; }
+.nav-button.active { border-color: transparent; background: var(--accent-subtle); color: var(--accent); }
+.nav-more { position: relative; }
+.nav-more-trigger { height: 100%; }
+.nav-more-chevron { margin-left: -3px; }
+.nav-more-menu {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 70;
+  width: 180px;
   padding: 5px;
   border: 1px solid var(--border-strong);
-  border-radius: 17px;
-  background: color-mix(in srgb, var(--bg-surface) 93%, transparent);
-  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(20px);
-  transform: translateX(-50%);
+  border-radius: 11px;
+  background: var(--bg-surface);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
 }
-.nav-button { min-height: 48px; justify-content: center; border-radius: 10px; padding: 7px 5px; }
-.nav-button.active { border-color: transparent; background: var(--accent-subtle); color: var(--accent); }
-.icon-btn { width: 40px; height: 40px; border-radius: 11px; background: var(--bg-surface); }
+.nav-more-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 39px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-secondary);
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+}
+.nav-more-item:hover, .nav-more-item.active { background: var(--accent-subtle); color: var(--accent); }
+.icon-btn { width: 36px; height: 36px; border-radius: 9px; background: var(--bg-surface); }
 .sound-toggle[aria-pressed='true'] { color: var(--accent); }
 .header-actions { position: relative; }
 .theme-menu {
@@ -214,7 +240,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .theme-swatch { display: grid; place-items: center; width: 27px; height: 27px; flex: none; border: 1px solid var(--border-strong); border-radius: 9px; background: var(--swatch-bg); }
 .theme-swatch i { width: 12px; height: 12px; border-radius: 50%; background: var(--swatch-accent); }
 .theme-option-check { margin-left: auto; color: var(--accent); }
-.app-main { min-width: 0; padding-bottom: 28px; }
+.app-main { min-width: 0; padding-bottom: 20px; }
 
 .cockpit-date-banner {
   min-width: 0;
@@ -376,11 +402,6 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .empty-state .btn-secondary { margin-top: 14px; }
 .error-state { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--danger); }
 .form-error { order: 5; width: 100%; margin: 2px 0 8px; color: var(--danger); font-size: 13px; }
-.app-footer { padding: 24px 0 calc(104px + env(safe-area-inset-bottom)); }
-.footer-nav { flex-wrap: wrap; gap: 10px 18px; }
-.footer-link { border: 0; padding: 0; background: transparent; font: inherit; }
-.legal-page { max-width: 840px; margin: 0 auto 30px; padding: 36px; border-radius: var(--radius-lg); }
-
 @media (min-width: 980px) {
   .today-page { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(360px, 1fr); gap: 0 20px; align-items: start; }
   .today-page > .cockpit-date-banner { grid-column: 1 / -1; }
@@ -397,9 +418,11 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 
 @media (max-width: 760px) {
   .app-container { padding: 0 16px; }
-  .app-header { position: static; margin-bottom: 18px; padding: 16px 0; background: transparent; backdrop-filter: none; }
-  .nav-links { bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100vw - 36px); gap: 1px; }
-  .nav-button { min-height: 50px; padding: 5px 2px; }
+  .app-header { flex-wrap: wrap; justify-content: space-between; gap: 9px; margin-bottom: 18px; padding: 10px 0 11px; }
+  .nav-links { order: 3; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); width: 100%; margin: 0; gap: 1px; }
+  .nav-button { width: 100%; min-height: 36px; padding: 5px 4px; }
+  .nav-more { min-width: 0; }
+  .nav-more-menu { right: 0; }
   .cockpit-date-banner { padding: 22px; }
   .weekly-days-grid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(150px, 38%); overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
   .weekly-day-card { scroll-snap-align: start; }
@@ -421,6 +444,10 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 }
 
 @media (max-width: 480px) {
+  .brand { font-size: 14px; }
+  .header-actions { gap: 5px; }
+  .nav-button { font-size: 11px; gap: 4px; }
+  .nav-more-chevron { display: none; }
   .date-banner-top { align-items: flex-start; }
   .date-banner-actions { flex-wrap: wrap; justify-content: flex-end; }
   .quick-options { flex-wrap: wrap; }
@@ -431,7 +458,12 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   .kpi-number { font-size: 26px; }
   .weekly-days-grid { grid-template-columns: none; grid-auto-columns: minmax(150px, 68%); }
   .modal-content { padding: 18px; }
-  .legal-page { padding: 22px; }
+}
+
+@media (max-width: 380px) {
+  .nav-label { display: none; }
+  .nav-more .nav-label { display: inline; }
+  .nav-button { padding: 5px 2px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
