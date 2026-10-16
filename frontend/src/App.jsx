@@ -89,8 +89,20 @@ export default function App() {
     setAuthState((current) => ({ ...current, authenticated: false }));
   };
 
+  const retrySession = async () => {
+    setAuthState((current) => ({ ...current, loading: true }));
+    try {
+      const session = await api.getSession();
+      setAuthError('');
+      setAuthState({ loading: false, authenticated: session.authenticated, configured: session.configured });
+    } catch (error) {
+      setAuthError(error.message || 'Could not reach the server.');
+      setAuthState({ loading: false, authenticated: false, configured: false });
+    }
+  };
+
   if (authState.loading) return <div className="login-shell" role="status">Opening Lock In…</div>;
-  if (!authState.authenticated) return <LoginScreen configured={authState.configured} serverError={authError} onLogin={() => setAuthState((current) => ({ ...current, authenticated: true }))} />;
+  if (!authState.authenticated) return <LoginScreen configured={authState.configured} serverError={authError} onLogin={() => setAuthState((current) => ({ ...current, authenticated: true }))} onRetry={retrySession} />;
 
   return (
     <div className="app-container">
