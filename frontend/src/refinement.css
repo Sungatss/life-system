@@ -152,11 +152,11 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 }
 .brand-avatar {
   display: block;
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
   border: 1px solid var(--border-strong);
-  border-radius: 9px;
+  border-radius: 11px;
   background: #14202a;
   object-fit: cover;
 }

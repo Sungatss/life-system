@@ -36,7 +36,7 @@ export default function Header({ activeTab, onNavigate, theme, onSelectTheme, so
   return (
     <header className="app-header">
       <button type="button" className="brand" onClick={() => onNavigate('today')} aria-label="Lock In home">
-        <img className="brand-avatar" src="/lock-in-logo.png" alt="" width="32" height="32" />
+        <img className="brand-avatar" src="/lock-in-logo.png" alt="" width="38" height="38" />
         <span>Lock In</span>
       </button>
 
