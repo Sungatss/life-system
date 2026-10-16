@@ -130,3 +130,12 @@ class AssistantProposal(Base):
     preview_json = Column(Text, nullable=False)
     expires_at = Column(DateTime(timezone=True), nullable=False)
     applied_at = Column(DateTime(timezone=True), nullable=True)
+
+
+class RateWindow(Base):
+    """Shared rate counters for serverless instances using one database."""
+
+    __tablename__ = "rate_windows"
+
+    key = Column(String(120), primary_key=True)
+    count = Column(Integer, nullable=False)

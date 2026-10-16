@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from . import models, schemas, crud, migrations, progress, auth, assistant
@@ -22,15 +23,18 @@ db_startup_error = None
 async def lifespan(app: FastAPI):
     global db_startup_error
     try:
-        # Initialize tables
-        Base.metadata.create_all(bind=engine)
-        migrations.drop_daily_notes_if_present(engine)
-        migrations.add_task_description_if_missing(engine)
-        migrations.add_task_project_if_missing(engine)
-        migrations.add_user_bio_if_missing(engine)
-        # Seed starter defaults if brand new db
-        with Session(bind=engine) as db:
-            crud.seed_default_data_if_empty(db)
+        # A single transaction prevents concurrent serverless cold starts from
+        # racing to create the same PostgreSQL tables and indexes.
+        with engine.begin() as connection:
+            if engine.dialect.name == "postgresql":
+                connection.execute(text("SELECT pg_advisory_xact_lock(98273, 1)"))
+            Base.metadata.create_all(bind=connection)
+            migrations.drop_daily_notes_if_present(connection)
+            migrations.add_task_description_if_missing(connection)
+            migrations.add_task_project_if_missing(connection)
+            migrations.add_user_bio_if_missing(connection)
+            with Session(bind=connection, join_transaction_mode="create_savepoint") as db:
+                crud.seed_default_data_if_empty(db)
         db_startup_error = None
     except Exception as e:
         db_startup_error = str(e)
@@ -100,14 +104,14 @@ def read_login_session(request: Request):
 
 
 @app.post("/api/auth/login")
-def login(credentials: schemas.LoginRequest, request: Request):
+def login(credentials: schemas.LoginRequest, request: Request, db: Session = Depends(get_db)):
     if not auth.configured():
         raise HTTPException(503, "Lock In login is not configured on the server.")
     client_ip = request.client.host if request.client else "unknown"
-    auth.login_limit(client_ip)
+    auth.login_limit(client_ip, db)
     if not auth.verify_password(credentials.password):
         raise HTTPException(401, "Incorrect password.")
-    auth.clear_login_limit(client_ip)
+    auth.clear_login_limit(client_ip, db)
     token, csrf = auth.issue_session()
     response = JSONResponse({"authenticated": True, "csrf": csrf})
     response.set_cookie(

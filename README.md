@@ -70,6 +70,12 @@ The bundled systemd service and Docker Compose port mapping listen on the host's
 
 The browser receives only a signed HttpOnly session cookie and a per-session request token. The Groq key is read only by the FastAPI process. Each assistant call sends a small relevant subset of app records to Groq, with at most four short conversation messages. Requests are limited to three per minute and 60 per day locally, in addition to Groq's free-plan limits. Suggestions expire after 15 minutes and need individual **Apply** clicks. Live Groq usage should be verified manually after you configure your new key; automated tests use a fake key and mocked responses.
 
+### Vercel deployment
+
+Vercel is a separate backend; this computer's `.env` and SQLite database do not appear there. The Vercel project needs a persistent PostgreSQL `DATABASE_URL` and these **Production** server environment variables: `LOCK_IN_PASSWORD_HASH`, `LOCK_IN_SESSION_SECRET`, `GROQ_API_KEY`, and `GROQ_MODEL=openai/gpt-oss-20b`. Add credentials as Vercel **Secret** variables, never as `VITE_` frontend variables. Keep the database URL already attached to the project; replacing it can disconnect existing saved data. Redeploy after changing environment variables. The backend refuses temporary SQLite storage on Vercel, and its login and assistant limits use shared database counters across function instances.
+
+Do not copy this computer's `.env` into Vercel: it includes a local SQLite URL. If the Vercel database already has records, inspect and back them up before migrating any local records into it.
+
 ---
 
 ## 24/7 Background Service & Persistent Remote Access

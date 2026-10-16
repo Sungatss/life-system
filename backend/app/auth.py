@@ -12,6 +12,11 @@ import time
 from collections import defaultdict, deque
 
 from fastapi import HTTPException
+from sqlalchemy import delete
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+
+from . import models
 
 COOKIE_NAME = "lock_in_session"
 SESSION_SECONDS = 7 * 24 * 60 * 60
@@ -81,7 +86,38 @@ def _prune(queue, cutoff):
         queue.popleft()
 
 
-def login_limit(ip: str):
+def _database_limit(db, key: str, period: int, maximum: int, message: str):
+    now = int(time.time())
+    window = now // period
+    counter_key = f"{key}:{window}"
+    dialect = db.get_bind().dialect.name
+    if dialect == "postgresql":
+        insert = pg_insert(models.RateWindow)
+    elif dialect == "sqlite":
+        insert = sqlite_insert(models.RateWindow)
+    else:
+        raise RuntimeError("A supported database is required for shared rate limits")
+    statement = insert.values(key=counter_key, count=1).on_conflict_do_update(
+        index_elements=[models.RateWindow.key],
+        set_={"count": models.RateWindow.count + 1},
+    ).returning(models.RateWindow.count)
+    count = db.execute(statement).scalar_one()
+    db.commit()
+    if count > maximum:
+        retry = period - now % period
+        raise HTTPException(429, message, headers={"Retry-After": str(retry)})
+
+
+def _login_key(ip: str) -> str:
+    return "login:" + hashlib.sha256(ip.encode()).hexdigest()[:32]
+
+
+def login_limit(ip: str, db=None):
+    if os.getenv("VERCEL"):
+        if db is None:
+            raise RuntimeError("Shared database session is required on Vercel")
+        _database_limit(db, _login_key(ip), 15 * 60, 5, "Too many sign-in attempts. Try again in 15 minutes.")
+        return
     now = time.monotonic()
     with _lock:
         queue = _attempts[ip]
@@ -91,12 +127,25 @@ def login_limit(ip: str):
         queue.append(now)
 
 
-def clear_login_limit(ip: str):
+def clear_login_limit(ip: str, db=None):
+    if os.getenv("VERCEL"):
+        if db is None:
+            raise RuntimeError("Shared database session is required on Vercel")
+        key = f"{_login_key(ip)}:{int(time.time()) // (15 * 60)}"
+        db.execute(delete(models.RateWindow).where(models.RateWindow.key == key))
+        db.commit()
+        return
     with _lock:
         _attempts.pop(ip, None)
 
 
-def assistant_limit():
+def assistant_limit(db=None):
+    if os.getenv("VERCEL"):
+        if db is None:
+            raise RuntimeError("Shared database session is required on Vercel")
+        _database_limit(db, "assistant:minute", 60, 3, "Assistant limit reached. Wait about a minute and try again.")
+        _database_limit(db, "assistant:day", 24 * 60 * 60, 60, "Today's assistant limit is reached. Try again tomorrow.")
+        return
     now = time.monotonic()
     with _lock:
         _prune(_assistant_minute, now - 60)

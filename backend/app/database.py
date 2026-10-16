@@ -16,6 +16,9 @@ def prepare_database_url(raw_url: str):
         "pool_pre_ping": True,
     }
 
+    if os.getenv("VERCEL") and (not raw_url or raw_url.startswith("sqlite")):
+        raise RuntimeError("Vercel requires a persistent PostgreSQL DATABASE_URL; SQLite files are temporary there")
+
     if not raw_url:
         # Default local sqlite fallback (use /tmp if current dir is read-only)
         if not os.access(".", os.W_OK):
@@ -56,11 +59,8 @@ def prepare_database_url(raw_url: str):
         url_parts[3] = urllib.parse.urlencode(query_params)
         url = urllib.parse.urlunsplit(url_parts)
 
-        # Ensure SSL context works with cloud Neon / Supabase certificates
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        connect_args["ssl_context"] = ctx
+        # Verify the cloud database certificate and hostname.
+        connect_args["ssl_context"] = ssl.create_default_context()
 
     return url, connect_args, engine_kwargs
 
