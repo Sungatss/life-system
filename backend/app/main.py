@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
     try:
         # Initialize tables
         Base.metadata.create_all(bind=engine)
+        migrations.drop_daily_notes_if_present(engine)
         migrations.add_task_description_if_missing(engine)
         migrations.add_task_project_if_missing(engine)
         migrations.add_user_bio_if_missing(engine)
@@ -189,42 +190,14 @@ def get_today_overview(
 ):
     target_date = date or datetime.date.today().isoformat()
 
-    note = crud.get_daily_note_by_date(db, target_date)
     today_tasks = crud.get_today_tasks(db, target_date)
     habits = crud.get_habits_with_history(db, active_only=True, days=7, reference_date_str=target_date)
 
     return schemas.TodayOverview(
         date=target_date,
-        daily_note=schemas.DailyNoteResponse.model_validate(note) if note else None,
         tasks=[schemas.TaskResponse.model_validate(t) for t in today_tasks],
         habits=habits
     )
-
-
-# Daily Notes
-@app.get("/api/notes/search", response_model=List[schemas.DailyNoteSearchResult])
-def search_notes(q: str = Query(..., min_length=1), db: Session = Depends(get_db)):
-    return crud.search_daily_notes(db, query_str=q)
-
-
-@app.get("/api/notes/{date_str}", response_model=schemas.DailyNoteResponse)
-def get_note(date_str: str, db: Session = Depends(get_db)):
-    note = crud.get_daily_note_by_date(db, date_str)
-    if not note:
-        return schemas.DailyNoteResponse(
-            id=0,
-            date=date_str,
-            content="",
-            created_at=datetime.datetime.now(datetime.timezone.utc),
-            updated_at=datetime.datetime.now(datetime.timezone.utc)
-        )
-    return schemas.DailyNoteResponse.model_validate(note)
-
-
-@app.put("/api/notes/{date_str}", response_model=schemas.DailyNoteResponse)
-def save_note(date_str: str, update: schemas.DailyNoteUpdate, db: Session = Depends(get_db)):
-    note = crud.upsert_daily_note(db, date_str, update.content)
-    return schemas.DailyNoteResponse.model_validate(note)
 
 
 # Tasks

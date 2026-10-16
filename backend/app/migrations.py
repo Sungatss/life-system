@@ -1,6 +1,13 @@
 from sqlalchemy import inspect, text
 
 
+def drop_daily_notes_if_present(engine):
+    """Remove the retired daily-note feature and its stored records."""
+    if inspect(engine).has_table("daily_notes"):
+        with engine.begin() as connection:
+            connection.execute(text("DROP TABLE daily_notes"))
+
+
 def add_task_description_if_missing(engine):
     """Keep existing task rows usable after adding optional descriptions."""
     columns = {column["name"] for column in inspect(engine).get_columns("tasks")}

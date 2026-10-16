@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import Session
 
-from backend.app import main, schemas
+from backend.app import main, migrations, schemas
 from backend.app.database import Base
 
 
@@ -50,15 +50,16 @@ class InboxTests(unittest.TestCase):
             main.delete_inbox_entry(9, self.db)
         self.assertEqual(error.exception.status_code, 404)
 
-    def test_new_inbox_table_preserves_existing_data(self):
+    def test_retired_daily_notes_table_is_removed_without_affecting_inbox(self):
         engine = create_engine('sqlite:///:memory:')
         with engine.begin() as connection:
             connection.execute(text('CREATE TABLE daily_notes (id INTEGER PRIMARY KEY, date TEXT, content TEXT)'))
             connection.execute(text("INSERT INTO daily_notes (id, date, content) VALUES (1, '2026-10-11', 'Existing note')"))
         Base.metadata.create_all(engine)
+        migrations.drop_daily_notes_if_present(engine)
         self.assertIn('inbox_entries', inspect(engine).get_table_names())
+        self.assertNotIn('daily_notes', inspect(engine).get_table_names())
         with engine.connect() as connection:
-            self.assertEqual(connection.execute(text('SELECT content FROM daily_notes WHERE id = 1')).scalar_one(), 'Existing note')
             self.assertEqual(connection.execute(text('SELECT COUNT(*) FROM inbox_entries')).scalar_one(), 0)
         engine.dispose()
 

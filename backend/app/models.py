@@ -26,16 +26,6 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
 
-class DailyNote(Base):
-    __tablename__ = "daily_notes"
-
-    id = Column(Integer, primary_key=True, index=True)
-    date = Column(String(10), unique=True, index=True, nullable=False)  # Format: YYYY-MM-DD
-    content = Column(Text, default="", nullable=False)
-    created_at = Column(DateTime(timezone=True), default=utcnow)
-    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
-
-
 class InboxEntry(Base):
     __tablename__ = "inbox_entries"
 

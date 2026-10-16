@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 sync_data.py - Full backup and restoration between local SQLite and Render cloud.
-Restores projects, tasks, daily notes, habits, habit streaks, and weekly reviews.
+Restores projects, tasks, habits, habit streaks, and weekly reviews.
 """
 import sys
 import json
@@ -186,18 +186,7 @@ def restore_data_to_api(target_url=RENDER_DEFAULT):
                 print(f"  ! Error restoring habit log for {log_date}: {e}")
     print(f"✓ Habit logs & streaks restored: {synced_logs} logs active")
 
-    # 6. Restore all daily notes
-    local_notes = c.execute("SELECT date, content FROM daily_notes ORDER BY date ASC").fetchall()
-    synced_notes = 0
-    for date_str, content in local_notes:
-        try:
-            api_call(f"/api/notes/{date_str}", method="PUT", data={"content": content})
-            synced_notes += 1
-        except Exception as e:
-            print(f"  ! Error restoring note for {date_str}: {e}")
-    print(f"✓ Daily notes restored: {synced_notes} notes preserved")
-
-    # 7. Restore weekly reviews
+    # 6. Restore weekly reviews
     try:
         local_reviews = c.execute("SELECT week_start, wins, blockers, next_focus FROM weekly_reviews").fetchall()
         for w_start, wins, blockers, next_focus in local_reviews:

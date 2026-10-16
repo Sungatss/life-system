@@ -24,12 +24,12 @@ export default function PrivacyPolicyPage({ onBack }) {
       <div className="legal-content">
         <h2>1. Overview</h2>
         <p>
-          Life System is designed as a personal, single-user productivity tool. We believe your thoughts, daily notes, task lists, and personal habits are private by default.
+          Life System is designed as a personal, single-user productivity tool. We believe your thoughts, task lists, and personal habits are private by default.
         </p>
 
         <h2>2. Data Collection and Storage</h2>
         <p>
-          All information created within Life System, including daily notes, task entries, and habit records, is stored directly in your designated backend database (such as SQLite on your server or personal device).
+          Information created within Life System, including tasks, projects, inbox entries, habits, and weekly reviews, is stored in your designated backend database (such as SQLite on your server or personal device).
         </p>
         <ul>
           <li>No telemetry or behavioral tracking is enabled.</li>
@@ -39,12 +39,12 @@ export default function PrivacyPolicyPage({ onBack }) {
 
         <h2>3. Local Storage</h2>
         <p>
-          The application uses browser local storage exclusively for your interface preferences, such as your chosen color theme.
+          The application uses browser local storage for interface preferences and unsaved inbox and project drafts.
         </p>
 
         <h2>4. Data Retention and Control</h2>
         <p>
-          You have complete ownership of your data. You may modify or delete any task, note, or habit directly from the interface at any time. When you delete an item, it is permanently removed from the database.
+          You have complete ownership of your data. You may modify or delete tasks and habits directly from the interface at any time. When you delete an item, it is permanently removed from the database.
         </p>
 
         <h2>5. Contact</h2>

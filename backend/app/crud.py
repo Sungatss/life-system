@@ -78,58 +78,6 @@ def delete_inbox_entry(db: Session, entry_id: int) -> bool:
     return True
 
 
-def get_daily_note_by_date(db: Session, date_str: str) -> Optional[models.DailyNote]:
-    return db.query(models.DailyNote).filter(models.DailyNote.date == date_str).first()
-
-
-def upsert_daily_note(db: Session, date_str: str, content: str) -> models.DailyNote:
-    note = get_daily_note_by_date(db, date_str)
-    now = models.utcnow()
-    if note:
-        note.content = content
-        note.updated_at = now
-    else:
-        note = models.DailyNote(date=date_str, content=content, created_at=now, updated_at=now)
-        db.add(note)
-    db.commit()
-    db.refresh(note)
-    return note
-
-
-def search_daily_notes(db: Session, query_str: str, limit: int = 50) -> List[schemas.DailyNoteSearchResult]:
-    cleaned = query_str.strip()
-    if not cleaned:
-        return []
-    pattern = f"%{cleaned}%"
-    notes = db.query(models.DailyNote).filter(
-        models.DailyNote.content.ilike(pattern)
-    ).order_by(desc(models.DailyNote.date)).limit(limit).all()
-
-    results = []
-    for note in notes:
-        content = note.content or ""
-        lower_content = content.lower()
-        idx = lower_content.find(cleaned.lower())
-        if idx == -1:
-            idx = 0
-        start = max(0, idx - 40)
-        end = min(len(content), idx + len(cleaned) + 60)
-        snippet = ("..." if start > 0 else "") + content[start:end].strip() + ("..." if end < len(content) else "")
-        words = len(content.split())
-        results.append(
-            schemas.DailyNoteSearchResult(
-                id=note.id,
-                date=note.date,
-                snippet=snippet,
-                content=content,
-                word_count=words,
-                updated_at=note.updated_at or note.created_at
-            )
-        )
-    return results
-
-
-
 def get_tasks(
     db: Session,
     filter_type: Optional[str] = None,
@@ -467,18 +415,6 @@ def get_contributions_history(
     start_str = start_date.isoformat()
     end_str = end_date.isoformat()
 
-    # Query notes in range
-    notes = db.query(models.DailyNote).filter(
-        models.DailyNote.date >= start_str,
-        models.DailyNote.date <= end_str
-    ).all()
-    notes_map = {}
-    for n in notes:
-        text = (n.content or "").strip()
-        words = len(text.split()) if text else 0
-        if words > 0:
-            notes_map[n.date] = words
-
     # Query habits in range
     active_habits_count = db.query(models.Habit).filter(models.Habit.active == True).count()
     habit_logs = db.query(models.HabitLog).filter(
@@ -507,27 +443,20 @@ def get_contributions_history(
     # Assemble day-by-day sequence
     day_list = []
     curr = start_date
-    total_notes = 0
     total_habits = 0
     total_tasks = 0
 
     while curr <= end_date:
         d_str = curr.isoformat()
-        has_note = d_str in notes_map
-        words = notes_map.get(d_str, 0)
         h_completed = habits_map.get(d_str, 0)
         t_completed = tasks_map.get(d_str, 0)
 
-        if has_note:
-            total_notes += 1
         total_habits += h_completed
         total_tasks += t_completed
 
         day_list.append(
             schemas.ContributionDay(
                 date=d_str,
-                has_note=has_note,
-                note_words=words,
                 habits_completed=h_completed,
                 total_habits=active_habits_count,
                 tasks_completed=t_completed
@@ -539,7 +468,6 @@ def get_contributions_history(
         start_date=start_str,
         end_date=end_str,
         days=day_list,
-        total_notes_written=total_notes,
         total_habits_completed=total_habits,
         total_tasks_completed=total_tasks
     )
@@ -595,14 +523,7 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
     review_model = get_weekly_review(db, monday_str)
     review_schema = schemas.WeeklyReviewResponse.model_validate(review_model) if review_model else None
 
-    # 2. Daily notes in this week
-    notes = db.query(models.DailyNote).filter(
-        models.DailyNote.date >= monday_str,
-        models.DailyNote.date <= sunday_str
-    ).all()
-    notes_map = {n.date: len(n.content.split()) for n in notes if n.content}
-
-    # 3. Active habits & logs in this week
+    # Active habits & logs in this week
     active_habits = get_habits(db, active_only=True)
     habit_ids = [h.id for h in active_habits]
     active_habits_count = len(active_habits)
@@ -618,7 +539,7 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
     for log in habit_logs:
         habits_by_day[log.date] = habits_by_day.get(log.date, 0) + 1
 
-    # 4. Completed tasks in this week
+    # Completed tasks in this week
     tasks = db.query(models.Task).filter(
         models.Task.completed == True
     ).all()
@@ -633,12 +554,11 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
         if t_date and monday_str <= t_date <= sunday_str:
             tasks_by_day[t_date] = tasks_by_day.get(t_date, 0) + 1
 
-    # 5. Build 7-day breakdown (Mon-Sun)
+    # Build 7-day breakdown (Mon-Sun)
     day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     days_breakdown = []
     total_tasks_completed = 0
     total_habits_completed = 0
-    total_words_written = 0
     days_active_count = 0
 
     for i in range(7):
@@ -646,13 +566,9 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
         curr_str = curr_d.isoformat()
         t_count = tasks_by_day.get(curr_str, 0)
         h_count = habits_by_day.get(curr_str, 0)
-        has_note = curr_str in notes_map
-        words = notes_map.get(curr_str, 0)
-
         total_tasks_completed += t_count
         total_habits_completed += h_count
-        total_words_written += words
-        if t_count > 0 or h_count > 0 or has_note:
+        if t_count > 0 or h_count > 0:
             days_active_count += 1
 
         days_breakdown.append(
@@ -661,9 +577,7 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
                 day_name=day_names[i],
                 tasks_completed=t_count,
                 habits_completed=h_count,
-                total_habits=active_habits_count,
-                has_note=has_note,
-                note_words=words
+                total_habits=active_habits_count
             )
         )
 
@@ -678,7 +592,6 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
         total_habits_possible=total_possible_habits,
         habit_consistency_rate=consistency_rate,
         days_active=days_active_count,
-        total_words_written=total_words_written,
         day_breakdown=days_breakdown,
         review=review_schema
     )

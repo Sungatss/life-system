@@ -57,15 +57,6 @@ export const api = {
     return request(`/api/today${query}`);
   },
 
-  // Daily note
-  getNote: (date) => request(`/api/notes/${encodeURIComponent(date)}`),
-  saveNote: (date, content) =>
-    request(`/api/notes/${encodeURIComponent(date)}`, {
-      method: 'PUT',
-      body: JSON.stringify({ content }),
-    }),
-  searchNotes: (query) => request(`/api/notes/search?q=${encodeURIComponent(query)}`),
-
   // Tasks
   getTasks: (filter, category, projectId) => {
     const params = new URLSearchParams();

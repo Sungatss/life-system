@@ -1,5 +1,5 @@
-// Service Worker for Life System (v2 - Direct API Network Access & Clean Offline App Shell)
-const CACHE_NAME = 'life-system-v2';
+// Service Worker for Life System (v3 - clear old app-shell assets)
+const CACHE_NAME = 'life-system-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

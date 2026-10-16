@@ -9,14 +9,14 @@ const DAY_LABELS = [
 ];
 
 export default function ContributionGraph({ contributions, title, defaultMode = 'all' }) {
-  const [mode, setMode] = useState(defaultMode); // 'all', 'notes', 'habits'
+  const [mode, setMode] = useState(defaultMode); // 'all' or 'habits'
   const [hoveredDay, setHoveredDay] = useState(null);
 
   if (!contributions || !contributions.days || contributions.days.length === 0) {
     return null;
   }
 
-  const { days, total_notes_written, total_habits_completed, total_tasks_completed } = contributions;
+  const { days, total_habits_completed, total_tasks_completed } = contributions;
 
   // Build a lookup map by YYYY-MM-DD
   const dayMap = {};
@@ -77,14 +77,6 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
   const getIntensityLevel = (item) => {
     if (!item) return 0;
 
-    if (mode === 'notes') {
-      if (!item.has_note) return 0;
-      if (item.note_words > 120) return 4;
-      if (item.note_words > 60) return 3;
-      if (item.note_words > 20) return 2;
-      return 1;
-    }
-
     if (mode === 'habits') {
       if (!item.habits_completed) return 0;
       const ratio = item.total_habits > 0 ? item.habits_completed / item.total_habits : 0;
@@ -96,7 +88,6 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
 
     // 'all' combined mode
     let score = 0;
-    if (item.has_note) score += 2;
     if (item.tasks_completed > 0) score += Math.min(item.tasks_completed, 2);
     if (item.habits_completed > 0) {
       const ratio = item.total_habits > 0 ? item.habits_completed / item.total_habits : 0;
@@ -107,9 +98,8 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
 
   // Active days count
   const activeDaysCount = days.filter((d) => {
-    if (mode === 'notes') return d.has_note;
     if (mode === 'habits') return d.habits_completed > 0;
-    return d.has_note || d.habits_completed > 0 || d.tasks_completed > 0;
+    return d.habits_completed > 0 || d.tasks_completed > 0;
   }).length;
 
   return (
@@ -120,8 +110,6 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
           <div className="contribution-stats">
             <span>{activeDaysCount} active days</span>
             <span>&bull;</span>
-          <span>{total_notes_written} notes written</span>
-          <span>&bull;</span>
           <span>{total_habits_completed} habits checked</span>
           <span>&bull;</span>
           <span>{total_tasks_completed} tasks finished</span>
@@ -136,14 +124,6 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
             aria-pressed={mode === 'all'}
           >
             All
-          </button>
-          <button
-            type="button"
-            className={`mode-btn ${mode === 'notes' ? 'active' : ''}`}
-            onClick={() => setMode('notes')}
-            aria-pressed={mode === 'notes'}
-          >
-            Daily notes
           </button>
           <button
             type="button"
@@ -211,7 +191,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
                         }}
                         role={day.inRange ? 'button' : undefined}
                         tabIndex={day.inRange ? 0 : -1}
-                        aria-label={day.inRange ? `${day.dateStr}: ${day.item.note_words} note words, ${day.item.habits_completed} habits completed, ${day.item.tasks_completed} tasks finished` : undefined}
+                        aria-label={day.inRange ? `${day.dateStr}: ${day.item.habits_completed} habits completed, ${day.item.tasks_completed} tasks finished` : undefined}
                       />
                     );
                   })}
@@ -227,8 +207,7 @@ export default function ContributionGraph({ contributions, title, defaultMode = 
         <div className="heatmap-tooltip">
           {hoveredDay ? (
             <span>
-              <strong>{hoveredDay.date}</strong>: {hoveredDay.has_note ? `${hoveredDay.note_words} words noted` : 'No daily note'},{' '}
-              {hoveredDay.habits_completed} / {hoveredDay.total_habits} habits completed, {hoveredDay.tasks_completed} tasks finished
+              <strong>{hoveredDay.date}</strong>: {hoveredDay.habits_completed} / {hoveredDay.total_habits} habits completed, {hoveredDay.tasks_completed} tasks finished
             </span>
           ) : null}
         </div>

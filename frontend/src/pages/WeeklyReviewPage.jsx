@@ -242,7 +242,7 @@ export default function WeeklyReviewPage() {
 
       {data && (
         <>
-          {/* 2. Four Sleek Summary KPI Cards */}
+          {/* Weekly activity summary */}
           <div className="weekly-kpi-grid">
             {/* Card 1: Tasks Completed */}
             <div className="weekly-kpi-card">
@@ -279,16 +279,6 @@ export default function WeeklyReviewPage() {
               </div>
             </div>
 
-            {/* Card 4: Reflection & Journal Volume */}
-            <div className="weekly-kpi-card">
-              <div className="kpi-card-header">
-                <span className="kpi-label">WORDS WRITTEN</span>
-                <div className="kpi-icon-wrap" style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}>
-                  <BookOpen size={18} />
-                </div>
-              </div>
-              <div className="kpi-number">{data.total_words_written}</div>
-            </div>
           </div>
 
           {/* 3. 7-Day Day-by-Day Performance Breakdown */}
@@ -305,7 +295,7 @@ export default function WeeklyReviewPage() {
               {data.day_breakdown.map((day) => {
                 const isToday = day.date === todayStr;
                 const habitPct = day.total_habits > 0 ? Math.round((day.habits_completed / day.total_habits) * 100) : 0;
-                const isComplete = day.tasks_completed > 0 || day.habits_completed > 0 || day.has_note;
+                const isComplete = day.tasks_completed > 0 || day.habits_completed > 0;
 
                 return (
                   <div
@@ -342,16 +332,6 @@ export default function WeeklyReviewPage() {
                         </span>
                       </div>
 
-                      <div className="day-metric-row">
-                        <span className="day-metric-label">Note:</span>
-                        <span className="day-metric-value">
-                          {day.has_note ? (
-                            <span style={{ color: 'var(--accent)' }}>{day.note_words} words</span>
-                          ) : (
-                            <span className="text-dim">None</span>
-                          )}
-                        </span>
-                      </div>
                     </div>
 
                     {/* Progress strip indicator */}
@@ -380,7 +360,7 @@ export default function WeeklyReviewPage() {
               <div className="section-header-actions">
                 <button
                   type="button"
-                  className={`btn-note-search ${activePreview ? 'active' : ''}`}
+                  className={`btn-review-preview ${activePreview ? 'active' : ''}`}
                   onClick={() => setActivePreview((prev) => !prev)}
                   title="Toggle Markdown Preview"
                 >

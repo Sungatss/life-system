@@ -246,7 +246,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .btn-primary { border-color: var(--accent); background: var(--accent); color: var(--bg-primary); font-weight: 680; }
 .btn-primary:hover:not(:disabled) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 83%, white); color: var(--bg-primary); }
 .btn-secondary:hover, .select-compact:hover { border-color: var(--border-strong); }
-.task-input-field, .select-compact, .reflection-textarea, .note-search-field { background: var(--bg-elevated); }
+.task-input-field, .select-compact, .reflection-textarea { background: var(--bg-elevated); }
 .task-input-field::placeholder, .reflection-textarea::placeholder { color: var(--text-muted); }
 .task-input-field:focus, .select-compact:focus, .reflection-textarea:focus { border-color: var(--accent); }
 
@@ -275,7 +275,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 }
 .task-details-fields > .task-input-field { width: 100%; min-width: 0; }
 .task-list, .habit-list { gap: 10px; }
-.task-card, .habit-card, .weekly-kpi-card, .weekly-day-card, .reflection-prompt-card, .preview-block, .note-search-item { border-radius: var(--radius-md); }
+.task-card, .habit-card, .weekly-kpi-card, .weekly-day-card, .reflection-prompt-card, .preview-block { border-radius: var(--radius-md); }
 .task-card, .habit-card { padding: 15px 16px; background: var(--bg-elevated); transition: background 0.16s ease, border-color 0.16s ease; }
 .task-card, .habit-card { position: relative; }
 .task-card:hover, .habit-card:hover { border-color: var(--border-strong); background: var(--bg-surface-hover); }
@@ -363,7 +363,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .progress-ring-status-pill { white-space: normal; }
 .progress-mini-bar-fill { background: linear-gradient(90deg, var(--accent), var(--success)); }
 .weekly-review-page { gap: 0; }
-.weekly-kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.weekly-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
 .weekly-kpi-card { min-width: 0; padding: 20px; }
 .weekly-days-grid { gap: 8px; }
 .weekly-day-card { min-width: 0; }
@@ -387,8 +387,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   .today-page > .progress-ring-section { grid-column: 1 / -1; }
   .today-page > .cockpit-section[aria-label='Today tasks section'] { grid-column: 1; }
   .today-page > .cockpit-section[aria-label='Habits section'] { grid-column: 2; }
-  .today-page > .contribution-container,
-  .today-page > .cockpit-section[aria-label='Daily note section'] { grid-column: 1 / -1; }
+  .today-page > .contribution-container { grid-column: 1 / -1; }
 }
 
 @media (max-width: 980px) {

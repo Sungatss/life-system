@@ -24,12 +24,12 @@ export default function TermsPage({ onBack }) {
       <div className="legal-content">
         <h2>1. Purpose of the Software</h2>
         <p>
-          Life System is provided as a personal, minimalist productivity application designed to help individuals plan their day, organize tasks, record daily notes, and track habits.
+          Life System is provided as a personal, minimalist productivity application designed to help individuals plan their day, organize tasks, review progress, and track habits.
         </p>
 
         <h2>2. Use License and Ownership</h2>
         <p>
-          You are granted a personal, non-exclusive license to use and self-host the software. You retain full ownership of all notes, tasks, and data entered into the application.
+          You are granted a personal, non-exclusive license to use and self-host the software. You retain full ownership of tasks, projects, and other data entered into the application.
         </p>
 
         <h2>3. Data Responsibility and Backups</h2>

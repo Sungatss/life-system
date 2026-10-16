@@ -15,39 +15,6 @@ class ProfileResponse(ProfileUpdate):
     model_config = ConfigDict(from_attributes=True)
 
 
-# Daily Note Schemas
-class DailyNoteBase(BaseModel):
-    content: str = ""
-
-
-class DailyNoteCreate(DailyNoteBase):
-    date: str  # YYYY-MM-DD
-
-
-class DailyNoteUpdate(BaseModel):
-    content: str
-
-
-class DailyNoteResponse(DailyNoteBase):
-    id: int
-    date: str
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class DailyNoteSearchResult(BaseModel):
-    id: int
-    date: str
-    snippet: str
-    content: str
-    word_count: int
-    updated_at: datetime.datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
 class InboxEntryContent(BaseModel):
     content: str = Field(..., max_length=10000)
 
@@ -186,7 +153,6 @@ class ProgressResponse(BaseModel):
 
 class TodayOverview(BaseModel):
     date: str
-    daily_note: Optional[DailyNoteResponse] = None
     tasks: List[TaskResponse] = []
     habits: List[HabitItemResponse] = []
 
@@ -194,8 +160,6 @@ class TodayOverview(BaseModel):
 # GitHub-style Contribution Tracker Schemas
 class ContributionDay(BaseModel):
     date: str
-    has_note: bool = False
-    note_words: int = 0
     habits_completed: int = 0
     total_habits: int = 0
     tasks_completed: int = 0
@@ -205,7 +169,6 @@ class ContributionsResponse(BaseModel):
     start_date: str
     end_date: str
     days: List[ContributionDay]
-    total_notes_written: int
     total_habits_completed: int
     total_tasks_completed: int
 
@@ -235,8 +198,6 @@ class WeeklyDayStat(BaseModel):
     tasks_completed: int
     habits_completed: int
     total_habits: int
-    has_note: bool
-    note_words: int
 
 
 class WeeklyCockpitResponse(BaseModel):
@@ -247,6 +208,5 @@ class WeeklyCockpitResponse(BaseModel):
     total_habits_possible: int
     habit_consistency_rate: int
     days_active: int
-    total_words_written: int
     day_breakdown: List[WeeklyDayStat]
     review: Optional[WeeklyReviewResponse] = None

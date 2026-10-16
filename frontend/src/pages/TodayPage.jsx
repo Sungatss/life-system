@@ -1,28 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../api/client';
-import DailyNoteEditor from '../components/DailyNoteEditor';
 import QuickTaskInput from '../components/QuickTaskInput';
 import TaskItem from '../components/TaskItem';
 import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
 import DateNavigator from '../components/DateNavigator';
-import NoteSearchModal from '../components/NoteSearchModal';
-import { ListTodo, Flame, PenLine, Plus, Search } from 'lucide-react';
+import { ListTodo, Flame, Plus } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
 
 export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const todayStr = getLocalDateStr();
   const [currentDateStr, setCurrentDateStr] = useState(todayStr);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const searchOpenerRef = useRef(null);
-  const openSearch = (event) => {
-    searchOpenerRef.current = event.currentTarget;
-    setIsSearchOpen(true);
-  };
-  const closeSearch = () => {
-    setIsSearchOpen(false);
-    requestAnimationFrame(() => searchOpenerRef.current?.focus());
-  };
   const [todayData, setTodayData] = useState(null);
   const [contributions, setContributions] = useState(null);
   const [error, setError] = useState(null);
@@ -230,18 +218,16 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
 
   const tasks = hasCurrentData ? todayData.tasks : [];
   const habits = hasCurrentData ? todayData.habits : [];
-  const noteContent = hasCurrentData ? todayData.daily_note?.content || '' : '';
 
   const completedTasksCount = tasks.filter((t) => t.completed).length;
   const completedHabitsCount = habits.filter((h) => h.completed_today).length;
 
   return (
     <div className="today-page">
-      {/* 1. Interactive Date Navigator */}
+      {/* Date navigator */}
       <DateNavigator
         currentDateStr={currentDateStr}
         onDateChange={setCurrentDateStr}
-        onOpenSearch={openSearch}
       />
 
       {/* Today's Tasks */}
@@ -361,7 +347,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         )}
       </section>
 
-      {/* 5. GitHub-style Contribution Tracker for Daily Notes & Habits */}
+      {/* Task and habit activity */}
       {contributions && (
         <ContributionGraph
           contributions={contributions}
@@ -369,53 +355,6 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         />
       )}
 
-      {/* Daily note stays at the end of the day view. */}
-      <section className="cockpit-section" aria-label="Daily note section">
-        <div className="section-header">
-          <div className="section-title-wrap">
-            <PenLine size={16} />
-            <h2 className="section-title">Daily note</h2>
-          </div>
-          <div className="section-header-actions">
-            <button
-              type="button"
-              className="btn-note-search"
-              onClick={openSearch}
-              title="Search across all notes"
-            >
-              <Search size={13} />
-              <span>Search</span>
-            </button>
-            <span className="section-badge">Auto-save</span>
-          </div>
-        </div>
-        <DailyNoteEditor
-          date={currentDateStr}
-          initialContent={noteContent}
-          onContentSaved={(newContent) => {
-            setTodayData((prev) =>
-              prev?.date === currentDateStr
-                ? {
-                    ...prev,
-                    daily_note: prev.daily_note
-                      ? { ...prev.daily_note, content: newContent }
-                      : { id: 0, date: currentDateStr, content: newContent, created_at: '', updated_at: '' },
-                  }
-                : prev
-            );
-            refreshContributions();
-          }}
-        />
-      </section>
-
-      {/* Note Search Modal */}
-      <NoteSearchModal
-        isOpen={isSearchOpen}
-        onClose={closeSearch}
-        onSelectDate={(targetDate) => {
-          setCurrentDateStr(targetDate);
-        }}
-      />
     </div>
   );
 }

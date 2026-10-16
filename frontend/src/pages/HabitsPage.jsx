@@ -126,7 +126,7 @@ export default function HabitsPage() {
       {contributions && (
         <ContributionGraph
           contributions={contributions}
-          title="Habits and daily notes consistency"
+          title="Habit and task consistency"
           defaultMode="habits"
         />
       )}

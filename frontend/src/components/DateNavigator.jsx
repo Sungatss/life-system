@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, RotateCcw, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, RotateCcw } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
 
-export default function DateNavigator({ currentDateStr, onDateChange, onOpenSearch }) {
+export default function DateNavigator({ currentDateStr, onDateChange }) {
   const todayStr = getLocalDateStr();
   const datePickerRef = useRef(null);
 
@@ -63,17 +63,6 @@ export default function DateNavigator({ currentDateStr, onDateChange, onOpenSear
             </button>
           )}
 
-          {onOpenSearch && (
-            <button
-              type="button"
-              className="btn-search-trigger"
-              onClick={onOpenSearch}
-              title="Search all daily notes"
-            >
-              <Search size={13} />
-              <span>Search Notes</span>
-            </button>
-          )}
         </div>
       </div>
 
