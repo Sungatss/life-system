@@ -23,6 +23,7 @@ SESSION_SECONDS = 7 * 24 * 60 * 60
 _attempts = defaultdict(deque)
 _assistant_minute = deque()
 _assistant_day = deque()
+_finance_minute = deque()
 _lock = threading.Lock()
 
 
@@ -156,3 +157,18 @@ def assistant_limit(db=None):
             raise HTTPException(429, "Today's assistant limit is reached. Try again tomorrow.", headers={"Retry-After": "86400"})
         _assistant_minute.append(now)
         _assistant_day.append(now)
+
+
+def finance_limit(db=None):
+    """Bound access to financial records after the session check."""
+    if os.getenv("VERCEL"):
+        if db is None:
+            raise RuntimeError("Shared database session is required on Vercel")
+        _database_limit(db, "finance:minute", 60, 120, "Finance is busy. Wait a minute and try again.")
+        return
+    now = time.monotonic()
+    with _lock:
+        _prune(_finance_minute, now - 60)
+        if len(_finance_minute) >= 120:
+            raise HTTPException(429, "Finance is busy. Wait a minute and try again.", headers={"Retry-After": "60"})
+        _finance_minute.append(now)

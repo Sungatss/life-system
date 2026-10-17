@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Calendar, CalendarDays, ChevronDown, Flame, FolderKanban, Inbox, ListTodo, Menu, UserRound } from 'lucide-react';
+import { Calendar, CalendarDays, ChevronDown, Flame, FolderKanban, Inbox, ListTodo, Menu, UserRound, Wallet } from 'lucide-react';
 
 const primaryItems = [
   { id: 'today', label: 'Today', icon: Calendar },
@@ -11,6 +11,7 @@ const primaryItems = [
 // Add future secondary pages here; they will appear in the same menu.
 const moreItems = [
   { id: 'calendar', label: 'Calendar', icon: CalendarDays },
+  { id: 'finance', label: 'Finance', icon: Wallet },
   { id: 'inbox', label: 'Inbox', icon: Inbox },
   { id: 'projects', label: 'Projects', icon: FolderKanban },
 ];

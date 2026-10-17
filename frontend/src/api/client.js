@@ -32,7 +32,9 @@ async function request(endpoint, options = {}) {
     let errorDetail = 'Request failed';
     try {
       const errJson = await response.json();
-      errorDetail = errJson.detail || JSON.stringify(errJson);
+      errorDetail = Array.isArray(errJson.detail)
+        ? errJson.detail.map((item) => item.msg || 'Invalid value').join('; ')
+        : (errJson.detail || JSON.stringify(errJson));
     } catch {
       errorDetail = response.statusText || `${response.status}`;
     }
@@ -88,6 +90,20 @@ export const api = {
   createCalendarEvent: (data) => request('/api/calendar/events', { method: 'POST', body: JSON.stringify(data) }),
   updateCalendarEvent: (id, data) => request(`/api/calendar/events/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteCalendarEvent: (id) => request(`/api/calendar/events/${id}`, { method: 'DELETE' }),
+  getFinanceOverview: (month, today) => request(`/api/finance/overview?month=${encodeURIComponent(month)}&today=${encodeURIComponent(today)}`),
+  getFinanceTransactions: (month, offset = 0, limit = 50) => request(`/api/finance/transactions?month=${encodeURIComponent(month)}&offset=${offset}&limit=${limit}`),
+  saveFinanceSettings: (data) => request('/api/finance/settings', { method: 'PUT', body: JSON.stringify(data) }),
+  createFinanceTransaction: (data) => request('/api/finance/transactions', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceTransaction: (id, data) => request(`/api/finance/transactions/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteFinanceTransaction: (id) => request(`/api/finance/transactions/${id}`, { method: 'DELETE' }),
+  createFinanceBudgetItem: (data) => request('/api/finance/budget', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceBudgetItem: (id, data) => request(`/api/finance/budget/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteFinanceBudgetItem: (id) => request(`/api/finance/budget/${id}`, { method: 'DELETE' }),
+  createFinanceObligation: (data) => request('/api/finance/obligations', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceObligation: (id, data) => request(`/api/finance/obligations/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteFinanceObligation: (id) => request(`/api/finance/obligations/${id}`, { method: 'DELETE' }),
+  payFinanceObligation: (id, data) => request(`/api/finance/obligations/${id}/payments`, { method: 'POST', body: JSON.stringify(data) }),
+  saveFinanceWeeklyReview: (weekStart, data) => request(`/api/finance/reviews/weekly?week_start=${encodeURIComponent(weekStart)}`, { method: 'PUT', body: JSON.stringify(data) }),
   // Today overview
   getToday: (date) => {
     const query = date ? `?date=${encodeURIComponent(date)}` : '';

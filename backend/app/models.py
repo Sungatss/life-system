@@ -2,6 +2,7 @@ import datetime
 from sqlalchemy import (
     Column,
     Integer,
+    BigInteger,
     String,
     Text,
     Boolean,
@@ -80,6 +81,67 @@ class CalendarEvent(Base):
     end_time = Column(String(5), nullable=True)
     notes = Column(Text, nullable=False, default="")
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
+class FinanceSettings(Base):
+    __tablename__ = "finance_settings"
+
+    id = Column(Integer, primary_key=True)
+    currency = Column(String(3), nullable=False, default="KZT")
+    opening_cash_minor = Column(BigInteger, nullable=False, default=0)
+    opening_emergency_minor = Column(BigInteger, nullable=False, default=0)
+    opening_investment_minor = Column(BigInteger, nullable=False, default=0)
+    emergency_buffer_target_minor = Column(BigInteger, nullable=False, default=0)
+    runway_target_months = Column(Integer, nullable=False, default=3)
+
+
+class FinanceTransaction(Base):
+    __tablename__ = "finance_transactions"
+
+    id = Column(Integer, primary_key=True)
+    date = Column(String(10), nullable=False, index=True)
+    kind = Column(String(16), nullable=False)  # income, expense, transfer
+    title = Column(String(255), nullable=False)
+    amount_minor = Column(BigInteger, nullable=False)
+    category = Column(String(100), nullable=False, default="")
+    classification = Column(String(16), nullable=True)  # essential or optional for expenses
+    account = Column(String(16), nullable=False)  # cash, emergency, investment
+    transfer_to = Column(String(16), nullable=True)
+    obligation_id = Column(Integer, ForeignKey("finance_obligations.id", ondelete="RESTRICT"), nullable=True, index=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+
+
+class FinanceBudgetItem(Base):
+    __tablename__ = "finance_budget_items"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(255), nullable=False)
+    amount_minor = Column(BigInteger, nullable=False)
+    classification = Column(String(16), nullable=False)  # essential or optional
+
+
+class FinanceObligation(Base):
+    __tablename__ = "finance_obligations"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(255), nullable=False)
+    kind = Column(String(16), nullable=False)  # debt, tuition, other
+    initial_minor = Column(BigInteger, nullable=False)
+    remaining_minor = Column(BigInteger, nullable=False)
+    due_date = Column(String(10), nullable=True)
+    urgent = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+
+
+class FinanceWeeklyReview(Base):
+    __tablename__ = "finance_weekly_reviews"
+
+    id = Column(Integer, primary_key=True)
+    week_start = Column(String(10), nullable=False, unique=True, index=True)
+    wins = Column(Text, nullable=False, default="")
+    spending_to_cut = Column(Text, nullable=False, default="")
+    next_action = Column(Text, nullable=False, default="")
     updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
 

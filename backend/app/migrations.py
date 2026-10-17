@@ -43,3 +43,15 @@ def add_user_bio_if_missing(engine):
     if "bio" not in columns:
         with _transaction(engine) as connection:
             connection.execute(text("ALTER TABLE users ADD COLUMN bio TEXT NOT NULL DEFAULT ''"))
+
+
+def add_finance_buffer_target_if_missing(engine):
+    """Preserve existing finance settings when adding the first-buffer goal."""
+    if not inspect(engine).has_table("finance_settings"):
+        return
+    columns = {column["name"] for column in inspect(engine).get_columns("finance_settings")}
+    if "emergency_buffer_target_minor" not in columns:
+        with _transaction(engine) as connection:
+            connection.execute(text(
+                "ALTER TABLE finance_settings ADD COLUMN emergency_buffer_target_minor BIGINT NOT NULL DEFAULT 0"
+            ))

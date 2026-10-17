@@ -12,7 +12,7 @@ from starlette.responses import FileResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session, joinedload
 
-from . import models, schemas, crud, migrations, progress, auth, assistant
+from . import models, schemas, crud, migrations, progress, auth, assistant, finance
 from .database import engine, get_db, Base
 
 
@@ -33,6 +33,7 @@ async def lifespan(app: FastAPI):
             migrations.add_task_description_if_missing(connection)
             migrations.add_task_project_if_missing(connection)
             migrations.add_user_bio_if_missing(connection)
+            migrations.add_finance_buffer_target_if_missing(connection)
             with Session(bind=connection, join_transaction_mode="create_savepoint") as db:
                 crud.seed_default_data_if_empty(db)
         db_startup_error = None
@@ -49,6 +50,8 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+app.include_router(finance.router)
 
 # CORS setup for local dev and custom domain deployment
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
@@ -67,15 +70,16 @@ app.add_middleware(
 async def require_single_user_session(request: Request, call_next):
     path = request.url.path
     if path.startswith("/api/") and request.method != "OPTIONS":
-        if path == "/api/assistant/ask":
+        max_body = 16000 if path == "/api/assistant/ask" else 32000 if path.startswith("/api/finance/") and request.method not in ("GET", "HEAD") else None
+        if max_body is not None:
             length = request.headers.get("content-length", "0")
-            if not length.isdigit() or int(length) > 16000:
-                return JSONResponse({"detail": "Assistant request is too large."}, status_code=413)
+            if not length.isdigit() or int(length) > max_body:
+                return JSONResponse({"detail": "Request is too large."}, status_code=413)
             body = bytearray()
             async for chunk in request.stream():
                 body.extend(chunk)
-                if len(body) > 16000:
-                    return JSONResponse({"detail": "Assistant request is too large."}, status_code=413)
+                if len(body) > max_body:
+                    return JSONResponse({"detail": "Request is too large."}, status_code=413)
             request._body = bytes(body)
         origin = request.headers.get("origin")
         if origin:
