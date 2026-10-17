@@ -105,6 +105,27 @@ class AssistantTests(unittest.TestCase):
             self.assertEqual(db.query(models.Task).count(), 3)
             self.assertEqual(db.query(models.Task).filter_by(title="Design layout").one().project_id, self.project_id)
 
+    def test_chat_routes_plan_and_named_breakdown_without_other_records(self):
+        captured = []
+        def fake_groq(messages):
+            captured.append(messages)
+            return assistant.ModelAnswer(answer="Here is a short plan.", actions=[])
+        with Session(self.engine) as db, patch.object(assistant, "_call_groq", side_effect=fake_groq):
+            assistant.ask(db, assistant.AskRequest(question="Plan my day today"))
+            self.assertIn("Read 20 minutes", str(captured[-1]))
+            self.assertNotIn("Portfolio hero idea", str(captured[-1]))
+            assistant.ask(db, assistant.AskRequest(question="Break down the task Write portfolio copy into steps"))
+            self.assertIn("Write portfolio copy", str(captured[-1]))
+            self.assertNotIn("Clean kitchen", str(captured[-1]))
+            self.assertNotIn("Portfolio hero idea", str(captured[-1]))
+
+    def test_chat_asks_for_exact_breakdown_target_without_groq(self):
+        with Session(self.engine) as db, patch.object(assistant, "_call_groq") as fake_groq:
+            result = assistant.ask(db, assistant.AskRequest(question="Break this down into steps"))
+            self.assertIn("exact name", result["answer"])
+            self.assertEqual(result["proposals"], [])
+            fake_groq.assert_not_called()
+
     def test_rejects_invented_targets_and_stale_edits(self):
         request = assistant.AskRequest(question="Improve this task", intent="breakdown", focus_type="task", focus_id=self.task_id)
         bad = assistant.ModelAnswer(answer="No safe change.", actions=[action("edit_task", 9999, "Invented")])

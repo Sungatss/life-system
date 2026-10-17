@@ -13,7 +13,7 @@ A compact progress card on Tasks and Habits rewards each completed task or daily
 
 The compact top navigation keeps Today, Tasks, Habits, and Profile visible. Inbox and Projects are available from the More menu.
 
-**Ask Lock In** opens an assistant panel from any page. It answers questions about relevant saved tasks, habits, projects, and Inbox items, suggests a plan for today, and breaks a chosen task or project into steps. It shows each proposed task change before you approve it. The assistant cannot delete records or edit multiple records with one click.
+**Ask Lock In** opens a simple chat panel from any page. Ask about relevant saved tasks, habits, projects, or Inbox items; request a plan for today; or name a task or project to break into steps. It shows each proposed task change before you approve it. The assistant cannot delete records or edit multiple records with one click.
 
 ---
 
