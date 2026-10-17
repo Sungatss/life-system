@@ -1,6 +1,6 @@
 import datetime
-from typing import Optional, List, Dict
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Optional, List, Dict, Literal
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class LoginRequest(BaseModel):
@@ -102,6 +102,59 @@ class TaskResponse(TaskBase):
     subtasks: List[SubtaskResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CalendarEventInput(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    kind: Literal["event", "deadline"] = "event"
+    date: datetime.date
+    start_time: Optional[str] = Field(default=None, pattern=r"^([01][0-9]|2[0-3]):[0-5][0-9]$")
+    end_time: Optional[str] = Field(default=None, pattern=r"^([01][0-9]|2[0-3]):[0-5][0-9]$")
+    notes: str = Field(default="", max_length=5000)
+
+    @field_validator("title")
+    @classmethod
+    def nonempty_title(cls, value: str) -> str:
+        title = value.strip()
+        if not title:
+            raise ValueError("Title cannot be empty")
+        return title
+
+    @model_validator(mode="after")
+    def valid_times(self):
+        if self.end_time and not self.start_time:
+            raise ValueError("End time needs a start time")
+        if self.kind == "event" and self.start_time and not self.end_time:
+            raise ValueError("Timed events need an end time")
+        if self.kind == "deadline" and self.end_time:
+            raise ValueError("Deadlines have one due time")
+        if self.end_time and self.end_time <= self.start_time:
+            raise ValueError("End time must be after start time")
+        return self
+
+
+class CalendarEventResponse(CalendarEventInput):
+    id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CalendarTaskResponse(BaseModel):
+    id: int
+    title: str
+    due_date: str
+    completed: bool
+    priority: str
+    project_name: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CalendarFeed(BaseModel):
+    events: List[CalendarEventResponse]
+    tasks: List[CalendarTaskResponse]
 
 
 # Habit Schemas

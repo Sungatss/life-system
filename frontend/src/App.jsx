@@ -7,6 +7,7 @@ import ProgressCard from './components/ProgressCard';
 import InboxPage from './pages/InboxPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProfilePage from './pages/ProfilePage';
+import CalendarPage from './pages/CalendarPage';
 import RewardFeedback from './components/RewardFeedback';
 import LoginScreen from './components/LoginScreen';
 import AssistantPanel from './components/AssistantPanel';
@@ -14,7 +15,7 @@ import { api } from './api/client';
 import { getTheme } from './theme';
 import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
 
-const views = ['today', 'inbox', 'projects', 'tasks', 'habits', 'profile'];
+const views = ['today', 'inbox', 'projects', 'calendar', 'tasks', 'habits', 'profile'];
 const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
 
 export default function App() {
@@ -132,6 +133,7 @@ export default function App() {
         )}
         {activeTab === 'inbox' && <InboxPage />}
         {activeTab === 'projects' && <ProjectsPage />}
+        {activeTab === 'calendar' && <CalendarPage />}
         {activeTab === 'tasks' && <TasksPage />}
         {activeTab === 'habits' && <HabitsPage />}
         {activeTab === 'profile' && <ProfilePage onSignOut={signOut} />}

@@ -69,6 +69,20 @@ class Task(Base):
         return self.project.name if self.project else None
 
 
+class CalendarEvent(Base):
+    __tablename__ = "calendar_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    kind = Column(String(20), nullable=False, default="event")
+    date = Column(String(10), nullable=False, index=True)  # Local calendar date, YYYY-MM-DD
+    start_time = Column(String(5), nullable=True)  # Local wall time, HH:MM
+    end_time = Column(String(5), nullable=True)
+    notes = Column(Text, nullable=False, default="")
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
 class Subtask(Base):
     __tablename__ = "subtasks"
 

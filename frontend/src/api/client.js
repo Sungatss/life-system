@@ -84,6 +84,10 @@ export const api = {
   createProject: (data) => request('/api/projects', { method: 'POST', body: JSON.stringify(data) }),
   updateProject: (id, data) => request(`/api/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteProject: (id) => request(`/api/projects/${id}`, { method: 'DELETE' }),
+  getCalendar: (start, end) => request(`/api/calendar?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`),
+  createCalendarEvent: (data) => request('/api/calendar/events', { method: 'POST', body: JSON.stringify(data) }),
+  updateCalendarEvent: (id, data) => request(`/api/calendar/events/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteCalendarEvent: (id) => request(`/api/calendar/events/${id}`, { method: 'DELETE' }),
   // Today overview
   getToday: (date) => {
     const query = date ? `?date=${encodeURIComponent(date)}` : '';

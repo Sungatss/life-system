@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from . import models, schemas, crud, migrations, progress, auth, assistant
 from .database import engine, get_db, Base
@@ -333,6 +333,57 @@ def remove_task(task_id: int, db: Session = Depends(get_db)):
     deleted = crud.delete_task(db, task_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Task not found")
+    return None
+
+
+# Calendar events are independent of tasks. Task deadlines are read from the
+# existing due_date field, so adding the calendar never rewrites saved tasks.
+@app.get("/api/calendar", response_model=schemas.CalendarFeed)
+def read_calendar(
+    start: datetime.date,
+    end: datetime.date,
+    db: Session = Depends(get_db),
+):
+    if end < start or (end - start).days > 41:
+        raise HTTPException(400, "Choose a calendar range of 1 to 42 days.")
+    first, last = start.isoformat(), end.isoformat()
+    events = db.query(models.CalendarEvent).filter(
+        models.CalendarEvent.date.between(first, last)
+    ).order_by(models.CalendarEvent.date, models.CalendarEvent.start_time, models.CalendarEvent.id).all()
+    tasks = db.query(models.Task).options(joinedload(models.Task.project)).filter(
+        models.Task.due_date.between(first, last)
+    ).order_by(models.Task.due_date, models.Task.id).all()
+    return {"events": events, "tasks": tasks}
+
+
+@app.post("/api/calendar/events", response_model=schemas.CalendarEventResponse, status_code=status.HTTP_201_CREATED)
+def create_calendar_event(payload: schemas.CalendarEventInput, db: Session = Depends(get_db)):
+    event = models.CalendarEvent(**payload.model_dump(mode="json"))
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+    return event
+
+
+@app.put("/api/calendar/events/{event_id}", response_model=schemas.CalendarEventResponse)
+def update_calendar_event(event_id: int, payload: schemas.CalendarEventInput, db: Session = Depends(get_db)):
+    event = db.get(models.CalendarEvent, event_id)
+    if event is None:
+        raise HTTPException(404, "Calendar item not found")
+    for name, value in payload.model_dump(mode="json").items():
+        setattr(event, name, value)
+    db.commit()
+    db.refresh(event)
+    return event
+
+
+@app.delete("/api/calendar/events/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_calendar_event(event_id: int, db: Session = Depends(get_db)):
+    event = db.get(models.CalendarEvent, event_id)
+    if event is None:
+        raise HTTPException(404, "Calendar item not found")
+    db.delete(event)
+    db.commit()
     return None
 
 
