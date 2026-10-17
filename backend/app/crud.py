@@ -1,8 +1,10 @@
 import datetime
 from typing import Optional, List, Dict
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, and_, func
+from sqlalchemy import desc, and_, or_, func
+from zoneinfo import ZoneInfo
 from . import models, schemas
+from .progress import XP_PER_COMPLETION
 
 
 def get_projects(db: Session) -> List[models.Project]:
@@ -507,11 +509,16 @@ def upsert_weekly_review(db: Session, week_start_str: str, review_in: schemas.We
     return review
 
 
-def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) -> schemas.WeeklyCockpitResponse:
+def get_weekly_cockpit(
+    db: Session, reference_date_str: Optional[str] = None,
+    today_str: Optional[str] = None, timezone: Optional[ZoneInfo] = None,
+) -> schemas.WeeklyCockpitResponse:
+    timezone = timezone or ZoneInfo("UTC")
     if reference_date_str:
         ref_date = datetime.date.fromisoformat(reference_date_str)
     else:
-        ref_date = datetime.date.today()
+        ref_date = datetime.datetime.now(timezone).date()
+    today = datetime.date.fromisoformat(today_str) if today_str else datetime.datetime.now(timezone).date()
 
     # Monday of the week (weekday 0)
     monday = ref_date - datetime.timedelta(days=ref_date.weekday())
@@ -523,36 +530,52 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
     review_model = get_weekly_review(db, monday_str)
     review_schema = schemas.WeeklyReviewResponse.model_validate(review_model) if review_model else None
 
-    # Active habits & logs in this week
+    # Current active habits are the tracked set. Creation dates avoid counting
+    # them before they existed, and future days do not lower an ongoing week.
     active_habits = get_habits(db, active_only=True)
-    habit_ids = [h.id for h in active_habits]
-    active_habits_count = len(active_habits)
-
+    habit_ids = {h.id for h in active_habits}
+    elapsed_end = min(sunday, today)
     habit_logs = db.query(models.HabitLog).filter(
-        models.HabitLog.habit_id.in_(habit_ids),
         models.HabitLog.date >= monday_str,
-        models.HabitLog.date <= sunday_str,
-        models.HabitLog.completed == True
-    ).all() if habit_ids else []
+        models.HabitLog.date <= elapsed_end.isoformat(),
+        models.HabitLog.completed.is_(True),
+    ).all() if elapsed_end >= monday else []
 
-    habits_by_day = {}
+    habits_by_day, all_habits_by_day, active_log_ids_by_day = {}, {}, {}
     for log in habit_logs:
-        habits_by_day[log.date] = habits_by_day.get(log.date, 0) + 1
+        all_habits_by_day[log.date] = all_habits_by_day.get(log.date, 0) + 1
+        if log.habit_id in habit_ids:
+            habits_by_day[log.date] = habits_by_day.get(log.date, 0) + 1
+            active_log_ids_by_day.setdefault(log.date, set()).add(log.habit_id)
 
-    # Completed tasks in this week
-    tasks = db.query(models.Task).filter(
-        models.Task.completed == True
-    ).all()
+    # A planned task is one currently due in the chosen week. A completion
+    # counts for that plan only if it happened by the end of the chosen week.
+    utc_start = datetime.datetime.combine(monday - datetime.timedelta(days=1), datetime.time.min, tzinfo=datetime.timezone.utc)
+    utc_end = datetime.datetime.combine(sunday + datetime.timedelta(days=2), datetime.time.min, tzinfo=datetime.timezone.utc)
+    tasks = db.query(models.Task).filter(or_(
+        models.Task.due_date.between(monday_str, sunday_str),
+        and_(models.Task.completed.is_(True), models.Task.completed_at >= utc_start, models.Task.completed_at < utc_end),
+    )).all()
 
     tasks_by_day = {}
+    tasks_planned = planned_tasks_completed = 0
+    progressed_projects = set()
     for t in tasks:
         t_date = None
-        if t.completed_at:
-            t_date = t.completed_at.strftime("%Y-%m-%d")
-        elif t.due_date:
+        if t.completed and t.completed_at:
+            stamp = t.completed_at if t.completed_at.tzinfo else t.completed_at.replace(tzinfo=datetime.timezone.utc)
+            t_date = stamp.astimezone(timezone).date().isoformat()
+        elif t.completed and t.due_date:
+            # Legacy imported completions may have no completion timestamp.
             t_date = t.due_date
-        if t_date and monday_str <= t_date <= sunday_str:
+        if t.due_date and monday_str <= t.due_date <= sunday_str:
+            tasks_planned += 1
+            if t.completed and t_date and t_date <= elapsed_end.isoformat():
+                planned_tasks_completed += 1
+        if t_date and monday_str <= t_date <= elapsed_end.isoformat():
             tasks_by_day[t_date] = tasks_by_day.get(t_date, 0) + 1
+            if t.project_id:
+                progressed_projects.add(t.project_id)
 
     # Build 7-day breakdown (Mon-Sun)
     day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -560,15 +583,26 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
     total_tasks_completed = 0
     total_habits_completed = 0
     days_active_count = 0
+    total_habits_possible = 0
 
     for i in range(7):
         curr_d = monday + datetime.timedelta(days=i)
         curr_str = curr_d.isoformat()
         t_count = tasks_by_day.get(curr_str, 0)
         h_count = habits_by_day.get(curr_str, 0)
+        possible = sum(
+            1 for habit in active_habits
+            if curr_d <= elapsed_end and (
+                habit.id in active_log_ids_by_day.get(curr_str, set()) or
+                not habit.created_at or
+                (habit.created_at if habit.created_at.tzinfo else habit.created_at.replace(tzinfo=datetime.timezone.utc)).astimezone(timezone).date() <= curr_d
+            )
+        )
         total_tasks_completed += t_count
         total_habits_completed += h_count
-        if t_count > 0 or h_count > 0:
+        total_habits_possible += possible
+        has_activity = t_count > 0 or all_habits_by_day.get(curr_str, 0) > 0
+        if has_activity:
             days_active_count += 1
 
         days_breakdown.append(
@@ -577,21 +611,28 @@ def get_weekly_cockpit(db: Session, reference_date_str: Optional[str] = None) ->
                 day_name=day_names[i],
                 tasks_completed=t_count,
                 habits_completed=h_count,
-                total_habits=active_habits_count
+                total_habits=possible,
+                has_activity=has_activity,
             )
         )
 
-    total_possible_habits = active_habits_count * 7
-    consistency_rate = round((total_habits_completed / total_possible_habits) * 100) if total_possible_habits > 0 else 0
+    consistency_rate = round((total_habits_completed / total_habits_possible) * 100) if total_habits_possible else 0
 
     return schemas.WeeklyCockpitResponse(
         week_start=monday_str,
         week_end=sunday_str,
+        week_number=monday.isocalendar().week,
+        week_year=monday.isocalendar().year,
+        tasks_planned=tasks_planned,
+        planned_tasks_completed=planned_tasks_completed,
+        task_completion_rate=round(planned_tasks_completed / tasks_planned * 100) if tasks_planned else 0,
         total_tasks_completed=total_tasks_completed,
         total_habits_completed=total_habits_completed,
-        total_habits_possible=total_possible_habits,
+        total_habits_possible=total_habits_possible,
         habit_consistency_rate=consistency_rate,
         days_active=days_active_count,
+        projects_moved_forward=len(progressed_projects),
+        xp_earned=(total_tasks_completed + sum(all_habits_by_day.values())) * XP_PER_COMPLETION,
         day_breakdown=days_breakdown,
         review=review_schema
     )

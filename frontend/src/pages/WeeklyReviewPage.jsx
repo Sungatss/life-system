@@ -46,7 +46,7 @@ export default function WeeklyReviewPage() {
       setLoading(true);
       setError(null);
       setData(null);
-      const res = await api.getWeeklyCockpit(date);
+      const res = await api.getWeeklyCockpit(date, getLocalDateStr());
       if (loadId !== loadIdRef.current) return;
       setData(res);
       weekRef.current = res.week_start;
@@ -173,6 +173,7 @@ export default function WeeklyReviewPage() {
         <div className="review-nav-container">
           <div className="review-nav-left">
             <h2 className="review-title">Weekly review</h2>
+            {data && <p className="review-subtitle">Week {data.week_number}, {data.week_year}</p>}
           </div>
 
           <div className="review-nav-controls">
@@ -242,20 +243,18 @@ export default function WeeklyReviewPage() {
 
       {data && (
         <>
-          {/* Weekly activity summary */}
-          <div className="weekly-kpi-grid">
-            {/* Card 1: Tasks Completed */}
+          <section className="weekly-kpi-grid" aria-label="Weekly statistics">
             <div className="weekly-kpi-card">
               <div className="kpi-card-header">
-                <span className="kpi-label">TASKS FINISHED</span>
+                <span className="kpi-label">TASKS</span>
                 <div className="kpi-icon-wrap" style={{ background: 'var(--success-subtle)', color: 'var(--success)' }}>
                   <CheckCircle2 size={18} />
                 </div>
               </div>
-              <div className="kpi-number">{data.total_tasks_completed}</div>
+              <div className="kpi-number">{data.planned_tasks_completed}<span className="kpi-sub-total"> / {data.tasks_planned}</span></div>
+              <p className="kpi-caption">{data.tasks_planned ? `${data.task_completion_rate}% of planned tasks completed` : 'No tasks due this week'}</p>
             </div>
 
-            {/* Card 2: Habit Consistency Rate */}
             <div className="weekly-kpi-card">
               <div className="kpi-card-header">
                 <span className="kpi-label">HABIT CONSISTENCY</span>
@@ -263,10 +262,21 @@ export default function WeeklyReviewPage() {
                   <Flame size={18} />
                 </div>
               </div>
-              <div className="kpi-number">{data.habit_consistency_rate}%</div>
+              <div className="kpi-number">{data.total_habits_possible ? `${data.habit_consistency_rate}%` : '—'}</div>
+              <p className="kpi-caption">{data.total_habits_possible ? `${data.total_habits_completed} of ${data.total_habits_possible} possible check-ins` : 'No tracked habit days'}</p>
             </div>
 
-            {/* Card 3: Days Active */}
+            <div className="weekly-kpi-card">
+              <div className="kpi-card-header">
+                <span className="kpi-label">PROJECTS MOVED FORWARD</span>
+                <div className="kpi-icon-wrap" style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}>
+                  <Target size={18} />
+                </div>
+              </div>
+              <div className="kpi-number">{data.projects_moved_forward}</div>
+              <p className="kpi-caption">Projects with a task finished this week</p>
+            </div>
+
             <div className="weekly-kpi-card">
               <div className="kpi-card-header">
                 <span className="kpi-label">DAYS ACTIVE</span>
@@ -277,9 +287,20 @@ export default function WeeklyReviewPage() {
               <div className="kpi-number">
                 {data.days_active} <span className="kpi-sub-total">/ 7</span>
               </div>
+              <p className="kpi-caption">Days with a task or habit completed</p>
             </div>
 
-          </div>
+            <div className="weekly-kpi-card">
+              <div className="kpi-card-header">
+                <span className="kpi-label">XP EARNED</span>
+                <div className="kpi-icon-wrap" style={{ background: 'var(--warning-subtle)', color: 'var(--warning)' }}>
+                  <Sparkles size={18} />
+                </div>
+              </div>
+              <div className="kpi-number">{data.xp_earned}</div>
+              <p className="kpi-caption">From this week’s task and habit completions</p>
+            </div>
+          </section>
 
           {/* 3. 7-Day Day-by-Day Performance Breakdown */}
           <section className="cockpit-section" aria-label="Day by day breakdown">
@@ -295,7 +316,7 @@ export default function WeeklyReviewPage() {
               {data.day_breakdown.map((day) => {
                 const isToday = day.date === todayStr;
                 const habitPct = day.total_habits > 0 ? Math.round((day.habits_completed / day.total_habits) * 100) : 0;
-                const isComplete = day.tasks_completed > 0 || day.habits_completed > 0;
+                const isComplete = day.has_activity;
 
                 return (
                   <div

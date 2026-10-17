@@ -166,9 +166,12 @@ export const api = {
   },
 
   // Weekly Review Cockpit
-  getWeeklyCockpit: (date) => {
-    const query = date ? `?date=${encodeURIComponent(date)}` : '';
-    return request(`/api/reviews/weekly${query}`);
+  getWeeklyCockpit: (date, today) => {
+    const params = new URLSearchParams();
+    if (date) params.set('date', date);
+    if (today) params.set('today', today);
+    params.set('timezone', Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+    return request(`/api/reviews/weekly?${params.toString()}`);
   },
   saveWeeklyReview: (weekStart, data) =>
     request(`/api/reviews/weekly?week_start=${encodeURIComponent(weekStart)}`, {

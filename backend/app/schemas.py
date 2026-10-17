@@ -202,15 +202,23 @@ class WeeklyDayStat(BaseModel):
     tasks_completed: int
     habits_completed: int
     total_habits: int
+    has_activity: bool
 
 
 class WeeklyCockpitResponse(BaseModel):
     week_start: str
     week_end: str
+    week_number: int
+    week_year: int
+    tasks_planned: int
+    planned_tasks_completed: int
+    task_completion_rate: int
     total_tasks_completed: int
     total_habits_completed: int
     total_habits_possible: int
     habit_consistency_rate: int
     days_active: int
+    projects_moved_forward: int
+    xp_earned: int
     day_breakdown: List[WeeklyDayStat]
     review: Optional[WeeklyReviewResponse] = None

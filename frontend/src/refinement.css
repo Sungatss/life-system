@@ -391,7 +391,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .progress-ring-status-pill { white-space: normal; }
 .progress-mini-bar-fill { background: linear-gradient(90deg, var(--accent), var(--success)); }
 .weekly-review-page { gap: 0; }
-.weekly-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.weekly-kpi-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
 .weekly-kpi-card { min-width: 0; padding: 20px; }
 .weekly-days-grid { gap: 8px; }
 .weekly-day-card { min-width: 0; }
@@ -466,6 +466,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   .nav-label { display: none; }
   .nav-more .nav-label { display: inline; }
   .nav-button { padding: 5px 2px; }
+  .weekly-kpi-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

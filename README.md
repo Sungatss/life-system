@@ -13,6 +13,8 @@ A compact progress card on Tasks and Habits rewards each completed task or daily
 
 The compact top navigation keeps Today, Tasks, Habits, and Profile visible. Inbox and Projects are available from the More menu.
 
+Weekly Review on Profile summarizes the selected Monday–Sunday week above the saved Wins, Challenges, and Next focus prompts. Planned tasks are tasks currently due that week; the completion rate counts those finished by the end of the week (or by today for the current week). A project moves forward when one of its tasks is finished that week. XP is earned from task and habit completions during that week. Habit consistency uses currently active habits and elapsed days, so archived habits still contribute XP and active days but historical consistency cannot fully reconstruct when a habit was archived. Past statistics reflect the current saved task due dates and project assignments.
+
 **Ask Lock In** opens a simple chat panel from any page. Ask about relevant saved tasks, habits, projects, or Inbox items; request a plan for today; or name a task or project to break into steps. It shows each proposed task change before you approve it. The assistant cannot delete records or edit multiple records with one click.
 
 ---

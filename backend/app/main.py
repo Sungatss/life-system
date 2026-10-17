@@ -447,10 +447,19 @@ def get_contributions(
 # Weekly Review & Analytics Cockpit
 @app.get("/api/reviews/weekly", response_model=schemas.WeeklyCockpitResponse)
 def get_weekly_review_cockpit(
-    date: Optional[str] = None,
+    date: Optional[datetime.date] = None,
+    today: Optional[datetime.date] = None,
+    timezone: str = Query("UTC", max_length=64),
     db: Session = Depends(get_db)
 ):
-    return crud.get_weekly_cockpit(db, reference_date_str=date)
+    try:
+        zone = ZoneInfo(timezone)
+    except (ZoneInfoNotFoundError, ValueError):
+        raise HTTPException(status_code=400, detail="Invalid timezone") from None
+    return crud.get_weekly_cockpit(
+        db, reference_date_str=date.isoformat() if date else None,
+        today_str=today.isoformat() if today else None, timezone=zone,
+    )
 
 
 @app.put("/api/reviews/weekly", response_model=schemas.WeeklyReviewResponse)
