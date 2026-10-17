@@ -5,7 +5,7 @@ A minimalist personal productivity web application built for daily use.
 Primary areas:
 1. **Today**: Date, today's tasks and habits.
 2. **Inbox**: An empty-at-start capture list for thoughts and tasks, with multiline entries you can edit or delete. Draft text remains in the browser until saved.
-3. **Tasks**: Structured tasks with optional descriptions and nested steps with their own checkboxes. Add steps while creating a task (one per line under details) or from any existing task card.
+3. **Tasks**: Structured tasks with optional descriptions and nested steps with their own checkboxes. Add steps while creating a task (one per line under details) or from any existing task card. Checking the final step offers **Complete** or **Keep open** for the parent task; it never completes the parent automatically.
 4. **Projects**: A simple project plan or roadmap with its own tasks and nested steps. Existing tasks can be assigned through Edit. Deleting a project leaves its tasks in Tasks.
 5. **Habits**: Consistency tracking with a 14-day history grid.
 

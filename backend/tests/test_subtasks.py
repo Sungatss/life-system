@@ -58,6 +58,20 @@ class SubtaskTests(unittest.TestCase):
                 main.update_subtask_item(task.id, updated.subtasks[0].id, schemas.SubtaskUpdate(title=""), db)
             self.assertEqual(error.exception.status_code, 400)
 
+    def test_last_step_stays_separate_from_parent_completion(self):
+        with Session(self.engine) as db:
+            task = crud.create_task(db, schemas.TaskCreate(
+                title="Review proposal", subtasks=[schemas.SubtaskCreate(title="Draft")],
+            ))
+            updated = main.update_subtask_item(task.id, task.subtasks[0].id, schemas.SubtaskUpdate(completed=True), db)
+            self.assertTrue(updated.subtasks[0].completed)
+            self.assertFalse(updated.completed)
+            self.assertIsNone(updated.completed_at)
+
+            # The separate parent action is the only point that earns task XP.
+            completed = crud.update_task(db, task.id, schemas.TaskUpdate(completed=True))
+            self.assertTrue(completed.completed)
+            self.assertIsNotNone(completed.completed_at)
 
 if __name__ == "__main__":
     unittest.main()

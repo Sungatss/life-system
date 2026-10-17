@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Check, Edit2, Calendar, Plus, Trash2, X } from 'lucide-react';
 import TaskEditModal from './TaskEditModal';
 import { getLocalDateStr } from '../utils/date';
@@ -15,8 +15,11 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
   const [stepBusy, setStepBusy] = useState(false);
   const [toggleBusy, setToggleBusy] = useState(false);
   const [stepError, setStepError] = useState('');
+  const [showCompletionPrompt, setShowCompletionPrompt] = useState(false);
   const [completionFlash, flashCompletion] = useCompletionFlash();
   const openerRef = useRef(null);
+  const completionPromptRef = useRef(null);
+  const lastStepTriggerRef = useRef(null);
   const openModal = (event) => { openerRef.current = event.currentTarget; setIsModalOpen(true); };
   const closeModal = () => {
     setIsModalOpen(false);
@@ -26,12 +29,17 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
     });
   };
 
-  const runStepAction = async (action) => {
+  const runStepAction = async (action, onSaved) => {
     if (stepBusy) return false;
     setStepBusy(true);
     setStepError('');
     try {
-      onSubtasksChange(await action());
+      const updated = await action();
+      onSubtasksChange(updated);
+      if (updated.completed || !updated.subtasks?.length || updated.subtasks.some((step) => !step.completed)) {
+        setShowCompletionPrompt(false);
+      }
+      onSaved?.(updated);
       return true;
     } catch (err) {
       setStepError(err.message || 'Could not save this step. Try again.');
@@ -61,18 +69,44 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
     if (await runStepAction(() => api.deleteSubtask(task.id, stepId))) setConfirmDeleteId(null);
   };
 
+  const toggleStep = (step, trigger) => {
+    if (!step.completed) lastStepTriggerRef.current = trigger;
+    return runStepAction(
+      () => api.updateSubtask(task.id, step.id, { completed: !step.completed }),
+      (updated) => setShowCompletionPrompt(
+        !step.completed && !updated.completed && updated.subtasks.length > 0 && updated.subtasks.every((item) => item.completed)
+      ),
+    );
+  };
+  const keepTaskOpen = () => {
+    setShowCompletionPrompt(false);
+    requestAnimationFrame(() => lastStepTriggerRef.current?.focus());
+  };
+
   const todayStr = getLocalDateStr();
   const isOverdue = !task.completed && task.due_date && task.due_date < todayStr;
   const isDueToday = task.due_date === todayStr;
   const subtasks = task.subtasks || [];
   const completedSteps = subtasks.filter((step) => step.completed).length;
+  const completionPromptVisible = showCompletionPrompt && !task.completed && subtasks.length > 0 && completedSteps === subtasks.length;
+  useEffect(() => {
+    if (completionPromptVisible) completionPromptRef.current?.focus();
+  }, [completionPromptVisible]);
   const toggleCompletion = async () => {
     if (toggleBusy) return;
     setToggleBusy(true);
     const completing = !task.completed;
     try {
       const saved = await onToggle(task.id, completing);
-      if (completing && saved) flashCompletion();
+      if (saved) {
+        setShowCompletionPrompt(false);
+        setStepError('');
+        if (completing) flashCompletion();
+      } else if (completionPromptVisible && completing) {
+        setStepError('Could not complete this task. Try again.');
+      }
+    } catch {
+      setStepError('Could not update this task. Try again.');
     } finally {
       setToggleBusy(false);
     }
@@ -115,7 +149,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
               {subtasks.map((step) => (
                 <li key={step.id} className="subtask-row">
                   <button type="button" className={`custom-checkbox subtask-checkbox ${step.completed ? 'checked' : ''}`}
-                    onClick={() => runStepAction(() => api.updateSubtask(task.id, step.id, { completed: !step.completed }))}
+                    onClick={(event) => toggleStep(step, event.currentTarget)}
                     disabled={stepBusy} aria-label={step.completed ? `Mark ${step.title} incomplete` : `Complete ${step.title}`}
                     aria-pressed={step.completed}>{step.completed && <Check size={11} strokeWidth={3} />}</button>
                   {editingStepId === step.id ? (
@@ -140,6 +174,15 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
                 </li>
               ))}
             </ul>
+            {completionPromptVisible && (
+              <div className="subtask-completion-prompt" role="group" aria-label="All steps completed. Complete task?" tabIndex={-1} ref={completionPromptRef}>
+                <p>All steps completed. Complete task?</p>
+                <div className="subtask-completion-actions">
+                  <button type="button" className="btn-primary" onClick={toggleCompletion} disabled={toggleBusy}>Complete</button>
+                  <button type="button" className="btn-secondary" onClick={keepTaskOpen} disabled={toggleBusy}>Keep open</button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
