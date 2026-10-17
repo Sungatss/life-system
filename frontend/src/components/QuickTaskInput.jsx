@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, AlignLeft, ChevronDown } from 'lucide-react';
+import { TASK_AREAS } from '../utils/taskAreas';
 
 export default function QuickTaskInput({ onAddTask, defaultDueDate = null, projectId = null }) {
   const [title, setTitle] = useState('');
@@ -114,15 +115,16 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null, proje
             disabled={isSubmitting}
             rows={2}
           />
-          <input
-            type="text"
-            className="task-input-field"
-            placeholder="Category"
-            aria-label="Task category"
+          <select
+            className="select-compact"
+            aria-label="Task area"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             disabled={isSubmitting}
-          />
+          >
+            <option value="">Area: None</option>
+            {TASK_AREAS.map((area) => <option key={area} value={area}>{area}</option>)}
+          </select>
           <textarea
             className="task-input-field task-description-input task-steps-input"
             placeholder="Steps, one per line"

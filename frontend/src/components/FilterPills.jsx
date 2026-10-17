@@ -1,4 +1,5 @@
 import React from 'react';
+import { taskAreaChoices } from '../utils/taskAreas';
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -10,6 +11,7 @@ const FILTERS = [
 ];
 
 export default function FilterPills({ activeFilter, onSelectFilter, categories = [], selectedCategory, onSelectCategory }) {
+  const areas = taskAreaChoices(categories);
   return (
     <div className="filter-bar" role="toolbar" aria-label="Task filters">
       {FILTERS.map((f) => (
@@ -25,18 +27,20 @@ export default function FilterPills({ activeFilter, onSelectFilter, categories =
         </button>
       ))}
 
-      {categories.length > 0 && (
+      {areas.length > 0 && (
         <>
           <div style={{ width: '1px', height: '18px', background: 'var(--border-subtle)', margin: '0 4px' }} />
-          {categories.map((cat) => (
+          <span className="filter-group-label">Areas</span>
+          {areas.map((cat) => (
             <button
               key={cat}
               type="button"
               className={`filter-pill ${selectedCategory === cat ? 'active' : ''}`}
               onClick={() => onSelectCategory(selectedCategory === cat ? null : cat)}
               aria-pressed={selectedCategory === cat}
+              aria-label={`Area: ${cat}`}
             >
-              #{cat}
+              {cat}
             </button>
           ))}
         </>

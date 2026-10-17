@@ -301,7 +301,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   gap: 9px;
   width: 100%;
 }
-.task-details-fields > .task-input-field { width: 100%; min-width: 0; }
+.task-details-fields > .task-input-field, .task-details-fields > .select-compact { width: 100%; min-width: 0; }
 .task-list, .habit-list { gap: 10px; }
 .task-card, .habit-card, .weekly-kpi-card, .weekly-day-card, .reflection-prompt-card, .preview-block { border-radius: var(--radius-md); }
 .task-card, .habit-card { padding: 15px 16px; background: var(--bg-elevated); transition: background 0.16s ease, border-color 0.16s ease; }
@@ -385,6 +385,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .habit-history-row { margin-top: 8px; }
 .habit-check-btn { min-height: 38px; border-radius: 10px; }
 .filter-bar { gap: 8px; padding: 2px 1px 11px; margin-bottom: 12px; }
+.filter-group-label { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
 .filter-pill { min-height: 34px; padding: 6px 13px; }
 .filter-pill.active { border-color: var(--accent); background: var(--accent-subtle); color: var(--accent); }
 .date-title-button { border: 0; padding: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; letter-spacing: inherit; text-align: left; }

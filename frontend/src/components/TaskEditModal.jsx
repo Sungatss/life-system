@@ -3,6 +3,7 @@ import { Trash2, X } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
 import { trapDialogFocus } from '../utils/dialog';
 import { api } from '../api/client';
+import { taskAreaChoices } from '../utils/taskAreas';
 
 export default function TaskEditModal({ task, isOpen, onClose, onSave, onDelete }) {
   if (!isOpen || !task) return null;
@@ -146,15 +147,17 @@ function TaskEditForm({ task, onClose, onSave, onDelete }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="edit-task-category">Category</label>
-              <input
+              <label className="form-label" htmlFor="edit-task-category">Area</label>
+              <select
                 id="edit-task-category"
-                type="text"
                 className="select-compact"
                 style={{ width: '100%' }}
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-              />
+              >
+                <option value="">No area</option>
+                {taskAreaChoices([task.category]).map((area) => <option key={area} value={area}>{area}</option>)}
+              </select>
             </div>
           </div>
 
