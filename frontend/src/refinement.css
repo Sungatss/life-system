@@ -31,29 +31,29 @@
 
 [data-theme='light'] {
   color-scheme: light;
-  --bg-primary: #f3f5f6;
+  --bg-primary: #ffffff;
   --bg-surface: #ffffff;
-  --bg-surface-hover: #f7f9fa;
-  --bg-subtle: #edf2f5;
-  --bg-elevated: #f6f8f9;
-  --border-subtle: #dce5e9;
-  --border-strong: #a8bac5;
-  --text-primary: #172630;
-  --text-secondary: #50636f;
-  --text-muted: #657b89;
-  --accent: #216db4;
-  --accent-subtle: rgba(33, 109, 180, 0.09);
+  --bg-surface-hover: #f6f6f6;
+  --bg-subtle: #f1f1f1;
+  --bg-elevated: #fafafa;
+  --border-subtle: #e2e2e2;
+  --border-strong: #969696;
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --text-muted: #626262;
+  --accent: #000000;
+  --accent-subtle: rgba(0, 0, 0, 0.07);
   --success: #167d58;
   --success-subtle: rgba(22, 125, 88, 0.09);
   --warning: #a65c12;
   --warning-subtle: rgba(166, 92, 18, 0.09);
   --danger: #b9413f;
   --danger-subtle: rgba(185, 65, 63, 0.09);
-  --heatmap-1: #dcecf9;
-  --heatmap-2: #acd1f0;
-  --heatmap-3: #63a3d4;
-  --heatmap-4: #216db4;
-  --shadow-subtle: 0 16px 42px rgba(32, 62, 79, 0.07);
+  --heatmap-1: #ebebeb;
+  --heatmap-2: #cccccc;
+  --heatmap-3: #8e8e8e;
+  --heatmap-4: #333333;
+  --shadow-subtle: 0 16px 42px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme='dark-gray'] {
@@ -112,6 +112,7 @@
 
 html { scroll-behavior: smooth; }
 body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), transparent 34rem), var(--bg-primary); }
+[data-theme='light'] body { background: var(--bg-primary); }
 [data-theme='dark-gray'] body { background: var(--bg-primary); }
 button { -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: not-allowed; opacity: 0.5; }
