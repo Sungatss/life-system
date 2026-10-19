@@ -63,20 +63,27 @@ a {
 }
 
 /* App Shell */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
   min-height: 100vh;
   max-width: 820px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-/* Navigation Header */
+/* Content Header */
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 20px 0 16px;
   border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 24px;
@@ -89,38 +96,6 @@ a {
   font-weight: 600;
   font-size: 16px;
   letter-spacing: -0.01em;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.nav-button {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  padding: 6px 12px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.15s ease;
-}
-
-.nav-button:hover {
-  color: var(--text-primary);
-  background-color: var(--bg-subtle);
-}
-
-.nav-button.active {
-  color: var(--text-primary);
-  background-color: var(--bg-surface);
-  border-color: var(--border-subtle);
 }
 
 .header-actions {

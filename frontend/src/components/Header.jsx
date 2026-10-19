@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, Palette, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { themes } from '../theme';
-import TopNav from './TopNav';
 
-export default function Header({ activeTab, onNavigate, theme, onSelectTheme, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
+export default function Header({ theme, onSelectTheme, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -35,13 +34,6 @@ export default function Header({ activeTab, onNavigate, theme, onSelectTheme, so
 
   return (
     <header className="app-header">
-      <button type="button" className="brand" onClick={() => onNavigate('today')} aria-label="Lock In home">
-        <img className="brand-avatar" src="/lock-in-logo.png" alt="" width="38" height="38" />
-        <span>Lock In</span>
-      </button>
-
-      <TopNav activeTab={activeTab} onNavigate={onNavigate} />
-
       <div className="header-actions" ref={menuRef}>
         <button type="button" className="assistant-header-button" onClick={onOpenAssistant} aria-haspopup="dialog" aria-expanded={assistantOpen} aria-controls={assistantOpen ? 'ask-lock-in-panel' : undefined}>
           <Sparkles size={16} aria-hidden="true" /> <span>Ask Lock In</span>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import TodayPage from './pages/TodayPage';
 import TasksPage from './pages/TasksPage';
 import HabitsPage from './pages/HabitsPage';
@@ -18,6 +19,7 @@ import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
 
 const views = ['today', 'inbox', 'projects', 'calendar', 'finance', 'tasks', 'habits', 'profile'];
 const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
+const narrowScreen = '(max-width: 900px)';
 
 export default function App() {
   // Sync view state with URL hash
@@ -32,8 +34,35 @@ export default function App() {
   const [authState, setAuthState] = useState({ loading: true, authenticated: false, configured: false });
   const [authError, setAuthError] = useState('');
   const [assistantOpen, setAssistantOpen] = useState(false);
+  const [isNarrow, setIsNarrow] = useState(() => window.matchMedia(narrowScreen).matches);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('life-system-sidebar-collapsed') === 'true');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [dataVersion, setDataVersion] = useState(0);
   const closeAssistant = useCallback(() => setAssistantOpen(false), []);
+  const sidebarExpanded = isNarrow ? mobileSidebarOpen : !sidebarCollapsed;
+
+  useEffect(() => {
+    const media = window.matchMedia(narrowScreen);
+    const onChange = (event) => {
+      setIsNarrow(event.matches);
+      setMobileSidebarOpen(false);
+    };
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('life-system-sidebar-collapsed', String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    if (!mobileSidebarOpen) return undefined;
+    const onEscape = (event) => {
+      if (event.key === 'Escape') setMobileSidebarOpen(false);
+    };
+    document.addEventListener('keydown', onEscape);
+    return () => document.removeEventListener('keydown', onEscape);
+  }, [mobileSidebarOpen]);
 
   useEffect(() => {
     let active = true;
@@ -80,6 +109,7 @@ export default function App() {
   }, []);
 
   const navigateTo = (tab) => {
+    setMobileSidebarOpen(false);
     setActiveTab(tab);
     window.location.hash = tab;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -107,39 +137,49 @@ export default function App() {
   if (!authState.authenticated) return <LoginScreen configured={authState.configured} serverError={authError} onLogin={() => setAuthState((current) => ({ ...current, authenticated: true }))} onRetry={retrySession} />;
 
   return (
-    <div className="app-container">
+    <div className={`app-shell ${sidebarExpanded ? 'sidebar-expanded' : 'sidebar-collapsed'}${isNarrow && mobileSidebarOpen ? ' mobile-sidebar-open' : ''}`}>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <Header
+      {isNarrow && mobileSidebarOpen && <button type="button" className="sidebar-backdrop" aria-label="Close navigation" tabIndex={-1} onClick={() => setMobileSidebarOpen(false)} />}
+      <Sidebar
         activeTab={activeTab}
+        expanded={sidebarExpanded}
         onNavigate={navigateTo}
-        theme={theme}
-        onSelectTheme={setTheme}
-        soundEnabled={soundEnabled}
-        onOpenAssistant={() => setAssistantOpen(true)}
-        assistantOpen={assistantOpen}
-        onToggleSound={() => {
-          if (soundEnabled) stopRewardAudio();
-          else unlockRewardAudio();
-          setSoundEnabled((enabled) => !enabled);
+        onToggle={() => {
+          if (isNarrow) setMobileSidebarOpen((open) => !open);
+          else setSidebarCollapsed((collapsed) => !collapsed);
         }}
       />
+      <div className="app-container" inert={isNarrow && mobileSidebarOpen}>
+        <Header
+          theme={theme}
+          onSelectTheme={setTheme}
+          soundEnabled={soundEnabled}
+          onOpenAssistant={() => setAssistantOpen(true)}
+          assistantOpen={assistantOpen}
+          onToggleSound={() => {
+            if (soundEnabled) stopRewardAudio();
+            else unlockRewardAudio();
+            setSoundEnabled((enabled) => !enabled);
+          }}
+        />
 
-      <main className="app-main" id="main-content" key={dataVersion}>
-        {['tasks', 'habits'].includes(activeTab) && <ProgressCard />}
-        {activeTab === 'today' && (
-          <TodayPage
-            onNavigateToTasks={() => navigateTo('tasks')}
-            onNavigateToHabits={() => navigateTo('habits')}
-          />
-        )}
-        {activeTab === 'inbox' && <InboxPage />}
-        {activeTab === 'projects' && <ProjectsPage />}
-        {activeTab === 'calendar' && <CalendarPage />}
-        {activeTab === 'finance' && <FinancePage />}
-        {activeTab === 'tasks' && <TasksPage />}
-        {activeTab === 'habits' && <HabitsPage />}
-        {activeTab === 'profile' && <ProfilePage onSignOut={signOut} />}
-      </main>
+        <main className="app-main" id="main-content" key={dataVersion}>
+          {['tasks', 'habits'].includes(activeTab) && <ProgressCard />}
+          {activeTab === 'today' && (
+            <TodayPage
+              onNavigateToTasks={() => navigateTo('tasks')}
+              onNavigateToHabits={() => navigateTo('habits')}
+            />
+          )}
+          {activeTab === 'inbox' && <InboxPage />}
+          {activeTab === 'projects' && <ProjectsPage />}
+          {activeTab === 'calendar' && <CalendarPage />}
+          {activeTab === 'finance' && <FinancePage />}
+          {activeTab === 'tasks' && <TasksPage />}
+          {activeTab === 'habits' && <HabitsPage />}
+          {activeTab === 'profile' && <ProfilePage onSignOut={signOut} />}
+        </main>
+      </div>
 
       {assistantOpen && <AssistantPanel onClose={closeAssistant} onApplied={() => setDataVersion((version) => version + 1)} />}
       <RewardFeedback soundEnabled={soundEnabled} />
