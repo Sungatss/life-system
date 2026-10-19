@@ -1,5 +1,5 @@
 // Service Worker for Lock In
-const CACHE_NAME = 'lock-in-v5';
+const CACHE_NAME = 'lock-in-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,7 +8,11 @@ const STATIC_ASSETS = [
   '/lock-in-logo.png',
   '/apple-touch-icon.png',
   '/icon-192.png',
-  '/icon-512.png'
+  '/icon-512.png',
+  '/fonts/LiberationSerif-Regular.ttf',
+  '/fonts/LiberationSerif-Bold.ttf',
+  '/fonts/LiberationSerif-Italic.ttf',
+  '/fonts/LiberationSerif-BoldItalic.ttf'
 ];
 
 // Install: pre-cache core static shell

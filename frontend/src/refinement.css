@@ -443,6 +443,8 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   .task-details-fields { grid-template-columns: 1fr; }
   .task-card, .habit-card { flex-direction: column; align-items: stretch; }
   .task-main-row { flex-wrap: wrap; }
+  .task-main-row .task-left { flex: 1 1 100%; }
+  .task-main-row .task-copy { flex: 1; }
   .task-main-row .task-meta { margin-left: 32px; justify-content: flex-start; }
   .task-meta { justify-content: flex-end; }
   .habit-card-actions { justify-content: space-between; }

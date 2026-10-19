@@ -1,6 +1,6 @@
 .finance-page-head, .finance-section-head, .finance-list-row, .finance-form-actions, .finance-month-switch, .finance-transaction, .finance-transaction-side { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .finance-page-head { margin-bottom: 18px; }
-.finance-currency { border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--text-secondary); padding: 5px 9px; font-family: var(--font-mono); font-size: 12px; }
+.finance-currency { border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--text-secondary); padding: 5px 9px; font-family: var(--font-app); font-size: 12px; }
 .finance-tabs { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 3px; }
 .finance-tabs button, .finance-filters button { border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--text-secondary); padding: 8px 12px; white-space: nowrap; cursor: pointer; font-size: 13px; }
 .finance-tabs button:hover, .finance-filters button:hover { background: var(--bg-subtle); color: var(--text-primary); }
