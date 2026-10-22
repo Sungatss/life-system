@@ -91,7 +91,7 @@ async def require_single_user_session(request: Request, call_next):
             same_origin = origin == f"{scheme}://{request.headers.get('host')}"
             if not same_origin and origin not in origins:
                 return JSONResponse({"detail": "Origin is not allowed"}, status_code=403)
-        if path not in ("/api/auth/login", "/api/auth/session"):
+        if path not in ("/api/auth/login", "/api/auth/session", "/api/reminders/cron"):
             if not auth.configured():
                 return JSONResponse({"detail": "Lock In login is not configured on the server."}, status_code=503)
             session = auth.read_session(request.cookies.get(auth.COOKIE_NAME))

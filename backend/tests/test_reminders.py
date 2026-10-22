@@ -2,8 +2,10 @@ import datetime
 import unittest
 from unittest.mock import patch
 
+from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+from starlette.requests import Request
 
 from backend.app import models, reminders
 from backend.app.database import Base
@@ -46,6 +48,30 @@ class ReminderTests(unittest.TestCase):
             self.assertEqual(reminders.dispatch_due(now - datetime.timedelta(minutes=1)), 0)
             self.assertEqual(reminders.dispatch_due(now), 1)
             self.assertEqual(reminders.dispatch_due(now + datetime.timedelta(minutes=1)), 0)
+            send.assert_called_once()
+
+    def test_vercel_subscription_uses_fixed_almaty_schedule(self):
+        payload = reminders.SubscriptionInput(
+            endpoint='https://push.example/two', p256dh='key', auth='auth',
+            timezone='UTC', hour=7, minute=30,
+        )
+        with patch.dict('os.environ', {'VERCEL': '1', 'VAPID_PRIVATE_KEY': 'private',
+                                      'VAPID_PUBLIC_KEY': 'public', 'VAPID_SUBJECT': 'https://example.com',
+                                      'CRON_SECRET': 'a-long-random-cron-secret'}):
+            reminders.save_subscription(payload, self.db)
+        row = self.db.query(models.ReminderSubscription).one()
+        self.assertEqual((row.timezone, row.hour, row.minute), ('Asia/Almaty', 19, 0))
+
+    def test_cron_requires_secret_and_dispatches_when_authorized(self):
+        secret = 'a-long-random-cron-secret'
+        def request(header):
+            return Request({'type': 'http', 'method': 'GET', 'path': '/api/reminders/cron',
+                            'headers': [(b'authorization', header.encode())]})
+        with patch.dict('os.environ', {'CRON_SECRET': secret}), patch.object(reminders, 'dispatch_due', return_value=2) as send:
+            with self.assertRaises(HTTPException) as failure:
+                reminders.run_cron(request('Bearer wrong'))
+            self.assertEqual(failure.exception.status_code, 401)
+            self.assertEqual(reminders.run_cron(request(f'Bearer {secret}')), {'sent': 2})
             send.assert_called_once()
 
 

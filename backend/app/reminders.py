@@ -1,6 +1,7 @@
 """Opt-in daily Web Push reminders for unfinished tasks and habits."""
 
 import datetime
+import hmac
 import json
 import logging
 import os
@@ -8,7 +9,7 @@ import threading
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
 from pywebpush import WebPushException, webpush
 from sqlalchemy import or_, select, update
@@ -57,7 +58,20 @@ class SubscriptionInput(BaseModel):
 @router.get("/config")
 def get_config():
     _, public, subject = vapid_config()
-    return {"available": bool(public and subject and os.getenv("VAPID_PRIVATE_KEY")), "public_key": public}
+    cron_ready = not os.getenv("VERCEL") or len(os.getenv("CRON_SECRET", "")) >= 16
+    return {
+        "available": bool(public and subject and os.getenv("VAPID_PRIVATE_KEY") and cron_ready),
+        "public_key": public,
+        "schedule": "daily-almaty" if os.getenv("VERCEL") else "local-time",
+    }
+
+
+@router.get("/cron")
+def run_cron(request: Request):
+    secret = os.getenv("CRON_SECRET", "")
+    if len(secret) < 16 or not hmac.compare_digest(request.headers.get("authorization", ""), f"Bearer {secret}"):
+        raise HTTPException(401, "Invalid cron authorization")
+    return {"sent": dispatch_due()}
 
 
 @router.post("/subscriptions")
@@ -70,11 +84,11 @@ def save_subscription(payload: SubscriptionInput, db: Session = Depends(get_db))
         db.add(row)
     row.p256dh = payload.p256dh
     row.auth = payload.auth
-    row.timezone = payload.timezone
-    row.hour = payload.hour
-    row.minute = payload.minute
-    local = datetime.datetime.now(datetime.timezone.utc).astimezone(ZoneInfo(payload.timezone))
-    if (local.hour, local.minute) >= (payload.hour, payload.minute):
+    row.timezone = "Asia/Almaty" if os.getenv("VERCEL") else payload.timezone
+    row.hour = 19 if os.getenv("VERCEL") else payload.hour
+    row.minute = 0 if os.getenv("VERCEL") else payload.minute
+    local = datetime.datetime.now(datetime.timezone.utc).astimezone(ZoneInfo(row.timezone))
+    if (local.hour, local.minute) >= (row.hour, row.minute):
         row.last_sent_date = local.date().isoformat()
     db.commit()
     return {"enabled": True}

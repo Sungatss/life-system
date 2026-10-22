@@ -2,11 +2,11 @@
 
 ## Daily push reminders
 
-In **Profile → Daily reminders**, choose a local time and enable notifications on each phone or laptop. Lock In sends one reminder per device per day when due or overdue tasks remain or active habits are unchecked. It does not send anything when the day is complete. The browser must grant permission; on iPhone, open the app from its Home Screen icon.
+In **Profile → Daily reminders**, enable notifications on each phone or laptop. On a local always-on server, choose a time for each device; on Vercel Hobby, the reminder is fixed near 19:00 Almaty time. Lock In sends one reminder per device per day when due or overdue tasks remain or active habits are unchecked. It does not send anything when the day is complete. The browser must grant permission; on iPhone, open the app from its Home Screen icon.
 
 Generate a VAPID key pair once with `.venv/bin/python backend/create_vapid.py`. Put `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY`, and `VAPID_SUBJECT` in the server environment, then restart it. The generated subject uses the project URL; you may replace it with a real `mailto:` contact. Keep the same keys across deployments, or existing browser subscriptions will need to be recreated. Never put the private key in a `VITE_` variable. The Profile control shows a setup message until all three values exist.
 
-The reminder timer runs inside a continuously running backend process. The local systemd service can provide that; a sleeping Render free instance and Vercel serverless functions cannot guarantee scheduled reminders. Use an always-on backend for dependable delivery. Actual push delivery also depends on the device's network and notification settings.
+On Vercel Hobby, reminders run once daily through a protected cron at **14:00 UTC (around 19:00 Almaty time)**. Vercel may invoke Hobby cron at any point in that hour. The Profile page shows this fixed schedule. In Vercel **Production** environment variables, set the three VAPID values above and add `CRON_SECRET` (a separate random string of at least 16 characters), then redeploy Production. The cron endpoint rejects requests without the matching bearer secret. Vercel sends that header automatically when `CRON_SECRET` is configured. For a local always-on backend, the in-process timer still honors each device's selected local time. Actual push delivery depends on the device's network and notification settings.
 
 A minimalist personal productivity web application built for daily use.
 
