@@ -208,6 +208,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 }
 .icon-btn { width: 36px; height: 36px; border-radius: 9px; background: var(--bg-surface); }
 .sound-toggle[aria-pressed='true'] { color: var(--accent); }
+.header-calendar-active { color: var(--accent); border-color: var(--border-strong); background: var(--accent-subtle); }
 .header-actions { position: relative; }
 .theme-menu {
   position: absolute;

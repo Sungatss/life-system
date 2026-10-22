@@ -48,6 +48,27 @@ class Project(Base):
     tasks = relationship("Task", back_populates="project")
 
 
+class GoalArea(Base):
+    __tablename__ = "goal_areas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False, unique=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+    goals = relationship("Goal", back_populates="area", cascade="all, delete-orphan")
+
+
+class Goal(Base):
+    __tablename__ = "goals"
+
+    id = Column(Integer, primary_key=True, index=True)
+    area_id = Column(Integer, ForeignKey("goal_areas.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = Column(String(100), nullable=False)
+    plan = Column(Text, nullable=False, default="")
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+    area = relationship("GoalArea", back_populates="goals")
+
+
 class Task(Base):
     __tablename__ = "tasks"
 

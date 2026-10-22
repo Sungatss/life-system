@@ -7,6 +7,7 @@ import HabitsPage from './pages/HabitsPage';
 import ProgressCard from './components/ProgressCard';
 import InboxPage from './pages/InboxPage';
 import ProjectsPage from './pages/ProjectsPage';
+import GoalsPage from './pages/GoalsPage';
 import ProfilePage from './pages/ProfilePage';
 import CalendarPage from './pages/CalendarPage';
 import FinancePage from './pages/FinancePage';
@@ -17,7 +18,7 @@ import { api } from './api/client';
 import { getTheme } from './theme';
 import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
 
-const views = ['today', 'inbox', 'projects', 'calendar', 'finance', 'tasks', 'habits', 'profile'];
+const views = ['today', 'inbox', 'projects', 'goals', 'calendar', 'finance', 'tasks', 'habits', 'profile'];
 const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
 const narrowScreen = '(max-width: 900px)';
 
@@ -151,6 +152,8 @@ export default function App() {
       />
       <div className="app-container" inert={isNarrow && mobileSidebarOpen}>
         <Header
+          activeTab={activeTab}
+          onNavigate={navigateTo}
           theme={theme}
           onSelectTheme={setTheme}
           soundEnabled={soundEnabled}
@@ -173,6 +176,7 @@ export default function App() {
           )}
           {activeTab === 'inbox' && <InboxPage />}
           {activeTab === 'projects' && <ProjectsPage />}
+          {activeTab === 'goals' && <GoalsPage />}
           {activeTab === 'calendar' && <CalendarPage />}
           {activeTab === 'finance' && <FinancePage />}
           {activeTab === 'tasks' && <TasksPage />}

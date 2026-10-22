@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, Palette, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { CalendarDays, Check, Palette, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { themes } from '../theme';
 
-export default function Header({ theme, onSelectTheme, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
+export default function Header({ activeTab, onNavigate, theme, onSelectTheme, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -37,6 +37,9 @@ export default function Header({ theme, onSelectTheme, soundEnabled, onToggleSou
       <div className="header-actions" ref={menuRef}>
         <button type="button" className="assistant-header-button" onClick={onOpenAssistant} aria-haspopup="dialog" aria-expanded={assistantOpen} aria-controls={assistantOpen ? 'ask-lock-in-panel' : undefined}>
           <Sparkles size={16} aria-hidden="true" /> <span>Ask Lock In</span>
+        </button>
+        <button type="button" className={`icon-btn${activeTab === 'calendar' ? ' header-calendar-active' : ''}`} onClick={() => { setMenuOpen(false); onNavigate('calendar'); }} title="Calendar" aria-label="Calendar" aria-current={activeTab === 'calendar' ? 'page' : undefined}>
+          <CalendarDays size={17} aria-hidden="true" />
         </button>
         <button
           className="icon-btn sound-toggle"

@@ -1,11 +1,11 @@
-import { Calendar, CalendarDays, Flame, FolderKanban, Inbox, ListTodo, PanelLeftClose, PanelLeftOpen, UserRound, Wallet } from 'lucide-react';
+import { Calendar, Flame, FolderKanban, Inbox, ListTodo, PanelLeftClose, PanelLeftOpen, Target, UserRound, Wallet } from 'lucide-react';
 
 const items = [
   { id: 'today', label: 'Today', icon: Calendar },
   { id: 'inbox', label: 'Inbox', icon: Inbox },
   { id: 'tasks', label: 'Tasks', icon: ListTodo },
   { id: 'projects', label: 'Projects', icon: FolderKanban },
-  { id: 'calendar', label: 'Calendar', icon: CalendarDays },
+  { id: 'goals', label: 'Goals', icon: Target },
   { id: 'finance', label: 'Finance', icon: Wallet },
   { id: 'habits', label: 'Habits', icon: Flame },
   { id: 'profile', label: 'Profile', icon: UserRound },

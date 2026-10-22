@@ -1,0 +1,12 @@
+.goals-page .project-detail { display: flex; flex-direction: column; gap: 16px; }
+.goals-page .project-detail .cockpit-section { margin-bottom: 0; }
+.goals-area-form { display: flex; flex-direction: column; gap: 9px; }
+.goals-inline { display: flex; gap: 10px; }
+.goals-inline .task-input-field { flex: 1; min-width: 0; }
+.goals-inline .btn-secondary { white-space: nowrap; }
+.goals-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+.goals-list .project-rail-item { width: auto; max-width: 100%; border-color: var(--border-subtle); }
+.goals-empty { margin-top: 14px; color: var(--text-muted); }
+.goals-delete-row { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 15px; color: var(--text-secondary); font-size: 12px; }
+.goals-error { margin-bottom: 15px; padding: 12px 14px; border: 1px solid var(--danger); border-radius: var(--radius-sm); color: var(--danger); background: var(--danger-subtle); }
+@media (max-width: 480px) { .goals-inline { flex-direction: column; } .goals-inline .btn-secondary { align-self: flex-start; } }

@@ -274,6 +274,97 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
     return None
 
 
+@app.get("/api/goal-areas", response_model=List[schemas.GoalAreaResponse])
+def read_goal_areas(db: Session = Depends(get_db)):
+    return crud.get_goal_areas(db)
+
+
+@app.post("/api/goal-areas", response_model=schemas.GoalAreaResponse, status_code=status.HTTP_201_CREATED)
+def create_goal_area(data: schemas.GoalAreaCreate, db: Session = Depends(get_db)):
+    name = data.name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Area name cannot be empty")
+    if crud.goal_area_name_taken(db, name):
+        raise HTTPException(status_code=409, detail="An area with this name already exists")
+    area = models.GoalArea(name=name)
+    db.add(area)
+    db.commit()
+    db.refresh(area)
+    return area
+
+
+@app.put("/api/goal-areas/{area_id}", response_model=schemas.GoalAreaResponse)
+def update_goal_area(area_id: int, data: schemas.GoalAreaCreate, db: Session = Depends(get_db)):
+    area = db.get(models.GoalArea, area_id)
+    if not area:
+        raise HTTPException(status_code=404, detail="Area not found")
+    name = data.name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Area name cannot be empty")
+    if crud.goal_area_name_taken(db, name, except_id=area_id):
+        raise HTTPException(status_code=409, detail="An area with this name already exists")
+    area.name = name
+    db.commit()
+    db.refresh(area)
+    return area
+
+
+@app.delete("/api/goal-areas/{area_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_goal_area(area_id: int, db: Session = Depends(get_db)):
+    area = db.get(models.GoalArea, area_id)
+    if not area:
+        raise HTTPException(status_code=404, detail="Area not found")
+    db.delete(area)
+    db.commit()
+    return None
+
+
+@app.get("/api/goals", response_model=List[schemas.GoalResponse])
+def read_goals(db: Session = Depends(get_db)):
+    return crud.get_goals(db)
+
+
+@app.post("/api/goals", response_model=schemas.GoalResponse, status_code=status.HTTP_201_CREATED)
+def create_goal(data: schemas.GoalCreate, db: Session = Depends(get_db)):
+    if not db.get(models.GoalArea, data.area_id):
+        raise HTTPException(status_code=404, detail="Area not found")
+    if not data.name.strip():
+        raise HTTPException(status_code=400, detail="Goal name cannot be empty")
+    goal = models.Goal(area_id=data.area_id, name=data.name.strip(), plan=data.plan.strip())
+    db.add(goal)
+    db.commit()
+    db.refresh(goal)
+    return goal
+
+
+@app.put("/api/goals/{goal_id}", response_model=schemas.GoalResponse)
+def update_goal(goal_id: int, data: schemas.GoalCreate, db: Session = Depends(get_db)):
+    goal = db.get(models.Goal, goal_id)
+    if not goal:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    if not db.get(models.GoalArea, data.area_id):
+        raise HTTPException(status_code=404, detail="Area not found")
+    if not data.name.strip():
+        raise HTTPException(status_code=400, detail="Goal name cannot be empty")
+    goal.area_id = data.area_id
+    goal.name = data.name.strip()
+    goal.plan = data.plan.strip()
+    goal.updated_at = models.utcnow()
+    db.commit()
+    db.refresh(goal)
+    return goal
+
+
+@app.delete("/api/goals/{goal_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_goal(goal_id: int, db: Session = Depends(get_db)):
+    goal = db.get(models.Goal, goal_id)
+    if not goal:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    db.delete(goal)
+    db.commit()
+    return None
+
+
 # Today Overview
 @app.get("/api/today", response_model=schemas.TodayOverview)
 def get_today_overview(

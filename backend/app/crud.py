@@ -47,6 +47,21 @@ def delete_project(db: Session, project: models.Project) -> None:
     db.commit()
 
 
+def get_goal_areas(db: Session) -> List[models.GoalArea]:
+    return db.query(models.GoalArea).order_by(models.GoalArea.id).all()
+
+
+def goal_area_name_taken(db: Session, name: str, except_id: Optional[int] = None) -> bool:
+    query = db.query(models.GoalArea).filter(func.lower(models.GoalArea.name) == name.strip().lower())
+    if except_id is not None:
+        query = query.filter(models.GoalArea.id != except_id)
+    return query.first() is not None
+
+
+def get_goals(db: Session) -> List[models.Goal]:
+    return db.query(models.Goal).order_by(models.Goal.id.desc()).all()
+
+
 def get_inbox_entries(db: Session) -> List[models.InboxEntry]:
     return db.query(models.InboxEntry).order_by(models.InboxEntry.id.desc()).all()
 

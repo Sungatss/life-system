@@ -49,6 +49,31 @@ class ProjectResponse(ProjectCreate):
     model_config = ConfigDict(from_attributes=True)
 
 
+class GoalAreaCreate(BaseModel):
+    name: str = Field(..., max_length=100)
+
+
+class GoalAreaResponse(GoalAreaCreate):
+    id: int
+    created_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GoalCreate(BaseModel):
+    area_id: int = Field(..., ge=1)
+    name: str = Field(..., max_length=100)
+    plan: str = Field(default="", max_length=50000)
+
+
+class GoalResponse(GoalCreate):
+    id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 
 # Task Schemas
 class SubtaskCreate(BaseModel):
