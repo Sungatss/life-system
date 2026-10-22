@@ -1,7 +1,13 @@
 from contextlib import contextmanager
 
-from sqlalchemy import inspect, text
+from sqlalchemy import func, inspect, text
 from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Session
+
+from . import models
+
+
+PROJECTS_TO_GOALS_MIGRATION = "copy_projects_to_goals_2026_10_22"
 
 
 @contextmanager
@@ -55,3 +61,48 @@ def add_finance_buffer_target_if_missing(engine):
             connection.execute(text(
                 "ALTER TABLE finance_settings ADD COLUMN emergency_buffer_target_minor BIGINT NOT NULL DEFAULT 0"
             ))
+
+
+def copy_projects_to_goals_once(bind):
+    """Copy saved project names and plans into Goals without changing projects or tasks.
+
+    The marker and copies commit together. Reusing an exact matching goal avoids
+    duplicates; a same-name goal with a different plan is kept and gets a
+    separate copy so neither plan is overwritten.
+    """
+    with _transaction(bind) as connection:
+        with Session(bind=connection, join_transaction_mode="create_savepoint") as db:
+            if db.get(models.DataMigration, PROJECTS_TO_GOALS_MIGRATION):
+                return None
+
+            new_areas = 0
+            new_goals = 0
+            projects = db.query(models.Project).order_by(models.Project.id).all()
+            for project in projects:
+                area = db.query(models.GoalArea).filter(
+                    func.lower(models.GoalArea.name) == project.name.lower()
+                ).order_by(models.GoalArea.id).first()
+                if area is None:
+                    area = models.GoalArea(name=project.name, created_at=project.created_at)
+                    db.add(area)
+                    db.flush()
+                    new_areas += 1
+
+                matching_goal = db.query(models.Goal).filter(
+                    models.Goal.area_id == area.id,
+                    func.lower(models.Goal.name) == project.name.lower(),
+                    models.Goal.plan == project.plan,
+                ).first()
+                if matching_goal is None:
+                    db.add(models.Goal(
+                        area_id=area.id,
+                        name=project.name,
+                        plan=project.plan,
+                        created_at=project.created_at,
+                        updated_at=project.updated_at,
+                    ))
+                    new_goals += 1
+
+            db.add(models.DataMigration(name=PROJECTS_TO_GOALS_MIGRATION))
+            db.commit()
+            return len(projects), new_areas, new_goals

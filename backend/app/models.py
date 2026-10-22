@@ -69,6 +69,13 @@ class Goal(Base):
     area = relationship("GoalArea", back_populates="goals")
 
 
+class DataMigration(Base):
+    __tablename__ = "data_migrations"
+
+    name = Column(String(100), primary_key=True)
+    applied_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+
+
 class Task(Base):
     __tablename__ = "tasks"
 

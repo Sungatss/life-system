@@ -90,6 +90,8 @@ Vercel is a separate backend; this computer's `.env` and SQLite database do not 
 
 Do not copy this computer's `.env` into Vercel: it includes a local SQLite URL. If the Vercel database already has records, inspect and back them up before migrating any local records into it.
 
+On the first backend startup with the Projects-to-Goals migration, each saved Project is copied into an Area and a Goal with the same name, and its plan is copied to the Goal. Projects and their task assignments stay in place. Existing Areas and exact matching Goals are reused; a same-name Goal with a different plan is kept and receives a separate copied Goal. The copy runs once per database and does not keep future edits in sync. Startup logs report the number of Projects and new records copied.
+
 ---
 
 ## 24/7 Background Service & Persistent Remote Access

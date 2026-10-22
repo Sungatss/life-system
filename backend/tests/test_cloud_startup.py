@@ -31,6 +31,10 @@ class CloudStartupTests(unittest.TestCase):
         engine = create_engine("sqlite:///:memory:")
         with engine.begin() as connection:
             connection.execute(text("CREATE TABLE daily_notes (id INTEGER PRIMARY KEY, content TEXT)"))
+        Base.metadata.create_all(engine)
+        with Session(engine) as db:
+            db.add(models.Project(name="Exams", plan="Study weekly"))
+            db.commit()
         original_engine, original_error = main.engine, main.db_startup_error
 
         async def start_twice():
@@ -44,6 +48,10 @@ class CloudStartupTests(unittest.TestCase):
             with Session(engine) as db:
                 self.assertEqual(db.scalar(select(func.count()).select_from(models.Task)), 3)
                 self.assertEqual(db.scalar(select(func.count()).select_from(models.Habit)), 5)
+                self.assertEqual(db.scalar(select(func.count()).select_from(models.Project)), 1)
+                self.assertEqual(db.scalar(select(func.count()).select_from(models.GoalArea)), 1)
+                self.assertEqual(db.scalar(select(func.count()).select_from(models.Goal)), 1)
+                self.assertEqual(db.scalar(select(models.Goal.plan)), "Study weekly")
                 self.assertEqual(db.scalar(select(func.count()).select_from(models.RateWindow)), 0)
             with engine.connect() as connection:
                 self.assertFalse(connection.dialect.has_table(connection, "daily_notes"))

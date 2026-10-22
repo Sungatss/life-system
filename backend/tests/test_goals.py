@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from backend.app import main, models, schemas
+from backend.app import main, migrations, models, schemas
 from backend.app.database import Base
 
 
@@ -41,6 +41,48 @@ class GoalTests(unittest.TestCase):
             for goal in [schemas.GoalCreate(area_id=999, name="Plan"), schemas.GoalCreate(area_id=area.id, name=" ")]:
                 with self.assertRaises(HTTPException):
                     main.create_goal(goal, db)
+
+    def test_project_copy_preserves_projects_tasks_and_existing_goals(self):
+        with Session(self.engine) as db:
+            first = models.Project(name="Exams", plan="Study\nPractice")
+            second = models.Project(name="Health", plan="Walk daily")
+            third = models.Project(name="Learning", plan="Read weekly")
+            db.add_all([first, second, third])
+            db.flush()
+            task = models.Task(title="Revision", project_id=first.id)
+            health = models.GoalArea(name="Health")
+            learning = models.GoalArea(name="Learning")
+            db.add_all([task, health, learning])
+            db.flush()
+            db.add_all([
+                models.Goal(area_id=health.id, name="Health", plan="Walk daily"),
+                models.Goal(area_id=learning.id, name="Learning", plan="Existing plan"),
+            ])
+            db.commit()
+            project_ids = [first.id, second.id, third.id]
+            task_id = task.id
+
+        self.assertEqual(migrations.copy_projects_to_goals_once(self.engine), (3, 1, 2))
+        with Session(self.engine) as db:
+            self.assertEqual(db.query(models.Project).count(), 3)
+            self.assertEqual(db.get(models.Task, task_id).project_id, project_ids[0])
+            self.assertEqual(db.query(models.GoalArea).count(), 3)
+            self.assertEqual(
+                sorted((area.name, goal.name, goal.plan) for goal in db.query(models.Goal).all() for area in [goal.area]),
+                sorted([
+                    ("Exams", "Exams", "Study\nPractice"),
+                    ("Health", "Health", "Walk daily"),
+                    ("Learning", "Learning", "Existing plan"),
+                    ("Learning", "Learning", "Read weekly"),
+                ]),
+            )
+            db.get(models.Project, project_ids[0]).plan = "Later change"
+            db.commit()
+
+        self.assertIsNone(migrations.copy_projects_to_goals_once(self.engine))
+        with Session(self.engine) as db:
+            self.assertEqual(db.query(models.Goal).count(), 4)
+            self.assertEqual(db.query(models.DataMigration).count(), 1)
 
 
 if __name__ == "__main__":
