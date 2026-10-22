@@ -1,6 +1,7 @@
 """Opt-in daily Web Push reminders for unfinished tasks and habits."""
 
 import datetime
+import base64
 import hmac
 import json
 import logging
@@ -12,6 +13,8 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
 from pywebpush import WebPushException, webpush
+from py_vapid import Vapid
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from sqlalchemy import or_, select, update
 from sqlalchemy.orm import Session
 
@@ -23,9 +26,14 @@ logger = logging.getLogger("uvicorn.error")
 
 
 def vapid_config():
-    private = os.getenv("VAPID_PRIVATE_KEY", "").strip()
-    public = os.getenv("VAPID_PUBLIC_KEY", "").strip()
+    private = os.getenv("VAPID_PRIVATE_KEY", "").strip().strip('"\'')
     subject = os.getenv("VAPID_SUBJECT", "").strip()
+    try:
+        point = Vapid.from_string(private).public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint)
+        public = base64.urlsafe_b64encode(point).decode().rstrip("=")
+    except Exception:
+        # Do not expose a malformed private key or its contents in API responses.
+        return "", "", subject
     return private, public, subject
 
 
@@ -57,10 +65,10 @@ class SubscriptionInput(BaseModel):
 
 @router.get("/config")
 def get_config():
-    _, public, subject = vapid_config()
+    private, public, subject = vapid_config()
     cron_ready = not os.getenv("VERCEL") or len(os.getenv("CRON_SECRET", "")) >= 16
     return {
-        "available": bool(public and subject and os.getenv("VAPID_PRIVATE_KEY") and cron_ready),
+        "available": bool(private and public and subject and cron_ready),
         "public_key": public,
         "schedule": "daily-almaty" if os.getenv("VERCEL") else "local-time",
     }

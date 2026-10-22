@@ -3,8 +3,15 @@ import { Bell } from 'lucide-react';
 import { api } from '../api/client';
 
 function decodeKey(key) {
-  const padded = key.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(key.length / 4) * 4, '=');
-  return Uint8Array.from(atob(padded), (letter) => letter.charCodeAt(0));
+  try {
+    if (!/^[A-Za-z0-9_-]{87}$/.test(key)) throw new Error('Invalid key length');
+    const padded = key.replace(/-/g, '+').replace(/_/g, '/').padEnd(88, '=');
+    const bytes = Uint8Array.from(atob(padded), (letter) => letter.charCodeAt(0));
+    if (bytes.length !== 65 || bytes[0] !== 4) throw new Error('Invalid key point');
+    return bytes;
+  } catch {
+    throw new Error('The server push key is invalid. Check VAPID_PRIVATE_KEY in Vercel Production and redeploy.');
+  }
 }
 
 async function saveSubscription(subscription, selectedTime, schedule) {

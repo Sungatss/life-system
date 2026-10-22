@@ -1,4 +1,5 @@
 import datetime
+import base64
 import unittest
 from unittest.mock import patch
 
@@ -55,12 +56,22 @@ class ReminderTests(unittest.TestCase):
             endpoint='https://push.example/two', p256dh='key', auth='auth',
             timezone='UTC', hour=7, minute=30,
         )
-        with patch.dict('os.environ', {'VERCEL': '1', 'VAPID_PRIVATE_KEY': 'private',
-                                      'VAPID_PUBLIC_KEY': 'public', 'VAPID_SUBJECT': 'https://example.com',
+        private = base64.urlsafe_b64encode((1).to_bytes(32, 'big')).decode().rstrip('=')
+        with patch.dict('os.environ', {'VERCEL': '1', 'VAPID_PRIVATE_KEY': private,
+                                      'VAPID_PUBLIC_KEY': 'malformed-public-key', 'VAPID_SUBJECT': 'https://example.com',
                                       'CRON_SECRET': 'a-long-random-cron-secret'}):
+            config = reminders.get_config()
+            self.assertTrue(config['available'])
+            self.assertEqual(len(config['public_key']), 87)
             reminders.save_subscription(payload, self.db)
         row = self.db.query(models.ReminderSubscription).one()
         self.assertEqual((row.timezone, row.hour, row.minute), ('Asia/Almaty', 19, 0))
+
+    def test_invalid_private_key_disables_reminders(self):
+        with patch.dict('os.environ', {'VAPID_PRIVATE_KEY': 'not-a-key', 'VAPID_PUBLIC_KEY': 'ignored',
+                                      'VAPID_SUBJECT': 'https://example.com'}):
+            self.assertFalse(reminders.get_config()['available'])
+            self.assertEqual(reminders.get_config()['public_key'], '')
 
     def test_cron_requires_secret_and_dispatches_when_authorized(self):
         secret = 'a-long-random-cron-secret'
