@@ -12,7 +12,7 @@ from starlette.responses import FileResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session, joinedload
 
-from . import models, schemas, crud, migrations, progress, auth, assistant, finance
+from . import models, schemas, crud, migrations, progress, auth, assistant, finance, reminders
 from .database import engine, get_db, Base
 
 
@@ -41,7 +41,10 @@ async def lifespan(app: FastAPI):
         db_startup_error = str(e)
         import logging
         logging.getLogger("uvicorn.error").error(f"Startup DB Error: {e}")
+    reminder_stop = reminders.start_scheduler() if db_startup_error is None and not os.getenv("VERCEL") else None
     yield
+    if reminder_stop:
+        reminder_stop.set()
 
 
 app = FastAPI(
@@ -52,6 +55,7 @@ app = FastAPI(
 )
 
 app.include_router(finance.router)
+app.include_router(reminders.router)
 
 # CORS setup for local dev and custom domain deployment
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")

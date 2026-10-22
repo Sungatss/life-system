@@ -71,6 +71,9 @@ export const api = {
   applyAssistantProposal: (id) => request(`/api/assistant/proposals/${encodeURIComponent(id)}/apply`, { method: 'POST' }),
   getProfile: () => request('/api/profile'),
   updateProfile: (data) => request('/api/profile', { method: 'PUT', body: JSON.stringify(data) }),
+  getReminderConfig: () => request('/api/reminders/config'),
+  saveReminderSubscription: (data) => request('/api/reminders/subscriptions', { method: 'POST', body: JSON.stringify(data) }),
+  removeReminderSubscription: (endpoint) => request('/api/reminders/unsubscribe', { method: 'POST', body: JSON.stringify({ endpoint }) }),
   getProgress: () => request(`/api/progress?timezone=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')}`),
   getInbox: () => request('/api/inbox'),
   createInboxEntry: (content) => request('/api/inbox', {

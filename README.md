@@ -1,5 +1,13 @@
 # Life System
 
+## Daily push reminders
+
+In **Profile → Daily reminders**, choose a local time and enable notifications on each phone or laptop. Lock In sends one reminder per device per day when due or overdue tasks remain or active habits are unchecked. It does not send anything when the day is complete. The browser must grant permission; on iPhone, open the app from its Home Screen icon.
+
+Generate a VAPID key pair once with `.venv/bin/python backend/create_vapid.py`. Put `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY`, and `VAPID_SUBJECT` in the server environment, then restart it. The generated subject uses the project URL; you may replace it with a real `mailto:` contact. Keep the same keys across deployments, or existing browser subscriptions will need to be recreated. Never put the private key in a `VITE_` variable. The Profile control shows a setup message until all three values exist.
+
+The reminder timer runs inside a continuously running backend process. The local systemd service can provide that; a sleeping Render free instance and Vercel serverless functions cannot guarantee scheduled reminders. Use an always-on backend for dependable delivery. Actual push delivery also depends on the device's network and notification settings.
+
 A minimalist personal productivity web application built for daily use.
 
 Primary areas:

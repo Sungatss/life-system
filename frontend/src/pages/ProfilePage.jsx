@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Flame, Pencil, Save, X, Zap } from 'lucide-react';
 import { api } from '../api/client';
 import ContributionGraph from '../components/ContributionGraph';
+import ReminderSettings from '../components/ReminderSettings';
 import WeeklyReviewPage from './WeeklyReviewPage';
 import './ProfilePage.css';
 
@@ -115,6 +116,8 @@ export default function ProfilePage({ onSignOut }) {
       )}
 
       {contributions && <ContributionGraph contributions={contributions} title="Contributions" />}
+
+      <ReminderSettings />
 
       <WeeklyReviewPage />
     </div>

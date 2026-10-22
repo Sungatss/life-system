@@ -204,6 +204,19 @@ class HabitLog(Base):
     )
 
 
+class ReminderSubscription(Base):
+    __tablename__ = "reminder_subscriptions"
+
+    id = Column(Integer, primary_key=True)
+    endpoint = Column(Text, nullable=False, unique=True)
+    p256dh = Column(String(255), nullable=False)
+    auth = Column(String(255), nullable=False)
+    timezone = Column(String(100), nullable=False)
+    hour = Column(Integer, nullable=False, default=19)
+    minute = Column(Integer, nullable=False, default=0)
+    last_sent_date = Column(String(10), nullable=True)
+
+
 class WeeklyReview(Base):
     __tablename__ = "weekly_reviews"
 

@@ -117,6 +117,14 @@ export default function App() {
   };
 
   const signOut = async () => {
+    try {
+      const registration = await navigator.serviceWorker?.ready;
+      const subscription = await registration?.pushManager?.getSubscription();
+      if (subscription) {
+        try { await api.removeReminderSubscription(subscription.endpoint); } catch { /* Browser subscription still needs removal. */ }
+        await subscription.unsubscribe();
+      }
+    } catch { /* Sign out even if this device cannot update its reminder subscription. */ }
     try { await api.logout(); } catch { /* Clear the local view even if the network is unavailable. */ }
     setAssistantOpen(false);
     setAuthState((current) => ({ ...current, authenticated: false }));

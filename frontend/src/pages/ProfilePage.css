@@ -35,6 +35,13 @@
 .profile-error { color: var(--danger); margin: 0; }
 .profile-loading { padding: 24px; color: var(--text-muted); }
 .profile-page .weekly-review-page { min-width: 0; }
+.reminder-settings { padding: 20px 24px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle); }
+.reminder-heading { display: flex; align-items: center; gap: 8px; }
+.reminder-heading h2 { margin: 0; font-size: 19px; }
+.reminder-settings > p { color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+.reminder-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.reminder-controls label, .reminder-state { font-size: 13px; color: var(--text-secondary); }
+.reminder-controls input { padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg-subtle); color: var(--text-primary); font: inherit; }
 @media (max-width: 760px) {
   .profile-hero { flex-wrap: wrap; gap: 14px; padding: 18px; }
   .profile-avatar { width: 82px; height: 82px; border-radius: 18px; }

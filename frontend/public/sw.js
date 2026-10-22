@@ -1,5 +1,5 @@
 // Service Worker for Lock In
-const CACHE_NAME = 'lock-in-v6';
+const CACHE_NAME = 'lock-in-v7';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -90,4 +90,31 @@ self.addEventListener('fetch', (event) => {
       return cachedResponse || fetchPromise;
     })
   );
+});
+
+self.addEventListener('push', (event) => {
+  let payload;
+  try { payload = event.data?.json(); } catch { payload = null; }
+  if (!payload || typeof payload.title !== 'string' || typeof payload.body !== 'string') return;
+  event.waitUntil(self.registration.showNotification(payload.title, {
+    body: payload.body,
+    icon: '/icon-192.png',
+    badge: '/favicon-32.png',
+    tag: 'daily-reminder',
+    data: { url: '/#today' },
+  }));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil((async () => {
+    const url = new URL('/#today', self.location.origin).href;
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const existing = windows.find((client) => new URL(client.url).origin === self.location.origin);
+    if (existing) {
+      await existing.navigate(url);
+      return existing.focus();
+    }
+    return self.clients.openWindow(url);
+  })());
 });
