@@ -1,33 +1,20 @@
 .cat-pet-world { position: fixed; inset: 0; z-index: 35; pointer-events: none; }
-.app-shell .app-main { padding-bottom: 140px; }
-.cat-pet-home { position: absolute; bottom: max(7px, env(safe-area-inset-bottom)); width: 148px; height: 113px; transition: left 2700ms linear; }
+.app-shell .app-main { padding-bottom: 96px; }
+.cat-pet-home { position: absolute; bottom: max(7px, env(safe-area-inset-bottom)); width: 116px; height: 78px; transition: left 2700ms linear; }
 .cat-pet-world:not(.is-walking) .cat-pet-home { transition: none; }
-.cat-pet-animal { position: absolute; inset: 0; width: 148px; height: 113px; padding: 0; border: 0; background: transparent; cursor: pointer; pointer-events: auto; }
-.cat-pet-animal:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 20px; }
-.cat-pet-art { display: block; width: 148px; height: 110px; overflow: visible; transform: scaleX(var(--pet-facing, 1)); filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .17)); }
-.cat-pet-world .pet-tail { transform-origin: 39px 73px; animation: pet-tail 2.1s ease-in-out infinite alternate; }
-.cat-pet-world .pet-body { transform-origin: 84px 75px; animation: pet-breathe 2.6s ease-in-out infinite alternate; }
-.cat-pet-world .pet-eyes { transform-origin: 130px 60px; animation: pet-blink 5.8s ease-in-out infinite; }
-.cat-pet-world .pet-sleep-eyes { display: none; }
-.cat-pet-animal:hover .pet-tail { animation: pet-tail .35s ease-in-out infinite alternate; }
-.cat-pet-world:not(.is-walking):not(.is-sleeping) .cat-pet-animal:hover .pet-head { transform: rotate(-5deg); transform-origin: 123px 72px; }
-.cat-pet-world.is-walking .pet-body, .cat-pet-world.is-walking .pet-head { animation: pet-walk-bob .35s ease-in-out infinite alternate; }
-.cat-pet-world.is-walking .pet-legs-front { transform-origin: 117px 82px; animation: pet-step .35s ease-in-out infinite alternate; }
-.cat-pet-world.is-walking .pet-legs-back { transform-origin: 58px 82px; animation: pet-step .35s ease-in-out infinite alternate-reverse; }
-.cat-pet-world.is-walking .pet-tail { animation: pet-tail .5s ease-in-out infinite alternate; }
-.cat-pet-world.is-sleeping .pet-body { animation: pet-breathe 3.2s ease-in-out infinite alternate; }
-.cat-pet-world.is-sleeping .pet-head { transform: translateY(10px) rotate(8deg); transform-origin: 107px 72px; }
-.cat-pet-world.is-sleeping .pet-eyes { display: none; }
-.cat-pet-world.is-sleeping .pet-sleep-eyes { display: block; }
-.cat-pet-world.is-sleeping .pet-dream { animation: pet-float 2.2s ease-in-out infinite; }
-.cat-pet-world.is-stretching .pet-body { transform: translateY(6px) scaleX(1.05); }
-.cat-pet-world.is-stretching .pet-head { transform: translate(8px, 9px); }
-.cat-pet-world.is-happy .pet-body, .cat-pet-world.is-playing .pet-body { animation: pet-hop .55s ease-in-out 3; }
-.cat-pet-world.is-happy .pet-tail { animation: pet-tail .23s ease-in-out infinite alternate; }
-.cat-pet-world.is-happy .pet-heart { animation: pet-float 1.1s ease-out infinite; }
-.cat-pet-world.is-playing .pet-toy { animation: pet-toy-bounce .55s ease-in-out infinite alternate; }
-.cat-pet-world.is-eating .pet-head { animation: pet-nibble .35s ease-in-out 5 alternate; }
-.cat-pet-panel { position: absolute; bottom: 115px; width: min(300px, calc(100vw - var(--pet-rail) - 16px)); max-height: min(520px, calc(100dvh - 135px)); overflow-y: auto; padding: 16px; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elevated); color: var(--text-primary); box-shadow: 0 20px 48px rgba(0, 0, 0, .34); backdrop-filter: blur(18px); pointer-events: auto; }
+.cat-pet-animal { position: absolute; inset: 0; width: 116px; height: 78px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; cursor: pointer; pointer-events: auto; }
+.cat-pet-animal:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cat-pet-sprite { position: relative; display: block; width: 116px; height: 78px; transform: scaleX(var(--pet-facing, 1)); }
+.cat-pet-art { display: block; width: 116px; height: 78px; object-fit: contain; image-rendering: pixelated; user-select: none; animation: pet-breathe 3s ease-in-out infinite alternate; }
+.cat-pet-world.is-walking .cat-pet-art { animation: pet-walk-bob .35s steps(2, end) infinite alternate; }
+.cat-pet-world.is-stretching .cat-pet-art { animation: pet-stretch .8s ease-in-out 1; }
+.cat-pet-world.is-happy .cat-pet-art, .cat-pet-world.is-playing .cat-pet-art { animation: pet-hop .55s steps(3, end) 3; }
+.cat-pet-world.is-eating .cat-pet-art { animation: pet-nibble .35s steps(2, end) 5 alternate; }
+.cat-pet-effect { position: absolute; display: block; font-family: monospace; font-weight: 800; line-height: 1; pointer-events: none; }
+.cat-pet-heart { top: 2px; right: 9px; color: #e2a0a4; font-size: 19px; animation: pet-float 1.1s ease-out infinite; }
+.cat-pet-dream { top: 3px; right: 4px; color: #a8bcb0; font-size: 12px; letter-spacing: 3px; animation: pet-float 2.2s ease-in-out infinite; }
+.cat-pet-toy { bottom: 4px; left: 4px; color: #d6ab83; font-size: 16px; animation: pet-toy-bounce .55s steps(2, end) infinite alternate; }
+.cat-pet-panel { position: absolute; bottom: 82px; width: min(300px, calc(100vw - var(--pet-rail) - 16px)); max-height: min(520px, calc(100dvh - 105px)); overflow-y: auto; padding: 16px; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elevated); color: var(--text-primary); box-shadow: 0 20px 48px rgba(0, 0, 0, .34); backdrop-filter: blur(18px); pointer-events: auto; }
 .cat-pet-panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .cat-pet-panel-head > div { display: flex; flex-direction: column; gap: 1px; }
 .cat-pet-panel-head strong { font-size: 17px; line-height: 1.2; }
@@ -48,15 +35,13 @@
 .cat-pet-actions .cat-pet-thought { grid-column: 1 / -1; }
 .cat-pet-panel > small { display: block; margin-top: 12px; color: var(--text-muted); font-size: 10px; text-align: center; }
 .mobile-sidebar-open .cat-pet-world { visibility: hidden; }
-@keyframes pet-tail { from { transform: rotate(-9deg); } to { transform: rotate(12deg); } }
-@keyframes pet-breathe { from { transform: scaleY(1); } to { transform: scaleY(1.035); } }
-@keyframes pet-blink { 0%, 44%, 48%, 100% { transform: scaleY(1); } 46% { transform: scaleY(.12); } }
+@keyframes pet-breathe { from { transform: scaleY(1); } to { transform: scaleY(1.025); } }
 @keyframes pet-walk-bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
-@keyframes pet-step { from { transform: rotate(-8deg); } to { transform: rotate(9deg); } }
+@keyframes pet-stretch { 50% { transform: translateY(3px) scaleX(1.07); } }
 @keyframes pet-hop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 @keyframes pet-float { from { transform: translateY(0); opacity: .9; } to { transform: translateY(-9px); opacity: .35; } }
 @keyframes pet-toy-bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
-@keyframes pet-nibble { from { transform: rotate(0); } to { transform: rotate(7deg); } }
-@media (max-width: 600px) { .cat-pet-home { bottom: max(2px, env(safe-area-inset-bottom)); } .cat-pet-panel { bottom: 108px; padding: 13px; } }
+@keyframes pet-nibble { from { transform: translateY(0); } to { transform: translateY(2px); } }
+@media (max-width: 600px) { .cat-pet-home { bottom: max(2px, env(safe-area-inset-bottom)); } .cat-pet-panel { bottom: 80px; padding: 13px; } }
 @media (max-height: 450px) { .cat-pet-world { display: none; } }
 @media (prefers-reduced-motion: reduce) { .cat-pet-world *, .cat-pet-world *::before, .cat-pet-world *::after { animation: none !important; transition: none !important; } }

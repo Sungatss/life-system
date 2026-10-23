@@ -42,39 +42,18 @@ function readPetStats() {
 }
 
 function CatArt({ mode, facing }) {
-  return <svg className="cat-pet-art" style={{ '--pet-facing': facing }} viewBox="0 0 170 122" fill="none" aria-hidden="true">
-    <ellipse className="pet-ground" cx="86" cy="113" rx="62" ry="5" fill="#070b0a" opacity=".24" />
-    <path className="pet-tail" d="M41 75C18 80 8 63 16 49c5-9 16-10 21-3" stroke="#b5b8aa" strokeWidth="13" strokeLinecap="round" />
-    <g className="pet-legs-back">
-      <path d="M56 78c-5 8-8 18-6 28h17l7-22" fill="#aab09f" stroke="#46514d" strokeWidth="2.5" />
-      <ellipse cx="57" cy="107" rx="12" ry="5" fill="#d6d5c8" stroke="#46514d" strokeWidth="2" />
-    </g>
-    <g className="pet-body">
-      <ellipse cx="83" cy="72" rx="52" ry="28" fill="#c9cabc" stroke="#46514d" strokeWidth="3" />
-      <path d="M65 87c17 9 34 8 52-1" stroke="#e8e5d8" strokeWidth="12" strokeLinecap="round" />
-      <path d="m55 51 7 10m13-15 4 12m13-12-1 11" stroke="#969e90" strokeWidth="4" strokeLinecap="round" />
-    </g>
-    <g className="pet-legs-front">
-      <path d="M111 80c-1 8-1 17 2 27h17l-2-27" fill="#c9cabc" stroke="#46514d" strokeWidth="2.5" />
-      <ellipse cx="122" cy="107" rx="13" ry="5" fill="#e8e5d8" stroke="#46514d" strokeWidth="2" />
-    </g>
-    <g className="pet-head">
-      <path d="m106 49-1-25c0-3 3-4 5-2l14 12c5-1 10-1 15 0l14-12c2-2 5-1 5 2l-1 25c5 6 7 13 5 21-3 15-17 25-34 25-20 0-35-13-35-30 0-7 4-13 13-16Z" fill="#d7d8ca" stroke="#46514d" strokeWidth="3" strokeLinejoin="round" />
-      <path d="m111 29 1 15 10-9-11-6Zm40 0-11 6 10 9 1-15Z" fill="#c49398" />
-      <ellipse cx="114" cy="72" rx="14" ry="10" fill="#e9e6d8" />
-      <ellipse cx="146" cy="72" rx="14" ry="10" fill="#e9e6d8" />
-      <g className="pet-eyes" fill="#34413d"><ellipse cx="118" cy="59" rx="3" ry="4" /><ellipse cx="143" cy="59" rx="3" ry="4" /></g>
-      <g className="pet-sleep-eyes" stroke="#46514d" strokeWidth="2.5" strokeLinecap="round"><path d="m113 60 5 3 5-3m15 0 5 3 5-3" /></g>
-      <path d="m125 71 5 4 5-4c-2-2-8-2-10 0Z" fill="#be8c91" />
-      <path d="M130 75v4m0 0c-3 3-6 3-8 0m8 0c3 3 6 3 8 0m-35-8-15-3m15 8-15 2m66-7 15-3m-15 8 15 2" stroke="#5b6660" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M104 84c9 8 38 11 51-1" stroke="#879e90" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="129" cy="90" r="3.5" fill="#e2bd8a" />
-    </g>
-    {mode === 'playing' && <g className="pet-toy"><circle cx="27" cy="100" r="10" fill="#d6ab83" stroke="#715848" strokeWidth="2" /><path d="m20 94 14 12m-14 0 14-12" stroke="#f3dcc7" strokeWidth="2" /></g>}
-    {mode === 'happy' && <text className="pet-heart" x="130" y="25" fill="#e3a9ad" fontSize="21">♥</text>}
-    {mode === 'sleeping' && <g className="pet-dream" fill="#a8bcb0"><circle cx="111" cy="27" r="2.5" /><circle cx="122" cy="18" r="4" /><circle cx="136" cy="8" r="5.5" /></g>}
-    {mode === 'eating' && <g className="pet-snack"><ellipse cx="149" cy="105" rx="14" ry="5" fill="#8f9d8e" stroke="#46514d" strokeWidth="2" /><circle cx="146" cy="101" r="3" fill="#d3a674" /><circle cx="153" cy="101" r="3" fill="#d3a674" /></g>}
-  </svg>;
+  const resting = mode === 'idle' || mode === 'sleeping';
+  return <span className="cat-pet-sprite" style={{ '--pet-facing': facing }} aria-hidden="true">
+    <img
+      className="cat-pet-art"
+      src={resting ? '/miso-pixel-sleeping.png' : '/miso-pixel-awake.png'}
+      alt=""
+      draggable="false"
+    />
+    {mode === 'happy' && <span className="cat-pet-effect cat-pet-heart">♥</span>}
+    {mode === 'sleeping' && <span className="cat-pet-effect cat-pet-dream">z z</span>}
+    {mode === 'playing' && <span className="cat-pet-effect cat-pet-toy">●</span>}
+  </span>;
 }
 
 function Meter({ label, value }) {
@@ -85,7 +64,7 @@ export default function CatPet({ activeTab, paused = false, sidebarExpanded = fa
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [tabHidden, setTabHidden] = useState(() => document.hidden);
-  const [x, setX] = useState(() => Math.max(72, window.innerWidth - 210));
+  const [x, setX] = useState(() => Math.max(72, window.innerWidth - 160));
   const [facing, setFacing] = useState(1);
   const [mode, setMode] = useState('idle');
   const [panelOpen, setPanelOpen] = useState(false);
@@ -95,11 +74,11 @@ export default function CatPet({ activeTab, paused = false, sidebarExpanded = fa
   const animalRef = useRef(null);
 
   const rail = viewportWidth <= 900 ? 56 : sidebarExpanded ? 220 : 68;
-  const maxX = Math.max(8, viewportWidth - 154);
+  const maxX = Math.max(8, viewportWidth - 122);
   const minX = Math.min(rail + 8, maxX);
   const displayX = clamp(x, minX, maxX);
   const panelWidth = Math.min(300, Math.max(0, viewportWidth - rail - 16));
-  const panelLeft = clamp(displayX - 72, minX, Math.max(minX, viewportWidth - panelWidth - 8));
+  const panelLeft = clamp(displayX - 92, minX, Math.max(minX, viewportWidth - panelWidth - 8));
   const status = mode === 'sleeping' ? 'Napping' : mode === 'walking' ? 'Exploring' : mode === 'playing' ? 'Playing'
     : mode === 'eating' ? 'Snacking' : mode === 'happy' ? 'Purring' : stats.energy < 30 ? 'Sleepy' : 'Feeling cozy';
 
