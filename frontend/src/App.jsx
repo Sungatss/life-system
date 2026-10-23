@@ -209,7 +209,7 @@ export default function App() {
       </div>
 
       {assistantOpen && <AssistantPanel onClose={closeAssistant} onApplied={() => setDataVersion((version) => version + 1)} />}
-      <CatPet activeTab={activeTab} />
+      <CatPet activeTab={activeTab} paused={mobileSidebarOpen || assistantOpen} sidebarExpanded={sidebarExpanded} />
       <RewardFeedback soundEnabled={soundEnabled} />
     </div>
   );
