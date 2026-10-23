@@ -7,7 +7,7 @@ import { CircleAlert } from 'lucide-react';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('active');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
