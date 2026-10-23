@@ -83,6 +83,33 @@
   --shadow-subtle: 0 14px 40px rgba(0, 0, 0, 0.22);
 }
 
+[data-theme='glass-green'] {
+  color-scheme: dark;
+  --bg-primary: #0b1714;
+  --bg-surface: rgba(18, 39, 34, 0.82);
+  --bg-surface-hover: rgba(32, 61, 51, 0.9);
+  --bg-subtle: rgba(54, 91, 75, 0.48);
+  --bg-elevated: rgba(24, 47, 40, 0.84);
+  --border-subtle: rgba(172, 221, 193, 0.24);
+  --border-strong: rgba(174, 226, 197, 0.48);
+  --text-primary: #f0f8f2;
+  --text-secondary: #c9ded1;
+  --text-muted: #a8c0b1;
+  --accent: #a8dcc2;
+  --accent-subtle: rgba(168, 220, 194, 0.17);
+  --success: #8bdfaf;
+  --success-subtle: rgba(139, 223, 175, 0.17);
+  --warning: #eacb92;
+  --warning-subtle: rgba(234, 203, 146, 0.15);
+  --danger: #f4a5a5;
+  --danger-subtle: rgba(244, 165, 165, 0.15);
+  --heatmap-1: #254239;
+  --heatmap-2: #3b6956;
+  --heatmap-3: #70a687;
+  --heatmap-4: #a8dcc2;
+  --shadow-subtle: 0 18px 46px rgba(0, 8, 5, 0.3), inset 0 1px 0 rgba(233, 255, 241, 0.06);
+}
+
 [data-theme='light-matcha'] {
   color-scheme: light;
   --bg-primary: #fbfcf9;
@@ -114,6 +141,33 @@ html { scroll-behavior: smooth; }
 body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), transparent 34rem), var(--bg-primary); }
 [data-theme='light'] body { background: var(--bg-primary); }
 [data-theme='dark-gray'] body { background: var(--bg-primary); }
+[data-theme='glass-green'] body {
+  background:
+    radial-gradient(ellipse at 88% 3%, rgba(75, 147, 111, 0.25), transparent 38rem),
+    radial-gradient(ellipse at 14% 72%, rgba(39, 100, 78, 0.23), transparent 46rem),
+    linear-gradient(155deg, #0a1210, #10241c 54%, #091411);
+  background-attachment: fixed;
+}
+[data-theme='glass-green'] :is(
+  .app-sidebar, .cockpit-date-banner, .cockpit-section, .contribution-container,
+  .project-rail, .profile-hero, .profile-stats > div, .reminder-settings,
+  .navigation-settings, .progress-card, .login-card, .theme-menu,
+  .modal-content, .assistant-dialog
+) {
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  backdrop-filter: blur(18px) saturate(130%);
+}
+[data-theme='glass-green'] .app-header { background: rgba(11, 29, 23, 0.76); }
+[data-theme='glass-green'] .cockpit-date-banner {
+  border-color: var(--border-strong);
+  background: linear-gradient(130deg, rgba(56, 111, 80, 0.43), rgba(18, 45, 35, 0.85) 58%, rgba(10, 29, 24, 0.78));
+}
+[data-theme='glass-green'] :is(.modal-content, .assistant-dialog, .theme-menu, .login-card) {
+  background: rgba(18, 39, 34, 0.95);
+}
+[data-theme='glass-green'] .modal-overlay { background: rgba(3, 15, 10, 0.77); }
+[data-theme='glass-green'] .assistant-dialog::backdrop { background: rgba(3, 15, 10, 0.77); }
+[data-theme='glass-green'] .brand-avatar { background: #183429; }
 button { -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: not-allowed; opacity: 0.5; }
 :where(button, a, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
