@@ -100,6 +100,44 @@ class FinanceTests(unittest.TestCase):
         self.assertEqual(changed.exception.status_code, 409)
         self.assertEqual(finance.settings_data(self.db)["currency"], "KZT")
 
+    def test_purchase_plan_is_separate_from_spending_and_can_be_managed(self):
+        first = finance.create_purchase_plan(finance.PurchasePlanInput(
+            title="  Desk lamp  ", estimated_minor=1250000,
+            image_url="https://example.com/lamp.jpg", product_url="https://example.com/lamp",
+            notes="  Compare sizes  ", target_date="2026-12-01"), self.db)
+        second = finance.create_purchase_plan(finance.PurchasePlanInput(
+            title="Notebook", estimated_minor=350000), self.db)
+        self.assertEqual((first.title, first.notes, first.target_date),
+                         ("Desk lamp", "Compare sizes", "2026-12-01"))
+        self.assertEqual(finance.PurchasePlanResponse.model_validate(first).target_date,
+                         dt.date(2026, 12, 1))
+        self.assertEqual([item.id for item in finance.list_purchase_plans(self.db)], [second.id, first.id])
+
+        changed = finance.update_purchase_plan(first.id, finance.PurchasePlanInput(
+            title="Desk lamp", estimated_minor=1100000, product_url="https://example.com/new-lamp"), self.db)
+        self.assertEqual((changed.estimated_minor, changed.product_url, changed.purchased),
+                         (1100000, "https://example.com/new-lamp", False))
+        finance.set_purchase_plan_status(first.id, finance.PurchaseStatusInput(purchased=True), self.db)
+        self.assertEqual([item.id for item in finance.list_purchase_plans(self.db)], [second.id, first.id])
+        self.assertEqual(finance.overview("2026-10", dt.date(2026, 10, 23), self.db)["balances_minor"]["cash"], 0)
+        self.assertEqual(finance.list_transactions("2026-10", 0, 50, self.db), [])
+        with self.assertRaises(HTTPException) as changed_currency:
+            finance.update_settings(finance.SettingsInput(currency="USD"), self.db)
+        self.assertEqual(changed_currency.exception.status_code, 409)
+
+        finance.delete_purchase_plan(first.id, self.db)
+        self.assertIsNone(self.db.get(models.FinancePurchasePlan, first.id))
+        with self.assertRaises(HTTPException) as missing:
+            finance.set_purchase_plan_status(first.id, finance.PurchaseStatusInput(purchased=False), self.db)
+        self.assertEqual(missing.exception.status_code, 404)
+
+    def test_purchase_plan_rejects_invalid_links_and_amounts(self):
+        for url in ("javascript:alert(1)", "https://user:pass@example.com/item", "https://example.com/bad link"):
+            with self.assertRaises(ValidationError):
+                finance.PurchasePlanInput(title="Item", estimated_minor=100, product_url=url)
+        with self.assertRaises(ValidationError):
+            finance.PurchasePlanInput(title="Item", estimated_minor=0)
+
     def test_finance_rate_limit_is_independent_of_assistant_quota(self):
         with auth._lock:
             auth._finance_minute.clear()
@@ -121,6 +159,7 @@ class FinanceTests(unittest.TestCase):
                 db.commit()
             Base.metadata.create_all(old)
             self.assertIn("finance_transactions", inspect(old).get_table_names())
+            self.assertIn("finance_purchase_plans", inspect(old).get_table_names())
             with Session(old) as db:
                 self.assertEqual(db.query(models.Task).one().title, "Existing task")
         finally:

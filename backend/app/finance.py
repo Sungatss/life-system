@@ -2,6 +2,7 @@
 
 import datetime as dt
 from typing import Literal
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -88,6 +89,49 @@ class BudgetInput(BaseModel):
 class BudgetResponse(BudgetInput):
     id: int
     model_config = ConfigDict(from_attributes=True)
+
+
+class PurchasePlanInput(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    estimated_minor: int = Field(..., gt=0, le=MAX_MINOR)
+    image_url: str = Field(default="", max_length=2048)
+    product_url: str = Field(default="", max_length=2048)
+    notes: str = Field(default="", max_length=2000)
+    target_date: dt.date | None = None
+
+    @field_validator("title")
+    @classmethod
+    def title_required(cls, value: str) -> str:
+        return clean_title(value)
+
+    @field_validator("image_url", "product_url")
+    @classmethod
+    def web_url_only(cls, value: str) -> str:
+        cleaned = value.strip()
+        if cleaned:
+            parsed = urlsplit(cleaned)
+            if (parsed.scheme not in ("http", "https") or not parsed.hostname
+                    or parsed.username is not None or parsed.password is not None
+                    or any(character.isspace() for character in cleaned)):
+                raise ValueError("Use an http or https URL without credentials")
+        return cleaned
+
+    @field_validator("notes")
+    @classmethod
+    def clean_notes(cls, value: str) -> str:
+        return value.strip()
+
+
+class PurchasePlanResponse(PurchasePlanInput):
+    id: int
+    purchased: bool
+    created_at: dt.datetime
+    updated_at: dt.datetime
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PurchaseStatusInput(BaseModel):
+    purchased: bool
 
 
 class ObligationInput(BaseModel):
@@ -237,7 +281,8 @@ def update_settings(payload: SettingsInput, db: Session = Depends(get_db)):
     current_currency = current.currency if current else "KZT"
     if current_currency != payload.currency:
         has_records = any(db.query(model.id).first() for model in
-                          (models.FinanceTransaction, models.FinanceBudgetItem, models.FinanceObligation))
+                          (models.FinanceTransaction, models.FinanceBudgetItem,
+                           models.FinancePurchasePlan, models.FinanceObligation))
         has_openings = current is not None and any(
             (current.opening_cash_minor, current.opening_emergency_minor,
              current.opening_investment_minor, current.emergency_buffer_target_minor))
@@ -316,6 +361,46 @@ def update_budget_item(item_id: int, payload: BudgetInput, db: Session = Depends
 @router.delete("/budget/{item_id}", status_code=204)
 def delete_budget_item(item_id: int, db: Session = Depends(get_db)):
     db.delete(require_row(db, models.FinanceBudgetItem, item_id))
+    db.commit()
+
+
+@router.get("/purchase-plans", response_model=list[PurchasePlanResponse])
+def list_purchase_plans(db: Session = Depends(get_db)):
+    return db.query(models.FinancePurchasePlan).order_by(
+        models.FinancePurchasePlan.purchased, models.FinancePurchasePlan.id.desc()).all()
+
+
+@router.post("/purchase-plans", response_model=PurchasePlanResponse, status_code=201)
+def create_purchase_plan(payload: PurchasePlanInput, db: Session = Depends(get_db)):
+    row = models.FinancePurchasePlan(**payload.model_dump(mode="json"))
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return row
+
+
+@router.put("/purchase-plans/{item_id}", response_model=PurchasePlanResponse)
+def update_purchase_plan(item_id: int, payload: PurchasePlanInput, db: Session = Depends(get_db)):
+    row = require_row(db, models.FinancePurchasePlan, item_id)
+    for name, value in payload.model_dump(mode="json").items():
+        setattr(row, name, value)
+    db.commit()
+    db.refresh(row)
+    return row
+
+
+@router.patch("/purchase-plans/{item_id}/status", response_model=PurchasePlanResponse)
+def set_purchase_plan_status(item_id: int, payload: PurchaseStatusInput, db: Session = Depends(get_db)):
+    row = require_row(db, models.FinancePurchasePlan, item_id)
+    row.purchased = payload.purchased
+    db.commit()
+    db.refresh(row)
+    return row
+
+
+@router.delete("/purchase-plans/{item_id}", status_code=204)
+def delete_purchase_plan(item_id: int, db: Session = Depends(get_db)):
+    db.delete(require_row(db, models.FinancePurchasePlan, item_id))
     db.commit()
 
 

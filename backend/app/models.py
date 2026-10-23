@@ -149,6 +149,21 @@ class FinanceBudgetItem(Base):
     classification = Column(String(16), nullable=False)  # essential or optional
 
 
+class FinancePurchasePlan(Base):
+    __tablename__ = "finance_purchase_plans"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(255), nullable=False)
+    estimated_minor = Column(BigInteger, nullable=False)
+    image_url = Column(String(2048), nullable=False, default="")
+    product_url = Column(String(2048), nullable=False, default="")
+    notes = Column(Text, nullable=False, default="")
+    target_date = Column(String(10), nullable=True)
+    purchased = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
 class FinanceObligation(Base):
     __tablename__ = "finance_obligations"
 

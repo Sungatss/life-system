@@ -2,31 +2,11 @@ import { useEffect, useState } from 'react';
 import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, ChevronLeft, ChevronRight, Plus, Wallet } from 'lucide-react';
 import { api } from '../api/client';
 import { addDays, getLocalDateStr } from '../utils/date';
+import { amountText, money, toMinor } from '../utils/financeMoney';
+import FinanceToBuy from '../components/FinanceToBuy';
 import './FinancePage.css';
 
-const pageTabs = ['Overview', 'Activity', 'Plan', 'Review'];
-
-function money(minor, currency = 'KZT') {
-  const sign = minor < 0 ? '−' : '';
-  const absolute = Math.abs(minor);
-  const whole = Math.floor(absolute / 100).toLocaleString('en-US');
-  const cents = absolute % 100;
-  const value = `${sign}${whole}${cents ? `.${String(cents).padStart(2, '0')}` : ''}`;
-  return currency === 'KZT' ? `${value} ₸` : currency === 'USD' ? `${sign}$${whole}${cents ? `.${String(cents).padStart(2, '0')}` : ''}` : `${value} €`;
-}
-
-function amountText(minor) {
-  return (minor / 100).toFixed(2).replace(/\.00$/, '');
-}
-
-function toMinor(value) {
-  const cleaned = value.trim().replace(/\s/g, '').replace(',', '.');
-  if (!/^\d{1,11}(\.\d{1,2})?$/.test(cleaned)) throw new Error('Enter an amount such as 2500 or 2500.50.');
-  const [whole, fraction = ''] = cleaned.split('.');
-  const amount = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
-  if (amount <= 0 || amount > 10 ** 13) throw new Error('Enter an amount greater than zero.');
-  return amount;
-}
+const pageTabs = ['Overview', 'Activity', 'Plan', 'To buy', 'Review'];
 
 function toOpeningMinor(value, allowNegative = false) {
   if (allowNegative && value.trim().startsWith('-')) return -toMinor(value.trim().slice(1));
@@ -281,6 +261,8 @@ export default function FinancePage() {
         <section className="cockpit-section"><div className="finance-section-head"><div><h2>Debt, tuition & obligations</h2><p>Record each payment to reduce the remaining amount.</p></div><button type="button" className="btn-secondary" onClick={() => setObligationEditor('new')}><Plus size={15} /> Add obligation</button></div>{obligationEditor && <ObligationForm key={obligationEditor === 'new' ? 'new' : obligationEditor.id} initial={obligationEditor === 'new' ? null : obligationEditor} currency={currency} onCancel={() => setObligationEditor(null)} onSave={async (data) => { if (obligationEditor === 'new') await api.createFinanceObligation(data); else await api.updateFinanceObligation(obligationEditor.id, data); setObligationEditor(null); refresh(); }} />}{overview.obligations.length ? overview.obligations.map((item) => <div className="finance-list-row" key={item.id}><div><strong>{item.title}</strong><small>{item.kind}{item.urgent ? ' · urgent' : ''}{item.due_date ? ` · due ${niceDate(item.due_date)}` : ''}{item.remaining_minor === 0 ? ' · cleared' : ''}</small></div><div className="finance-row-right"><strong>{money(item.remaining_minor, currency)}</strong><div>{item.remaining_minor > 0 && <button type="button" className="finance-link" onClick={() => setPaying(item)}>Record payment</button>}<button type="button" className="finance-link" onClick={() => setObligationEditor(item)}>Edit</button><button type="button" className={`finance-link danger${confirmDelete === `obligation-${item.id}` ? ' confirming' : ''}`} onClick={() => remove(`obligation-${item.id}`, () => api.deleteFinanceObligation(item.id))}>{confirmDelete === `obligation-${item.id}` ? 'Confirm delete' : 'Delete'}</button></div></div></div>) : <p className="finance-empty">No obligations recorded.</p>}{paying && <PaymentForm key={paying.id} obligation={paying} currency={currency} onCancel={() => setPaying(null)} onSave={async (data) => { await api.payFinanceObligation(paying.id, data); setPaying(null); refresh(); }} />}</section>
         <section className="cockpit-section"><div className="finance-section-head"><div><h2>Balances & runway target</h2><p>Set the amounts you held before tracking in Lock In.</p></div><Wallet size={20} aria-hidden="true" /></div><SettingsForm settings={overview.settings} onSave={async (data) => { await api.saveFinanceSettings(data); refresh(); }} /></section>
       </>}
+
+      {tab === 'To buy' && <FinanceToBuy currency={currency} />}
 
       {tab === 'Review' && <section className="cockpit-section"><div className="finance-section-head"><div><h2>Weekly money review</h2><p>{niceDate(overview.week.start)} – {niceDate(overview.week.end)}</p></div><div className="finance-month-switch"><button type="button" className="icon-btn" aria-label="Previous money review week" onClick={() => setReviewDate((date) => addDays(date, -7))}><ChevronLeft size={17} /></button><button type="button" className="btn-secondary" onClick={() => setReviewDate(today)}>This week</button><button type="button" className="icon-btn" aria-label="Next money review week" onClick={() => setReviewDate((date) => addDays(date, 7))}><ChevronRight size={17} /></button></div></div><ReviewForm key={overview.week.start} week={overview.week} currency={currency} onSave={(data) => api.saveFinanceWeeklyReview(overview.week.start, data)} /></section>}
     </>}
