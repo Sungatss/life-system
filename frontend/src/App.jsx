@@ -14,6 +14,7 @@ import FinancePage from './pages/FinancePage';
 import RewardFeedback from './components/RewardFeedback';
 import LoginScreen from './components/LoginScreen';
 import AssistantPanel from './components/AssistantPanel';
+import CatPet from './components/CatPet';
 import { api } from './api/client';
 import { getTheme } from './theme';
 import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
@@ -208,6 +209,7 @@ export default function App() {
       </div>
 
       {assistantOpen && <AssistantPanel onClose={closeAssistant} onApplied={() => setDataVersion((version) => version + 1)} />}
+      <CatPet activeTab={activeTab} />
       <RewardFeedback soundEnabled={soundEnabled} />
     </div>
   );
