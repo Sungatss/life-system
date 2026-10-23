@@ -4,9 +4,10 @@ import { api } from '../api/client';
 import ContributionGraph from '../components/ContributionGraph';
 import ReminderSettings from '../components/ReminderSettings';
 import WeeklyReviewPage from './WeeklyReviewPage';
+import { hideablePages } from '../utils/navigationPreferences';
 import './ProfilePage.css';
 
-export default function ProfilePage({ onSignOut }) {
+export default function ProfilePage({ onSignOut, hiddenPages, onTogglePageVisibility }) {
   const [profile, setProfile] = useState(null);
   const [progress, setProgress] = useState(null);
   const [contributions, setContributions] = useState(null);
@@ -118,6 +119,19 @@ export default function ProfilePage({ onSignOut }) {
       {contributions && <ContributionGraph contributions={contributions} title="Contributions" />}
 
       <ReminderSettings />
+
+      <section className="navigation-settings" aria-labelledby="navigation-settings-title">
+        <h2 id="navigation-settings-title">Navigation</h2>
+        <p>Choose which page buttons appear. Your pages and data remain available. Changes are saved on this device.</p>
+        <div className="navigation-settings-list">
+          {hideablePages.map(({ id, label }) => (
+            <label className="navigation-settings-option" key={id}>
+              <span>Show {label}</span>
+              <input type="checkbox" checked={!hiddenPages.includes(id)} onChange={() => onTogglePageVisibility(id)} />
+            </label>
+          ))}
+        </div>
+      </section>
 
       <WeeklyReviewPage />
     </div>

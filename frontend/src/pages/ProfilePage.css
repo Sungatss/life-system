@@ -42,6 +42,13 @@
 .reminder-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
 .reminder-controls label, .reminder-state { font-size: 13px; color: var(--text-secondary); }
 .reminder-controls input { padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg-subtle); color: var(--text-primary); font: inherit; }
+.navigation-settings { padding: 20px 24px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle); }
+.navigation-settings h2 { margin: 0; font-size: 19px; }
+.navigation-settings p { margin: 10px 0 16px; color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+.navigation-settings-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.navigation-settings-option { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; padding: 9px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); cursor: pointer; }
+.navigation-settings-option:hover { background: var(--bg-subtle); }
+.navigation-settings-option input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); cursor: pointer; }
 @media (max-width: 760px) {
   .profile-hero { flex-wrap: wrap; gap: 14px; padding: 18px; }
   .profile-avatar { width: 82px; height: 82px; border-radius: 18px; }
@@ -52,6 +59,7 @@
   .profile-stats { gap: 8px; }
   .profile-stats > div { padding: 12px; }
   .profile-stats strong { font-size: 15px; }
+  .navigation-settings-list { grid-template-columns: 1fr; }
 }
 @media (max-width: 380px) { .profile-stats { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .profile-level-bar span { transition: none; } }

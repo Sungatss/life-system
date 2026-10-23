@@ -17,6 +17,7 @@ import AssistantPanel from './components/AssistantPanel';
 import { api } from './api/client';
 import { getTheme } from './theme';
 import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
+import { getHiddenPages, saveHiddenPages } from './utils/navigationPreferences';
 
 const views = ['today', 'inbox', 'projects', 'goals', 'calendar', 'finance', 'tasks', 'habits', 'profile'];
 const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
@@ -37,6 +38,7 @@ export default function App() {
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [isNarrow, setIsNarrow] = useState(() => window.matchMedia(narrowScreen).matches);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('life-system-sidebar-collapsed') === 'true');
+  const [hiddenPages, setHiddenPages] = useState(getHiddenPages);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [dataVersion, setDataVersion] = useState(0);
   const closeAssistant = useCallback(() => setAssistantOpen(false), []);
@@ -55,6 +57,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('life-system-sidebar-collapsed', String(sidebarCollapsed));
   }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    saveHiddenPages(hiddenPages);
+  }, [hiddenPages]);
 
   useEffect(() => {
     if (!mobileSidebarOpen) return undefined;
@@ -116,6 +122,12 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const togglePageVisibility = (id) => {
+    setHiddenPages((current) => current.includes(id)
+      ? current.filter((page) => page !== id)
+      : [...current, id]);
+  };
+
   const signOut = async () => {
     try {
       const registration = await navigator.serviceWorker?.ready;
@@ -152,6 +164,7 @@ export default function App() {
       <Sidebar
         activeTab={activeTab}
         expanded={sidebarExpanded}
+        hiddenPages={hiddenPages}
         onNavigate={navigateTo}
         onToggle={() => {
           if (isNarrow) setMobileSidebarOpen((open) => !open);
@@ -161,6 +174,7 @@ export default function App() {
       <div className="app-container" inert={isNarrow && mobileSidebarOpen}>
         <Header
           activeTab={activeTab}
+          showCalendar={!hiddenPages.includes('calendar')}
           onNavigate={navigateTo}
           theme={theme}
           onSelectTheme={setTheme}
@@ -189,7 +203,7 @@ export default function App() {
           {activeTab === 'finance' && <FinancePage />}
           {activeTab === 'tasks' && <TasksPage />}
           {activeTab === 'habits' && <HabitsPage />}
-          {activeTab === 'profile' && <ProfilePage onSignOut={signOut} />}
+          {activeTab === 'profile' && <ProfilePage onSignOut={signOut} hiddenPages={hiddenPages} onTogglePageVisibility={togglePageVisibility} />}
         </main>
       </div>
 

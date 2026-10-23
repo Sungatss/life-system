@@ -11,7 +11,7 @@ const items = [
   { id: 'profile', label: 'Profile', icon: UserRound },
 ];
 
-export default function Sidebar({ activeTab, expanded, onNavigate, onToggle }) {
+export default function Sidebar({ activeTab, expanded, hiddenPages, onNavigate, onToggle }) {
   return (
     <aside className="app-sidebar" aria-label="Sidebar">
       <div className="sidebar-top">
@@ -32,7 +32,7 @@ export default function Sidebar({ activeTab, expanded, onNavigate, onToggle }) {
         </button>
       </div>
       <nav className="sidebar-nav" id="main-navigation" aria-label="Main navigation">
-        {items.map(({ id, label, icon: Icon }) => (
+        {items.filter(({ id }) => !hiddenPages.includes(id)).map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             type="button"
