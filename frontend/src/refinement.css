@@ -85,18 +85,18 @@
 
 [data-theme='glass-green'] {
   color-scheme: dark;
-  --bg-primary: #171b1c;
-  --bg-surface: rgba(31, 37, 38, 0.82);
-  --bg-surface-hover: rgba(43, 49, 50, 0.9);
-  --bg-subtle: rgba(72, 82, 80, 0.4);
-  --bg-elevated: rgba(35, 42, 43, 0.87);
-  --border-subtle: rgba(169, 190, 180, 0.22);
-  --border-strong: rgba(178, 197, 188, 0.44);
+  --bg-primary: #141819;
+  --bg-surface: rgba(21, 26, 27, 0.88);
+  --bg-surface-hover: rgba(34, 41, 42, 0.94);
+  --bg-subtle: rgba(48, 57, 55, 0.52);
+  --bg-elevated: rgba(27, 33, 34, 0.9);
+  --border-subtle: rgba(158, 178, 167, 0.2);
+  --border-strong: rgba(171, 190, 179, 0.38);
   --text-primary: #f0f2f1;
   --text-secondary: #cbd2cf;
   --text-muted: #a8b4af;
-  --accent: #b9c8c0;
-  --accent-subtle: rgba(185, 200, 192, 0.14);
+  --accent: #93a99e;
+  --accent-subtle: rgba(147, 169, 158, 0.12);
   --success: #a4c6ae;
   --success-subtle: rgba(164, 198, 174, 0.14);
   --warning: #d7c5a4;
@@ -107,7 +107,7 @@
   --heatmap-2: #53645d;
   --heatmap-3: #82978a;
   --heatmap-4: #b9c8c0;
-  --shadow-subtle: 0 20px 46px rgba(0, 0, 0, 0.31), inset 0 1px 0 rgba(239, 244, 241, 0.05);
+  --shadow-subtle: 0 20px 46px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(239, 244, 241, 0.04);
 }
 
 [data-theme='light-matcha'] {
@@ -143,9 +143,9 @@ body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), trans
 [data-theme='dark-gray'] body { background: var(--bg-primary); }
 [data-theme='glass-green'] body {
   background:
-    radial-gradient(ellipse at 88% 3%, rgba(158, 175, 162, 0.06), transparent 38rem),
-    radial-gradient(ellipse at 14% 72%, rgba(112, 132, 121, 0.07), transparent 46rem),
-    linear-gradient(155deg, #15191a, #202627 54%, #131819);
+    radial-gradient(ellipse at 88% 3%, rgba(158, 175, 162, 0.04), transparent 38rem),
+    radial-gradient(ellipse at 14% 72%, rgba(112, 132, 121, 0.05), transparent 46rem),
+    linear-gradient(155deg, #111516, #1b2021 54%, #111516);
   background-attachment: fixed;
 }
 [data-theme='glass-green'] :is(
@@ -157,13 +157,13 @@ body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), trans
   -webkit-backdrop-filter: blur(20px) saturate(100%);
   backdrop-filter: blur(20px) saturate(100%);
 }
-[data-theme='glass-green'] .app-header { background: rgba(26, 31, 33, 0.78); }
+[data-theme='glass-green'] .app-header { background: rgba(18, 22, 23, 0.86); }
 [data-theme='glass-green'] .cockpit-date-banner {
   border-color: var(--border-subtle);
-  background: linear-gradient(130deg, rgba(88, 99, 94, 0.23), rgba(36, 43, 44, 0.84) 58%, rgba(27, 34, 35, 0.8));
+  background: linear-gradient(130deg, rgba(35, 42, 41, 0.74), rgba(21, 27, 28, 0.91) 58%, rgba(18, 23, 24, 0.88));
 }
 [data-theme='glass-green'] :is(.modal-content, .assistant-dialog, .theme-menu, .login-card) {
-  background: rgba(33, 40, 41, 0.95);
+  background: rgba(23, 29, 30, 0.96);
 }
 [data-theme='glass-green'] .modal-overlay { background: rgba(7, 11, 12, 0.78); }
 [data-theme='glass-green'] .assistant-dialog::backdrop { background: rgba(7, 11, 12, 0.78); }
