@@ -2,7 +2,7 @@ export const themes = [
   { id: 'light', label: 'White with black text', background: '#ffffff', accent: '#000000' },
   { id: 'dark', label: 'Dark blue with white', background: '#0c1219', accent: '#8bbefb' },
   { id: 'dark-gray', label: 'Dark gray with white', background: '#161616', accent: '#ffffff' },
-  { id: 'glass-green', label: 'Forest glass', background: '#1b2421', accent: '#a9c0ac' },
+  { id: 'glass-green', label: 'Dark glass gray', background: '#171b1c', accent: '#b9c8c0' },
   { id: 'light-matcha', label: 'White with matcha green', background: '#fbfcf9', accent: '#506d3d' },
 ];
 
