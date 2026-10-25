@@ -75,7 +75,7 @@ export default function Header({ activeTab, showCalendar, onNavigate, theme, onS
                 aria-pressed={theme === option.id}
                 onClick={() => selectTheme(option.id)}
               >
-                <span className="theme-swatch" style={{ '--swatch-bg': option.background, '--swatch-accent': option.accent }} aria-hidden="true"><i /></span>
+                <span className={`theme-swatch${option.swatch ? ' theme-swatch-palette' : ''}`} style={{ '--swatch-bg': option.swatch || option.background, '--swatch-accent': option.accent }} aria-hidden="true"><i /></span>
                 <span>{option.label}</span>
                 {theme === option.id && <Check size={16} className="theme-option-check" aria-hidden="true" />}
               </button>

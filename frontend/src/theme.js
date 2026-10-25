@@ -4,6 +4,10 @@ export const themes = [
   { id: 'dark-gray', label: 'Dark gray with white', background: '#161616', accent: '#ffffff' },
   { id: 'glass-green', label: 'Dark glass gray', background: '#141819', accent: '#93a99e' },
   { id: 'light-matcha', label: 'White with matcha green', background: '#fbfcf9', accent: '#506d3d' },
+  {
+    id: 'bloom', label: 'Bloom · peach and blue', background: '#f4eee0', accent: '#3173ad',
+    swatch: 'linear-gradient(90deg, #ffa47f 0 25%, #f4eee0 25% 50%, #3173ad 50% 75%, #193857 75%)',
+  },
 ];
 
 export const getTheme = (id) => {

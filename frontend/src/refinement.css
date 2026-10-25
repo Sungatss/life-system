@@ -137,6 +137,36 @@
   --shadow-subtle: 0 16px 42px rgba(54, 83, 47, 0.07);
 }
 
+[data-theme='bloom'] {
+  color-scheme: light;
+  --bg-primary: #f4eee0;
+  --bg-surface: #fffaf2;
+  --bg-surface-hover: #eef3f5;
+  --bg-subtle: #e5edf2;
+  --bg-elevated: #f8f2e8;
+  --border-subtle: #d5d9d7;
+  --border-strong: #8297a5;
+  --text-primary: #193857;
+  --text-secondary: #385570;
+  --text-muted: #566b7c;
+  --accent: #28689c;
+  --accent-subtle: #d9eaf5;
+  --success: #286f65;
+  --success-subtle: #dcece6;
+  --warning: #98571e;
+  --warning-subtle: #f9e4cf;
+  --danger: #a33f43;
+  --danger-subtle: #f8e2df;
+  --heatmap-1: #dce8ef;
+  --heatmap-2: #9fc4d9;
+  --heatmap-3: #6099c2;
+  --heatmap-4: #3173ad;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-subtle: 0 3px 0 #e0d8ca;
+}
+
 html { scroll-behavior: smooth; }
 body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), transparent 34rem), var(--bg-primary); }
 [data-theme='light'] body { background: var(--bg-primary); }
@@ -168,6 +198,42 @@ body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), trans
 [data-theme='glass-green'] .modal-overlay { background: rgba(7, 11, 12, 0.78); }
 [data-theme='glass-green'] .assistant-dialog::backdrop { background: rgba(7, 11, 12, 0.78); }
 [data-theme='glass-green'] .brand-avatar { background: #303b3b; }
+[data-theme='bloom'] body { background: var(--bg-primary); }
+[data-theme='bloom'] .app-sidebar {
+  --bg-surface: #193857;
+  --bg-subtle: #284b6b;
+  --text-primary: #f4eee0;
+  --text-secondary: #d8e5ef;
+  --text-muted: #b6cada;
+  --accent: #ffab85;
+  --accent-subtle: #355774;
+  --border-subtle: #3d5b76;
+  --border-strong: #87a1b7;
+}
+[data-theme='bloom'] .app-header {
+  background: var(--bg-primary);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-theme='bloom'] .cockpit-date-banner {
+  border-color: #e28d6d;
+  background: #ffa47f;
+  color: #193857;
+}
+[data-theme='bloom'] .cockpit-date-banner :is(.cockpit-weekday, .page-intro) { color: #193857; }
+[data-theme='bloom'] .cockpit-date-banner :is(.date-nav-btn, .calendar-icon-btn) {
+  border-color: #d98769;
+  background: #fff2e4;
+  color: #193857;
+}
+[data-theme='bloom'] .progress-ring-section,
+[data-theme='bloom'] .progress-card { background: #e5f0f5; }
+[data-theme='bloom'] .modal-overlay {
+  background: rgba(25, 56, 87, 0.65);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-theme='bloom'] .brand-avatar { background: #3173ad; }
 button { -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: not-allowed; opacity: 0.5; }
 :where(button, a, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -297,6 +363,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .theme-option.active { border-color: var(--border-strong); background: var(--accent-subtle); }
 .theme-swatch { display: grid; place-items: center; width: 27px; height: 27px; flex: none; border: 1px solid var(--border-strong); border-radius: 9px; background: var(--swatch-bg); }
 .theme-swatch i { width: 12px; height: 12px; border-radius: 50%; background: var(--swatch-accent); }
+.theme-swatch-palette i { display: none; }
 .theme-option-check { margin-left: auto; color: var(--accent); }
 .app-main { min-width: 0; padding-bottom: 20px; }
 
