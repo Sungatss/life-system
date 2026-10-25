@@ -167,6 +167,36 @@
   --shadow-subtle: 0 3px 0 #e0d8ca;
 }
 
+[data-theme='bloom-dark'] {
+  color-scheme: dark;
+  --bg-primary: #102b45;
+  --bg-surface: #193857;
+  --bg-surface-hover: #28506e;
+  --bg-subtle: #294b68;
+  --bg-elevated: #214360;
+  --border-subtle: #41627d;
+  --border-strong: #83a3bb;
+  --text-primary: #f4eee0;
+  --text-secondary: #dce6e9;
+  --text-muted: #b9cbd5;
+  --accent: #ffa47f;
+  --accent-subtle: #35485f;
+  --success: #9bd9c4;
+  --success-subtle: #275a61;
+  --warning: #ffd098;
+  --warning-subtle: #674b45;
+  --danger: #ffaaa8;
+  --danger-subtle: #663f50;
+  --heatmap-1: #294d6b;
+  --heatmap-2: #3173ad;
+  --heatmap-3: #6eabd0;
+  --heatmap-4: #ffab85;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-subtle: 0 3px 0 #0b2237;
+}
+
 html { scroll-behavior: smooth; }
 body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), transparent 34rem), var(--bg-primary); }
 [data-theme='light'] body { background: var(--bg-primary); }
@@ -234,6 +264,33 @@ body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), trans
   backdrop-filter: none;
 }
 [data-theme='bloom'] .brand-avatar { background: #3173ad; }
+[data-theme='bloom-dark'] body { background: var(--bg-primary); }
+[data-theme='bloom-dark'] .app-sidebar { background: #0b2237; }
+[data-theme='bloom-dark'] .app-header {
+  background: var(--bg-primary);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-theme='bloom-dark'] .cockpit-date-banner {
+  border-color: #6d9cc3;
+  background: #28689c;
+  color: #f4eee0;
+}
+[data-theme='bloom-dark'] .cockpit-date-banner :is(.cockpit-weekday, .page-intro) { color: #f4eee0; }
+[data-theme='bloom-dark'] .cockpit-date-banner .cockpit-weekday { color: #ffdfcc; }
+[data-theme='bloom-dark'] .cockpit-date-banner :is(.date-nav-btn, .calendar-icon-btn) {
+  border-color: #85a9c4;
+  background: #193857;
+  color: #f4eee0;
+}
+[data-theme='bloom-dark'] .progress-ring-section,
+[data-theme='bloom-dark'] .progress-card { background: #234969; }
+[data-theme='bloom-dark'] .modal-overlay {
+  background: rgba(5, 17, 30, 0.76);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-theme='bloom-dark'] .brand-avatar { background: #3173ad; }
 button { -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: not-allowed; opacity: 0.5; }
 :where(button, a, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
