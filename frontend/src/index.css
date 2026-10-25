@@ -545,21 +545,7 @@ a {
   border-color: var(--success);
 }
 
-/* Filter Pills */
-.filter-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  margin-bottom: 16px;
-  scrollbar-width: none;
-}
-
-.filter-bar::-webkit-scrollbar {
-  display: none;
-}
-
+/* Filter pills in task editing */
 .filter-pill {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
