@@ -384,11 +384,15 @@ def get_today_overview(
     target_date = date or datetime.date.today().isoformat()
 
     today_tasks = crud.get_today_tasks(db, target_date)
+    today_events = db.query(models.CalendarEvent).filter(
+        models.CalendarEvent.date == target_date
+    ).order_by(models.CalendarEvent.start_time, models.CalendarEvent.id).all()
     habits = crud.get_habits_with_history(db, active_only=True, days=7, reference_date_str=target_date)
 
     return schemas.TodayOverview(
         date=target_date,
         tasks=[schemas.TaskResponse.model_validate(t) for t in today_tasks],
+        events=[schemas.CalendarEventResponse.model_validate(event) for event in today_events],
         habits=habits
     )
 

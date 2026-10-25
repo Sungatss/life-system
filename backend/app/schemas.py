@@ -236,6 +236,7 @@ class ProgressResponse(BaseModel):
 class TodayOverview(BaseModel):
     date: str
     tasks: List[TaskResponse] = []
+    events: List[CalendarEventResponse] = Field(default_factory=list)
     habits: List[HabitItemResponse] = []
 
 

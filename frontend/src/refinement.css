@@ -490,8 +490,9 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   .today-page { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(360px, 1fr); gap: 0 20px; align-items: start; }
   .today-page > .cockpit-date-banner { grid-column: 1 / -1; }
   .today-page > .progress-ring-section { grid-column: 1 / -1; }
-  .today-page > .cockpit-section[aria-label='Today tasks section'] { grid-column: 1; }
-  .today-page > .cockpit-section[aria-label='Habits section'] { grid-column: 2; }
+  .today-page > .cockpit-section[aria-label='Events and deadlines for the selected day'] { grid-column: 1; }
+  .today-page > .cockpit-section[aria-label='Tasks for the selected day'] { grid-column: 1; }
+  .today-page > .cockpit-section[aria-label='Habits section'] { grid-column: 2; grid-row: 2 / span 2; }
   .today-page > .contribution-container { grid-column: 1 / -1; }
 }
 

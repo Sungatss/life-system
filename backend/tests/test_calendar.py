@@ -36,14 +36,22 @@ class CalendarTests(unittest.TestCase):
         deadline = main.create_calendar_event(schemas.CalendarEventInput(
             title="Submit draft", kind="deadline", date="2026-10-20", start_time="17:00",
         ), self.db)
+        main.create_calendar_event(schemas.CalendarEventInput(
+            title="Watch a show", date="2026-10-20",
+        ), self.db)
         feed = main.read_calendar(dt.date(2026, 10, 19), dt.date(2026, 10, 25), self.db)
-        self.assertEqual([item.title for item in feed["events"]], ["Focus session", "Submit draft"])
+        self.assertEqual([item.title for item in feed["events"]], ["Watch a show", "Focus session", "Submit draft"])
         self.assertEqual([(item.title, item.project_name) for item in feed["tasks"]], [("Revise chapter", "Exam prep")])
+        today = main.get_today_overview("2026-10-20", self.db)
+        self.assertEqual([item.title for item in today.events], ["Watch a show", "Focus session", "Submit draft"])
+        self.assertEqual([item.title for item in today.tasks], ["Revise chapter"])
+        self.assertEqual(main.get_today_overview("2026-10-19", self.db).events, [])
 
         main.update_calendar_event(event.id, schemas.CalendarEventInput(
             title="Focus later", date="2026-10-21", start_time="11:00", end_time="12:00",
         ), self.db)
         self.assertEqual(self.db.get(models.CalendarEvent, event.id).date, "2026-10-21")
+        self.assertEqual([item.title for item in main.get_today_overview("2026-10-21", self.db).events], ["Focus later"])
         main.delete_calendar_event(deadline.id, self.db)
         self.assertIsNone(self.db.get(models.CalendarEvent, deadline.id))
         self.assertEqual(self.db.query(models.Task).one().due_date, "2026-10-20")

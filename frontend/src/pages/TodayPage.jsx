@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../api/client';
 import QuickTaskInput from '../components/QuickTaskInput';
 import TaskItem from '../components/TaskItem';
+import TodayEvents from '../components/TodayEvents';
 import HabitItem from '../components/HabitItem';
 import ContributionGraph from '../components/ContributionGraph';
 import DateNavigator from '../components/DateNavigator';
@@ -47,6 +48,26 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     loadTodayData();
     return () => { requestIdRef.current += 1; };
   }, [currentDateStr]);
+
+  // Calendar events stay separate from tasks and progress.
+  const handleSavedEvent = (saved) => {
+    setTodayData((prev) => {
+      if (prev?.date !== saved.date) return prev;
+      const events = prev.events || [];
+      return {
+        ...prev,
+        events: events.some((item) => item.id === saved.id)
+          ? events.map((item) => item.id === saved.id ? saved : item)
+          : [...events, saved],
+      };
+    });
+  };
+
+  const handleDeletedEvent = (eventId, date) => {
+    setTodayData((prev) => prev?.date === date
+      ? { ...prev, events: (prev.events || []).filter((item) => item.id !== eventId) }
+      : prev);
+  };
 
   // Task actions
   const handleAddTask = async (taskPayload) => {
@@ -217,6 +238,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   }
 
   const tasks = hasCurrentData ? todayData.tasks : [];
+  const events = hasCurrentData ? todayData.events || [] : [];
   const habits = hasCurrentData ? todayData.habits : [];
 
   const completedTasksCount = tasks.filter((t) => t.completed).length;
@@ -230,12 +252,20 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         onDateChange={setCurrentDateStr}
       />
 
-      {/* Today's Tasks */}
-      <section className="cockpit-section" aria-label="Today tasks section">
+      <TodayEvents
+        key={currentDateStr}
+        date={currentDateStr}
+        events={events}
+        onSaved={handleSavedEvent}
+        onDeleted={handleDeletedEvent}
+      />
+
+      {/* Tasks for the selected day */}
+      <section className="cockpit-section" aria-label="Tasks for the selected day">
         <div className="section-header">
           <div className="section-title-wrap">
             <ListTodo size={16} />
-            <h2 className="section-title">Today's tasks</h2>
+            <h2 className="section-title">{currentDateStr === todayStr ? "Today's tasks" : 'Tasks for this day'}</h2>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className="section-badge">
