@@ -4,27 +4,19 @@ import QuickTaskInput from '../components/QuickTaskInput';
 import TaskControls from '../components/TaskControls';
 import TaskItem from '../components/TaskItem';
 import { filterAndSortTasks, getTaskAreas } from '../utils/taskFilters';
+import useTaskViewSettings from '../hooks/useTaskViewSettings';
 import { CircleAlert } from 'lucide-react';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
-  const [status, setStatus] = useState('active');
-  const [priorities, setPriorities] = useState([]);
-  const [area, setArea] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
+  const { settings, change, reset } = useTaskViewSettings('tasks', 'active');
+  const { status, priorities, area, sortBy, pinned } = settings;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const requestIdRef = useRef(0);
   const areas = getTaskAreas(tasks);
   const visibleTasks = filterAndSortTasks(tasks, { status, priorities, area, sortBy });
   const hasFilters = status !== 'all' || priorities.length > 0 || Boolean(area);
-
-  const resetSettings = () => {
-    setStatus('all');
-    setPriorities([]);
-    setArea('');
-    setSortBy('newest');
-  };
 
   const loadTasks = () => {
     const requestId = ++requestIdRef.current;
@@ -96,16 +88,18 @@ export default function TasksPage() {
 
         <TaskControls
           status={status}
-          onStatusChange={setStatus}
+          onStatusChange={(value) => change({ status: value })}
           priorities={priorities}
-          onPrioritiesChange={setPriorities}
+          onPrioritiesChange={(value) => change({ priorities: value })}
           area={area}
-          onAreaChange={setArea}
+          onAreaChange={(value) => change({ area: value })}
           areas={areas}
           hasUnassignedArea={tasks.some((task) => !task.category)}
           sortBy={sortBy}
-          onSortChange={setSortBy}
-          onReset={resetSettings}
+          onSortChange={(value) => change({ sortBy: value })}
+          pinned={pinned}
+          onPinnedChange={(value) => change({ pinned: value })}
+          onReset={reset}
           visibleCount={visibleTasks.length}
           totalCount={tasks.length}
         />
@@ -124,7 +118,7 @@ export default function TasksPage() {
           <div className="empty-state">
             <p>{tasks.length ? 'No tasks match these filters.' : 'No tasks yet.'}</p>
             {tasks.length > 0 && hasFilters && (
-              <button type="button" className="btn-secondary" onClick={resetSettings}>
+              <button type="button" className="btn-secondary" onClick={reset}>
                 Clear filters
               </button>
             )}

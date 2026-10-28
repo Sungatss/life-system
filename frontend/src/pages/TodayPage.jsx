@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../api/client';
 import QuickTaskInput from '../components/QuickTaskInput';
+import TaskControls from '../components/TaskControls';
 import TaskItem from '../components/TaskItem';
 import TodayEvents from '../components/TodayEvents';
 import HabitItem from '../components/HabitItem';
@@ -8,6 +9,8 @@ import ContributionGraph from '../components/ContributionGraph';
 import DateNavigator from '../components/DateNavigator';
 import { ListTodo, Flame, Plus } from 'lucide-react';
 import { getLocalDateStr } from '../utils/date';
+import { filterAndSortTasks, getTaskAreas } from '../utils/taskFilters';
+import useTaskViewSettings from '../hooks/useTaskViewSettings';
 
 export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const todayStr = getLocalDateStr();
@@ -16,6 +19,8 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const [contributions, setContributions] = useState(null);
   const [error, setError] = useState(null);
   const requestIdRef = useRef(0);
+  const { settings, change, reset } = useTaskViewSettings('today', 'all');
+  const { status, priorities, area, sortBy, pinned } = settings;
 
   const loadTodayData = async () => {
     const requestId = ++requestIdRef.current;
@@ -240,6 +245,9 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const tasks = hasCurrentData ? todayData.tasks : [];
   const events = hasCurrentData ? todayData.events || [] : [];
   const habits = hasCurrentData ? todayData.habits : [];
+  const visibleTasks = filterAndSortTasks(tasks, settings);
+  const taskAreas = getTaskAreas(tasks);
+  const hasTaskFilters = status !== 'all' || priorities.length > 0 || Boolean(area);
 
   const completedTasksCount = tasks.filter((t) => t.completed).length;
   const completedHabitsCount = habits.filter((h) => h.completed_today).length;
@@ -288,13 +296,34 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
           defaultDueDate={currentDateStr}
         />
 
-        {tasks.length === 0 ? (
+        <TaskControls
+          status={status}
+          onStatusChange={(value) => change({ status: value })}
+          priorities={priorities}
+          onPrioritiesChange={(value) => change({ priorities: value })}
+          area={area}
+          onAreaChange={(value) => change({ area: value })}
+          areas={taskAreas}
+          hasUnassignedArea={tasks.some((task) => !task.category)}
+          sortBy={sortBy}
+          onSortChange={(value) => change({ sortBy: value })}
+          pinned={pinned}
+          onPinnedChange={(value) => change({ pinned: value })}
+          onReset={reset}
+          visibleCount={visibleTasks.length}
+          totalCount={tasks.length}
+        />
+
+        {visibleTasks.length === 0 ? (
           <div className="empty-state">
-            <p>No tasks scheduled for today.</p>
+            <p>{tasks.length ? 'No tasks match these filters.' : 'No tasks for this day.'}</p>
+            {tasks.length > 0 && hasTaskFilters && (
+              <button type="button" className="btn-secondary" onClick={reset}>Clear filters</button>
+            )}
           </div>
         ) : (
           <div className="task-list">
-            {tasks.map((task) => (
+            {visibleTasks.map((task) => (
               <TaskItem
                 key={task.id}
                 task={task}
