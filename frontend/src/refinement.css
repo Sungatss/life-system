@@ -58,29 +58,29 @@
 
 [data-theme='dark-gray'] {
   color-scheme: dark;
-  --bg-primary: #161616;
-  --bg-surface: #222222;
-  --bg-surface-hover: #2b2b2b;
+  --bg-primary: #101010;
+  --bg-surface: #1c1c1c;
+  --bg-surface-hover: #262626;
   --bg-subtle: #303030;
-  --bg-elevated: #292929;
+  --bg-elevated: #232323;
   --border-subtle: #3b3b3b;
   --border-strong: #686868;
   --text-primary: #ffffff;
   --text-secondary: #e0e0e0;
   --text-muted: #b5b5b5;
   --accent: #ffffff;
-  --accent-subtle: rgba(255, 255, 255, 0.12);
+  --accent-subtle: #303030;
   --success: #84d6ae;
-  --success-subtle: rgba(132, 214, 174, 0.15);
+  --success-subtle: #253a30;
   --warning: #efbc7d;
-  --warning-subtle: rgba(239, 188, 125, 0.15);
+  --warning-subtle: #3b3026;
   --danger: #f29ba4;
-  --danger-subtle: rgba(242, 155, 164, 0.15);
+  --danger-subtle: #3d2a2d;
   --heatmap-1: #383838;
   --heatmap-2: #575757;
   --heatmap-3: #858585;
   --heatmap-4: #b8b8b8;
-  --shadow-subtle: 0 14px 40px rgba(0, 0, 0, 0.22);
+  --shadow-subtle: 0 2px 0 #080808;
 }
 
 [data-theme='glass-green'] {
@@ -169,32 +169,32 @@
 
 [data-theme='bloom-dark'] {
   color-scheme: dark;
-  --bg-primary: #0b1929;
-  --bg-surface: #13283b;
-  --bg-surface-hover: #1b364d;
-  --bg-subtle: #203a50;
-  --bg-elevated: #193248;
-  --border-subtle: #34556f;
-  --border-strong: #83a3bb;
-  --text-primary: #f4eee0;
-  --text-secondary: #dce6e9;
-  --text-muted: #b9cbd5;
+  --bg-primary: #12100f;
+  --bg-surface: #211d1b;
+  --bg-surface-hover: #2c2623;
+  --bg-subtle: #342b27;
+  --bg-elevated: #29231f;
+  --border-subtle: #51423b;
+  --border-strong: #8f7264;
+  --text-primary: #f7ede6;
+  --text-secondary: #ddccc2;
+  --text-muted: #bca89d;
   --accent: #ffa47f;
-  --accent-subtle: #35485f;
-  --success: #9bd9c4;
-  --success-subtle: #275a61;
+  --accent-subtle: #433026;
+  --success: #a9d4b5;
+  --success-subtle: #263b30;
   --warning: #ffd098;
-  --warning-subtle: #674b45;
+  --warning-subtle: #443125;
   --danger: #ffaaa8;
-  --danger-subtle: #663f50;
-  --heatmap-1: #294d6b;
-  --heatmap-2: #3173ad;
-  --heatmap-3: #6eabd0;
-  --heatmap-4: #ffab85;
+  --danger-subtle: #432729;
+  --heatmap-1: #3b2a24;
+  --heatmap-2: #704333;
+  --heatmap-3: #b36a4d;
+  --heatmap-4: #ffa47f;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --shadow-subtle: 0 3px 0 #0b2237;
+  --shadow-subtle: 0 3px 0 #090807;
 }
 
 html { scroll-behavior: smooth; }
@@ -276,32 +276,32 @@ body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), trans
 }
 [data-theme='bloom'] .brand-avatar { background: #3173ad; }
 [data-theme='bloom-dark'] body { background: var(--bg-primary); }
-[data-theme='bloom-dark'] .app-sidebar { background: #091522; }
+[data-theme='bloom-dark'] .app-sidebar { background: #191513; }
 [data-theme='bloom-dark'] .app-header {
   background: var(--bg-primary);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 [data-theme='bloom-dark'] .cockpit-date-banner {
-  border-color: #426581;
-  background: #1d405e;
-  color: #f4eee0;
+  border-color: #77513f;
+  background: #3b2b24;
+  color: var(--text-primary);
 }
-[data-theme='bloom-dark'] .cockpit-date-banner :is(.cockpit-weekday, .page-intro) { color: #f4eee0; }
+[data-theme='bloom-dark'] .cockpit-date-banner :is(.cockpit-weekday, .page-intro) { color: var(--text-primary); }
 [data-theme='bloom-dark'] .cockpit-date-banner .cockpit-weekday { color: #ffdfcc; }
 [data-theme='bloom-dark'] .cockpit-date-banner :is(.date-nav-btn, .calendar-icon-btn) {
-  border-color: #85a9c4;
-  background: #193857;
-  color: #f4eee0;
+  border-color: #72584d;
+  background: #231b18;
+  color: var(--text-primary);
 }
 [data-theme='bloom-dark'] .progress-ring-section,
-[data-theme='bloom-dark'] .progress-card { background: #234969; }
+[data-theme='bloom-dark'] .progress-card { background: #332620; }
 [data-theme='bloom-dark'] .modal-overlay {
-  background: rgba(5, 17, 30, 0.76);
+  background: rgba(6, 5, 4, 0.84);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
-[data-theme='bloom-dark'] .brand-avatar { background: #3173ad; }
+[data-theme='bloom-dark'] .brand-avatar { background: #52362b; }
 button { -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: not-allowed; opacity: 0.5; }
 :where(button, a, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
