@@ -9,7 +9,7 @@ export const themes = [
     swatch: 'linear-gradient(90deg, #ffa47f 0 25%, #f4eee0 25% 50%, #3173ad 50% 75%, #193857 75%)',
   },
   {
-    id: 'bloom-dark', label: 'Bloom Dark · navy and peach', background: '#102b45', accent: '#ffa47f',
+    id: 'bloom-dark', label: 'Bloom Dark · navy and peach', background: '#0b1929', accent: '#ffa47f',
     swatch: 'linear-gradient(90deg, #193857 0 25%, #3173ad 25% 50%, #ffa47f 50% 75%, #f4eee0 75%)',
   },
 ];

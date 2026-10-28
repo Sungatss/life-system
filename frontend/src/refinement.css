@@ -169,12 +169,12 @@
 
 [data-theme='bloom-dark'] {
   color-scheme: dark;
-  --bg-primary: #102b45;
-  --bg-surface: #193857;
-  --bg-surface-hover: #28506e;
-  --bg-subtle: #294b68;
-  --bg-elevated: #214360;
-  --border-subtle: #41627d;
+  --bg-primary: #0b1929;
+  --bg-surface: #13283b;
+  --bg-surface-hover: #1b364d;
+  --bg-subtle: #203a50;
+  --bg-elevated: #193248;
+  --border-subtle: #34556f;
   --border-strong: #83a3bb;
   --text-primary: #f4eee0;
   --text-secondary: #dce6e9;
@@ -201,6 +201,17 @@ html { scroll-behavior: smooth; }
 body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), transparent 34rem), var(--bg-primary); }
 [data-theme='light'] body { background: var(--bg-primary); }
 [data-theme='dark-gray'] body { background: var(--bg-primary); }
+[data-theme='dark-gray'] .app-header {
+  background: var(--bg-primary);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-theme='dark-gray'] .cockpit-date-banner { background: var(--bg-surface); }
+[data-theme='dark-gray'] .modal-overlay {
+  background: rgba(0, 0, 0, 0.82);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 [data-theme='glass-green'] body {
   background:
     radial-gradient(ellipse at 88% 3%, rgba(158, 175, 162, 0.04), transparent 38rem),
@@ -265,15 +276,15 @@ body { background: radial-gradient(circle at 82% 0%, var(--accent-subtle), trans
 }
 [data-theme='bloom'] .brand-avatar { background: #3173ad; }
 [data-theme='bloom-dark'] body { background: var(--bg-primary); }
-[data-theme='bloom-dark'] .app-sidebar { background: #0b2237; }
+[data-theme='bloom-dark'] .app-sidebar { background: #091522; }
 [data-theme='bloom-dark'] .app-header {
   background: var(--bg-primary);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 [data-theme='bloom-dark'] .cockpit-date-banner {
-  border-color: #6d9cc3;
-  background: #28689c;
+  border-color: #426581;
+  background: #1d405e;
   color: #f4eee0;
 }
 [data-theme='bloom-dark'] .cockpit-date-banner :is(.cockpit-weekday, .page-intro) { color: #f4eee0; }
