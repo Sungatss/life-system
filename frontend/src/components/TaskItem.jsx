@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Check, Edit2, Calendar, Plus, Trash2, X } from 'lucide-react';
+import { Check, ChevronDown, Edit2, Calendar, Plus, Trash2, X } from 'lucide-react';
 import TaskEditModal from './TaskEditModal';
 import { getLocalDateStr } from '../utils/date';
 import { api } from '../api/client';
 import { useCompletionFlash } from './useCompletionFlash';
 
-export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtasksChange }) {
+export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtasksChange, compact = false }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddingStep, setIsAddingStep] = useState(false);
   const [newStepTitle, setNewStepTitle] = useState('');
@@ -16,6 +16,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
   const [toggleBusy, setToggleBusy] = useState(false);
   const [stepError, setStepError] = useState('');
   const [showCompletionPrompt, setShowCompletionPrompt] = useState(false);
+  const [stepsExpanded, setStepsExpanded] = useState(!compact);
   const [completionFlash, flashCompletion] = useCompletionFlash();
   const openerRef = useRef(null);
   const completionPromptRef = useRef(null);
@@ -114,7 +115,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
 
   return (
     <>
-      <div className={`task-card task-card-with-steps ${task.completed ? 'completed' : ''}${completionFlash ? ' completion-flash' : ''}`}>
+      <div className={`task-card task-card-with-steps ${task.completed ? 'completed' : ''}${completionFlash ? ' completion-flash' : ''}${compact ? ' task-card-compact' : ''}`}>
         <div className="task-main-row">
           <div className="task-left">
             <button type="button" className={`custom-checkbox ${task.completed ? 'checked' : ''}`}
@@ -143,9 +144,14 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
         {subtasks.length > 0 && (
           <div className="subtask-section">
             <div className="subtask-progress" aria-label={`${completedSteps} of ${subtasks.length} steps complete`}>
-              {completedSteps} of {subtasks.length} steps
+              {compact ? (
+                <button type="button" className="subtask-progress-toggle" onClick={() => setStepsExpanded((expanded) => !expanded)} aria-expanded={stepsExpanded}>
+                  <span>Steps {completedSteps}/{subtasks.length}</span><ChevronDown size={14} className={stepsExpanded ? 'rotated' : ''} aria-hidden="true" />
+                </button>
+              ) : `${completedSteps} of ${subtasks.length} steps`}
+              {compact && <span className="subtask-progress-track" aria-hidden="true"><span style={{ width: `${completedSteps / subtasks.length * 100}%` }} /></span>}
             </div>
-            <ul className="subtask-list">
+            {stepsExpanded && <ul className="subtask-list">
               {subtasks.map((step) => (
                 <li key={step.id} className="subtask-row">
                   <button type="button" className={`custom-checkbox subtask-checkbox ${step.completed ? 'checked' : ''}`}
@@ -173,7 +179,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
                   )}
                 </li>
               ))}
-            </ul>
+            </ul>}
             {completionPromptVisible && (
               <div className="subtask-completion-prompt" role="group" aria-label="All steps completed. Complete task?" tabIndex={-1} ref={completionPromptRef}>
                 <p>All steps completed. Complete task?</p>
@@ -186,7 +192,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
           </div>
         )}
 
-        {isAddingStep ? (
+        {(!compact || stepsExpanded || subtasks.length === 0) && (isAddingStep ? (
           <form className="subtask-add-form" onSubmit={addStep}>
             <input className="task-input-field subtask-input" value={newStepTitle}
               onChange={(event) => setNewStepTitle(event.target.value)} placeholder="Step"
@@ -196,7 +202,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onSubtask
           </form>
         ) : (
           <button type="button" className="subtask-add-button" onClick={() => setIsAddingStep(true)}><Plus size={14} /> Add step</button>
-        )}
+        ))}
         {stepError && <p className="form-error subtask-error" role="alert">{stepError}</p>}
       </div>
       <TaskEditModal task={task} isOpen={isModalOpen} onClose={closeModal} onSave={onUpdate} onDelete={onDelete} />

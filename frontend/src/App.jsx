@@ -207,7 +207,7 @@ export default function App() {
           {activeTab === 'goals' && <GoalsPage />}
           {activeTab === 'calendar' && <CalendarPage />}
           {activeTab === 'finance' && <FinancePage />}
-          {activeTab === 'tasks' && <TasksPage />}
+          {activeTab === 'tasks' && <TasksPage onNavigateToCalendar={() => navigateTo('calendar')} showCalendar={!hiddenPages.includes('calendar')} />}
           {activeTab === 'habits' && <HabitsPage />}
           {activeTab === 'profile' && <ProfilePage onSignOut={signOut} hiddenPages={hiddenPages} onTogglePageVisibility={togglePageVisibility} showCat={showCat} onToggleCatVisibility={() => setShowCat((visible) => !visible)} />}
         </main>
