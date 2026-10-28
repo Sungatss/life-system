@@ -34,6 +34,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(getInitialView);
   const [theme, setTheme] = useState(() => getTheme(localStorage.getItem('life-system-theme')).id);
   const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('life-system-sound') !== 'off');
+  const [showCat, setShowCat] = useState(() => localStorage.getItem('life-system-show-cat') !== 'false');
   const [authState, setAuthState] = useState({ loading: true, authenticated: false, configured: false });
   const [authError, setAuthError] = useState('');
   const [assistantOpen, setAssistantOpen] = useState(false);
@@ -62,6 +63,10 @@ export default function App() {
   useEffect(() => {
     saveHiddenPages(hiddenPages);
   }, [hiddenPages]);
+
+  useEffect(() => {
+    localStorage.setItem('life-system-show-cat', String(showCat));
+  }, [showCat]);
 
   useEffect(() => {
     if (!mobileSidebarOpen) return undefined;
@@ -204,12 +209,12 @@ export default function App() {
           {activeTab === 'finance' && <FinancePage />}
           {activeTab === 'tasks' && <TasksPage />}
           {activeTab === 'habits' && <HabitsPage />}
-          {activeTab === 'profile' && <ProfilePage onSignOut={signOut} hiddenPages={hiddenPages} onTogglePageVisibility={togglePageVisibility} />}
+          {activeTab === 'profile' && <ProfilePage onSignOut={signOut} hiddenPages={hiddenPages} onTogglePageVisibility={togglePageVisibility} showCat={showCat} onToggleCatVisibility={() => setShowCat((visible) => !visible)} />}
         </main>
       </div>
 
       {assistantOpen && <AssistantPanel onClose={closeAssistant} onApplied={() => setDataVersion((version) => version + 1)} />}
-      <CatPet activeTab={activeTab} paused={mobileSidebarOpen || assistantOpen} sidebarExpanded={sidebarExpanded} />
+      {showCat && <CatPet activeTab={activeTab} paused={mobileSidebarOpen || assistantOpen} sidebarExpanded={sidebarExpanded} />}
       <RewardFeedback soundEnabled={soundEnabled} />
     </div>
   );

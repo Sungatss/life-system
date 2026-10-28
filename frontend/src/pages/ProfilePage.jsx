@@ -7,7 +7,7 @@ import WeeklyReviewPage from './WeeklyReviewPage';
 import { hideablePages } from '../utils/navigationPreferences';
 import './ProfilePage.css';
 
-export default function ProfilePage({ onSignOut, hiddenPages, onTogglePageVisibility }) {
+export default function ProfilePage({ onSignOut, hiddenPages, onTogglePageVisibility, showCat, onToggleCatVisibility }) {
   const [profile, setProfile] = useState(null);
   const [progress, setProgress] = useState(null);
   const [contributions, setContributions] = useState(null);
@@ -119,6 +119,15 @@ export default function ProfilePage({ onSignOut, hiddenPages, onTogglePageVisibi
       {contributions && <ContributionGraph contributions={contributions} title="Contributions" />}
 
       <ReminderSettings />
+
+      <section className="navigation-settings" aria-labelledby="companion-settings-title">
+        <h2 id="companion-settings-title">Companion</h2>
+        <p>Choose whether Yuki appears in the app. Saved on this device.</p>
+        <label className="navigation-settings-option">
+          <span>Show Yuki (cat)</span>
+          <input type="checkbox" checked={showCat} onChange={onToggleCatVisibility} />
+        </label>
+      </section>
 
       <section className="navigation-settings" aria-labelledby="navigation-settings-title">
         <h2 id="navigation-settings-title">Navigation</h2>
