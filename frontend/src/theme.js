@@ -1,6 +1,7 @@
 export const themes = [
   { id: 'light', label: 'White with black text', background: '#ffffff', accent: '#000000' },
   { id: 'dark-gray', label: 'Dark gray with white', background: '#121212', accent: '#ffffff' },
+  { id: 'dark-green', label: 'Dark green · solid', background: '#101a15', accent: '#9bd1ad' },
   { id: 'glass-green', label: 'Dark glass gray', background: '#141819', accent: '#93a99e' },
   {
     id: 'bloom', label: 'Bloom · peach and blue', background: '#f4eee0', accent: '#3173ad',
