@@ -35,6 +35,8 @@ async def lifespan(app: FastAPI):
             migrations.add_task_project_if_missing(connection)
             migrations.add_user_bio_if_missing(connection)
             migrations.add_finance_buffer_target_if_missing(connection)
+            migrations.upgrade_finance_dashboard(connection)
+            migrations.seed_finance_data_once(connection)
             copied = migrations.copy_projects_to_goals_once(connection)
             with Session(bind=connection, join_transaction_mode="create_savepoint") as db:
                 crud.seed_default_data_if_empty(db)

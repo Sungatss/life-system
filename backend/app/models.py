@@ -137,6 +137,11 @@ class FinanceTransaction(Base):
     account = Column(String(16), nullable=False)  # cash, emergency, investment
     transfer_to = Column(String(16), nullable=True)
     obligation_id = Column(Integer, ForeignKey("finance_obligations.id", ondelete="RESTRICT"), nullable=True, index=True)
+    schedule_item_id = Column(Integer, ForeignKey("finance_schedule_items.id", ondelete="RESTRICT"), nullable=True)
+    income_source_id = Column(Integer, ForeignKey("finance_income_sources.id", ondelete="RESTRICT"), nullable=True)
+    income_period = Column(String(7), nullable=True)
+    bill_month = Column(String(7), nullable=True)
+    description = Column(Text, nullable=False, default="")
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
 
 
@@ -147,6 +152,47 @@ class FinanceBudgetItem(Base):
     title = Column(String(255), nullable=False)
     amount_minor = Column(BigInteger, nullable=False)
     classification = Column(String(16), nullable=False)  # essential or optional
+    month = Column(String(7), nullable=True, index=True)
+    category = Column(String(100), nullable=False, default="")
+    allocation = Column(String(16), nullable=False, default="living")
+
+
+class FinanceMonthPlan(Base):
+    __tablename__ = "finance_month_plans"
+
+    month = Column(String(7), primary_key=True)
+    expected_income_minor = Column(BigInteger, nullable=False, default=0)
+
+
+class FinanceIncomeSource(Base):
+    __tablename__ = "finance_income_sources"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(255), nullable=False)
+    amount_minor = Column(BigInteger, nullable=False)
+    frequency = Column(String(16), nullable=False, default="monthly")
+    expected_date = Column(String(10), nullable=True)
+    arrival_note = Column(String(255), nullable=False, default="")
+    active = Column(Boolean, nullable=False, default=True)
+
+
+class FinanceIncomeReceipt(Base):
+    """Unique receipt claim prevents two simultaneous clicks receiving one salary twice."""
+    __tablename__ = "finance_income_receipts"
+
+    source_id = Column(Integer, ForeignKey("finance_income_sources.id", ondelete="RESTRICT"), primary_key=True)
+    period = Column(String(7), primary_key=True)
+    transaction_id = Column(Integer, ForeignKey("finance_transactions.id", ondelete="CASCADE"), nullable=False, unique=True)
+
+
+class FinanceScheduleItem(Base):
+    __tablename__ = "finance_schedule_items"
+
+    id = Column(Integer, primary_key=True)
+    obligation_id = Column(Integer, ForeignKey("finance_obligations.id", ondelete="CASCADE"), nullable=False, index=True)
+    label = Column(String(100), nullable=False, default="Payment")
+    amount_minor = Column(BigInteger, nullable=False)
+    due_date = Column(String(10), nullable=True)
 
 
 class FinancePurchasePlan(Base):
@@ -174,6 +220,9 @@ class FinanceObligation(Base):
     remaining_minor = Column(BigInteger, nullable=False)
     due_date = Column(String(10), nullable=True)
     urgent = Column(Boolean, nullable=False, default=False)
+    historical_paid_minor = Column(BigInteger, nullable=False, default=0)
+    recurrence = Column(String(16), nullable=True)
+    terms = Column(Text, nullable=False, default="")
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
 
 

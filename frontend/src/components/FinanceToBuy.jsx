@@ -154,7 +154,7 @@ export default function FinanceToBuy({ currency }) {
 
   return <section className="cockpit-section finance-to-buy" aria-labelledby="finance-to-buy-title">
     <div className="finance-section-head"><div><h2 id="finance-to-buy-title">Things to buy</h2><p>Save ideas with an estimated price, image, link, and target date.</p></div>{!editor && <button type="button" className="btn-primary" disabled={loading || !!loadError} onClick={() => { setEditor('new'); setConfirmDelete(null); }}><Plus size={15} aria-hidden="true" /> Add item</button>}</div>
-    <p className="finance-hint">Plans do not change your balances. Record an expense in Activity after you buy something.</p>
+    <p className="finance-hint">Plans do not change your balances. Record an expense in Transactions after you buy something.</p>
     {editor && <PurchaseForm key={editor === 'new' ? 'new' : editor.id} initial={editor === 'new' ? null : editor} currency={currency} onSave={save} onCancel={() => setEditor(null)} />}
     {actionError && <p className="form-error" role="alert">{actionError}</p>}
     {loadError && <div className="finance-purchase-load-error" role="alert">{loadError} <button type="button" className="btn-secondary" onClick={() => { setLoading(true); setReload((value) => value + 1); }}>Retry</button></div>}
