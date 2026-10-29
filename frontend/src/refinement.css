@@ -677,73 +677,73 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
-/* Solid dark themes share opaque surfaces across every page and overlay. */
-:is([data-theme='dark-gray'], [data-theme='dark-green']) body { background: var(--bg-primary); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) *,
-:is([data-theme='dark-gray'], [data-theme='dark-green']) *::before,
-:is([data-theme='dark-gray'], [data-theme='dark-green']) *::after {
+/* Solid themes share opaque surfaces across every page and overlay. */
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) body { background: var(--bg-primary); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) *,
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) *::before,
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) *::after {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .app-header { background: var(--bg-primary); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .cockpit-date-banner { background: var(--bg-surface); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .brand-avatar { background: var(--bg-subtle); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(.modal-overlay, .sidebar-backdrop, .reward-feedback-level, .reward-feedback-streak) {
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .app-header { background: var(--bg-primary); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .cockpit-date-banner { background: var(--bg-surface); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .brand-avatar { background: var(--bg-subtle); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(.modal-overlay, .sidebar-backdrop, .reward-feedback-level, .reward-feedback-streak) {
   background: var(--bg-primary);
 }
 [data-theme='dark-gray'] .assistant-dialog::backdrop { background: #121212; }
 [data-theme='dark-green'] .assistant-dialog::backdrop { background: #101a15; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(
   .app-sidebar, .theme-menu, .modal-content, .assistant-dialog, .cat-pet-bubble,
   .reward-xp-toast, .reward-level-popup, .mode-btn.active
 ) {
   box-shadow: var(--shadow-subtle);
 }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .past-date-pill { border-color: var(--warning); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .past-date-pill { border-color: var(--warning); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(
   .task-card.completed, .finance-purchase-card.is-bought, .task-actions,
   .subtask-action, .text-dim, .heatmap-cell.outside-range
 ) { opacity: 1; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .finance-purchase-card.is-bought .finance-purchase-copy { color: var(--text-muted); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .heatmap-cell.outside-range { background: var(--bg-primary); border-color: var(--bg-primary); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .progress-ring-track { stroke-opacity: 1; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(button:disabled, .finance-page button:disabled) {
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .finance-purchase-card.is-bought .finance-purchase-copy { color: var(--text-muted); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .heatmap-cell.outside-range { background: var(--bg-primary); border-color: var(--bg-primary); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .progress-ring-track { stroke-opacity: 1; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(button:disabled, .finance-page button:disabled) {
   opacity: 1;
   color: var(--text-muted);
   background: var(--bg-subtle);
   border-color: var(--border-subtle);
 }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .progress-mini-bar-fill { background: var(--accent); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-feedback-streak {
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .progress-mini-bar-fill { background: var(--accent); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-feedback-streak {
   color: var(--text-primary);
   scrollbar-color: var(--border-strong) var(--bg-primary);
   animation: none;
 }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(.reward-streak-glow, .reward-streak-shadow) { display: none; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-flame { filter: none; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-ring { border-color: var(--border-strong); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-count { text-shadow: none; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-embers i { box-shadow: none; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(.reward-streak-bonuses span, .reward-streak-milestone) {
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(.reward-streak-glow, .reward-streak-shadow) { display: none; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-flame { filter: none; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-ring { border-color: var(--border-strong); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-count { text-shadow: none; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-embers i { box-shadow: none; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(.reward-streak-bonuses span, .reward-streak-milestone) {
   background: var(--bg-surface);
   border-color: var(--border-subtle);
   color: var(--text-primary);
 }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(.reward-streak-kicker, .reward-streak-copy h2, .reward-streak-milestone strong) { color: var(--text-primary); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(.reward-streak-copy p, .reward-streak-milestone > div:first-child span) { color: var(--text-secondary); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-track { background: var(--bg-subtle); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-track span { background: var(--accent); box-shadow: none; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-continue {
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(.reward-streak-kicker, .reward-streak-copy h2, .reward-streak-milestone strong) { color: var(--text-primary); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(.reward-streak-copy p, .reward-streak-milestone > div:first-child span) { color: var(--text-secondary); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-track { background: var(--bg-subtle); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-track span { background: var(--accent); box-shadow: none; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-continue {
   background: var(--accent);
   color: var(--bg-primary);
   box-shadow: none;
 }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-continue:hover { background: var(--text-secondary); }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-streak-continue:active { box-shadow: none; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-xp-toast { animation-name: solid-dark-toast-in; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .reward-level-popup { animation: solid-dark-level-in 520ms cubic-bezier(.17, 1.45, .35, 1) both; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) .cat-pet-bubble { animation-name: solid-dark-bubble-in; }
-:is([data-theme='dark-gray'], [data-theme='dark-green']) :is(.reward-streak-bonuses, .reward-streak-milestone, .reward-streak-continue) { animation-name: solid-dark-rise; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-continue:hover { background: var(--text-secondary); }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-streak-continue:active { box-shadow: none; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-xp-toast { animation-name: solid-dark-toast-in; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .reward-level-popup { animation: solid-dark-level-in 520ms cubic-bezier(.17, 1.45, .35, 1) both; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) .cat-pet-bubble { animation-name: solid-dark-bubble-in; }
+:is([data-theme='dark-gray'], [data-theme='dark-green'], [data-theme='zen-sakura']) :is(.reward-streak-bonuses, .reward-streak-milestone, .reward-streak-continue) { animation-name: solid-dark-rise; }
 @keyframes solid-dark-toast-in { from { transform: translateY(-22px) scale(.85); } to { transform: translateY(0) scale(1); } }
 @keyframes solid-dark-level-in { from { transform: translateY(25px) scale(.72); } to { transform: translateY(0) scale(1); } }
 @keyframes solid-dark-bubble-in { from { transform: translateY(4px); } to { transform: translateY(0); } }

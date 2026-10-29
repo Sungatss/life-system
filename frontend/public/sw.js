@@ -1,5 +1,5 @@
 // Service Worker for Lock In
-const CACHE_NAME = 'lock-in-v9';
+const CACHE_NAME = 'lock-in-v10';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -12,7 +12,9 @@ const STATIC_ASSETS = [
   '/fonts/LiberationSerif-Regular.ttf',
   '/fonts/LiberationSerif-Bold.ttf',
   '/fonts/LiberationSerif-Italic.ttf',
-  '/fonts/LiberationSerif-BoldItalic.ttf'
+  '/fonts/LiberationSerif-BoldItalic.ttf',
+  '/fonts/AdwaitaSans-Variable.woff2',
+  '/art/zen-sakura-header.webp'
 ];
 
 // Install: pre-cache core static shell

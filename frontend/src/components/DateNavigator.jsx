@@ -39,7 +39,7 @@ export default function DateNavigator({ currentDateStr, onDateChange }) {
   };
 
   return (
-    <div className="cockpit-date-banner">
+    <div className="cockpit-date-banner date-navigator">
       <div className="date-banner-top">
         <div className="date-status-wrap">
           <div className="cockpit-weekday">{weekday}</div>

@@ -1,0 +1,265 @@
+/* Zen Sakura. All artwork is confined to the date navigator's decorative cell. */
+@font-face {
+  font-family: 'Adwaita Sans';
+  src: url('/fonts/AdwaitaSans-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root:not([data-theme]),
+[data-theme='zen-sakura'] {
+  color-scheme: light;
+  --font-app: 'Adwaita Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Liberation Serif', Georgia, 'Times New Roman', serif;
+  --bg-primary: #f7f4ed;
+  --bg-surface: #fffcf7;
+  --bg-sidebar: #efeae0;
+  --bg-surface-hover: #f3eee5;
+  --bg-subtle: #f0ebe2;
+  --bg-elevated: #f8f4ec;
+  --border-subtle: #e5ded3;
+  --border-strong: #a39887;
+  --text-primary: #202b34;
+  --text-secondary: #505d61;
+  --text-muted: #626b66;
+  --accent: #c34b3f;
+  --accent-text: #a83f35;
+  --accent-hover: #a43d34;
+  --accent-subtle: #f6e7e2;
+  --secondary-accent: #8c9b85;
+  --success: #4d6953;
+  --success-subtle: #e9eee5;
+  --warning: #845e27;
+  --warning-subtle: #f3ebdb;
+  --danger: #a63e38;
+  --danger-subtle: #f5e6e0;
+  --heatmap-1: #e0e6d8;
+  --heatmap-2: #b8c6ad;
+  --heatmap-3: #8c9b85;
+  --heatmap-4: #586e58;
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --shadow-subtle: 0 2px 3px #eae4da, 0 7px 20px #f0ebe2;
+  --shadow-floating: 0 3px 6px #e4ddd1, 0 12px 32px #eee7dc;
+}
+
+[data-theme='zen-sakura'] body {
+  background: var(--bg-primary);
+  font-family: var(--font-app);
+  line-height: 1.6;
+}
+[data-theme='zen-sakura'] ::selection { color: var(--text-primary); background: #edd7cf; }
+[data-theme='zen-sakura'] :is(h1, h2, .cockpit-title, .review-title, .modal-title) {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+[data-theme='zen-sakura'] :is(.cockpit-title, .review-title, .profile-page-title) { font-size: clamp(28px, 3vw, 36px); }
+[data-theme='zen-sakura'] :is(.section-title, .assistant-header h2, .reminder-heading h2, .navigation-settings h2) { font-size: 23px; }
+[data-theme='zen-sakura'] :is(.finance-section-head h2, .calendar-month-head h2, .calendar-agenda-head h2, .modal-title) { font-size: 22px; }
+[data-theme='zen-sakura'] :is(.page-intro, .review-subtitle) { line-height: 1.65; font-size: 14px; }
+[data-theme='zen-sakura'] .cockpit-weekday {
+  font-family: var(--font-display);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+[data-theme='zen-sakura'] :is(.task-title, .habit-name) { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+[data-theme='zen-sakura'] :is(.task-description, .profile-bio, .inbox-entry-content) { line-height: 1.7; }
+[data-theme='zen-sakura'] :is(.finance-summary-card strong, .finance-inline-metrics strong, .profile-stats strong, .kpi-number) { font-variant-numeric: tabular-nums; letter-spacing: -0.035em; }
+
+/* The shell stays in its existing expanded, collapsed, and mobile layouts. */
+[data-theme='zen-sakura'] .app-container { padding-inline: 32px; }
+[data-theme='zen-sakura'] .app-sidebar { background: var(--bg-sidebar); border-color: var(--border-subtle); box-shadow: none; }
+[data-theme='zen-sakura'] .brand-label { font-family: var(--font-display); font-size: 22px; letter-spacing: -0.035em; }
+[data-theme='zen-sakura'] .brand-avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--text-primary); border-color: var(--border-subtle); }
+[data-theme='zen-sakura'] .sidebar-nav { gap: 7px; }
+[data-theme='zen-sakura'] .sidebar-link { min-height: 46px; font-size: 13px; font-weight: 500; border-radius: 12px; }
+[data-theme='zen-sakura'] .sidebar-link:hover { background: #e7e0d4; }
+[data-theme='zen-sakura'] .sidebar-link.active { position: relative; background: var(--bg-surface); color: var(--accent); border-color: var(--border-subtle); font-weight: 650; }
+[data-theme='zen-sakura'] .sidebar-link.active::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--accent); }
+[data-theme='zen-sakura'] .app-header { background: var(--bg-primary); border-bottom: 1px solid var(--border-subtle); padding-block: 16px; margin-bottom: 28px; }
+[data-theme='zen-sakura'] .header-actions { margin-left: auto; gap: 8px; }
+[data-theme='zen-sakura'] :is(.icon-btn, .sidebar-toggle) { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-sidebar); border: 1px solid var(--border-subtle); color: var(--text-primary); }
+[data-theme='zen-sakura'] .icon-btn:hover { background: #e7e0d4; border-color: var(--border-strong); }
+[data-theme='zen-sakura'] .assistant-header-button { min-height: 40px; padding-inline: 14px; border-radius: 12px; background: var(--text-primary); color: var(--bg-surface); border-color: var(--text-primary); filter: none; }
+[data-theme='zen-sakura'] .assistant-header-button:hover { background: #35434b; filter: none; }
+[data-theme='zen-sakura'] .theme-menu { width: min(292px, calc(100vw - 32px)); padding: 8px; border-color: var(--border-subtle); border-radius: 14px; background: var(--bg-surface); box-shadow: var(--shadow-floating); }
+[data-theme='zen-sakura'] .theme-option { min-height: 46px; font-size: 12px; border-radius: 12px; }
+[data-theme='zen-sakura'] .theme-option.active { border-color: #dec4ba; background: var(--accent-subtle); }
+[data-theme='zen-sakura'] :is(
+  .today-event-edit, .btn-today-return, .prompt-badge.focus-badge,
+  .calendar-text-button, .finance-tabs button.active, .finance-filters button.active,
+  .finance-safe-top p, .finance-link, .finance-installments summary,
+  .finance-purchase-link, .profile-level-label, .project-rail-item.active,
+  .sidebar-link.active, .filter-pill.active, .task-controls-count,
+  .task-settings-pin.active, .task-settings-reset, .reward-eyebrow,
+  .cat-pet-bubble-name
+) { color: var(--accent-text); }
+[data-theme='zen-sakura'] :is(
+  .task-details-toggle, .task-title, .habit-name, .subtask-add-button,
+  .task-section-heading, .subtask-progress-toggle, .date-title-button
+):hover { color: var(--accent-text); }
+
+/* Solid cards: calm content areas, with no decorative image behind recorded data. */
+[data-theme='zen-sakura'] :is(.cockpit-section, .contribution-container, .review-nav-section, .reflection-section) { padding: 26px; margin-bottom: 24px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-subtle); }
+[data-theme='zen-sakura'] :is(.profile-hero, .profile-stats > div, .reminder-settings, .navigation-settings, .progress-card, .project-rail, .login-card) { background: var(--bg-surface); border-color: var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-subtle); }
+[data-theme='zen-sakura'] .cockpit-date-banner { background: var(--bg-surface); border-radius: 16px; padding: 28px; }
+[data-theme='zen-sakura'] .section-header { align-items: center; gap: 16px; margin-bottom: 22px; }
+[data-theme='zen-sakura'] .section-title-wrap { gap: 11px; }
+[data-theme='zen-sakura'] .section-title-wrap > svg { width: 19px; height: 19px; color: var(--accent); flex-shrink: 0; }
+[data-theme='zen-sakura'] .section-badge { min-width: 32px; padding: 5px 10px; text-align: center; border-color: var(--border-subtle); color: var(--text-secondary); background: var(--bg-sidebar); font-size: 12px; }
+
+/* Explicit grid cells keep artwork away from dates, text, and navigation controls. */
+[data-theme='zen-sakura'] .date-navigator { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 28px; overflow: hidden; }
+[data-theme='zen-sakura'] .date-navigator::after { content: ''; display: block; grid-column: 1; height: 112px; width: 100%; background: var(--bg-surface) url('/art/zen-sakura-header.webp') right center / contain no-repeat; pointer-events: none; }
+[data-theme='zen-sakura'] .date-navigator .date-banner-top { margin: 0; gap: 12px; flex-wrap: wrap; }
+[data-theme='zen-sakura'] .date-navigator .cockpit-weekday { margin: 0; }
+[data-theme='zen-sakura'] .date-controls-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px; align-items: center; gap: 10px; width: fit-content; max-width: 100%; }
+[data-theme='zen-sakura'] .date-title-picker-wrap { min-width: 0; gap: 5px; }
+[data-theme='zen-sakura'] .date-navigator .cockpit-title { font-size: clamp(28px, 3.3vw, 42px); letter-spacing: -0.035em; }
+[data-theme='zen-sakura'] .date-title-button { white-space: nowrap; }
+[data-theme='zen-sakura'] .date-nav-btn { width: 40px; height: 40px; min-width: 0; min-height: 40px; border-radius: 12px; background: var(--bg-sidebar); border-color: var(--border-subtle); color: var(--text-primary); }
+[data-theme='zen-sakura'] .date-nav-btn:hover { background: #e7e0d4; border-color: var(--border-strong); }
+[data-theme='zen-sakura'] .calendar-icon-btn { width: 32px; min-width: 32px; min-height: 40px; color: var(--text-secondary); }
+[data-theme='zen-sakura'] .past-date-pill { border-color: #dbc59e; font-size: 10px; }
+[data-theme='zen-sakura'] .btn-today-return:hover { background: var(--text-primary); border-color: var(--text-primary); color: var(--bg-surface); }
+
+/* Controls share the same opaque paper surfaces and restrained hover treatment. */
+[data-theme='zen-sakura'] :is(button, a, input, select, textarea, summary) { transition-property: color, background-color, border-color; transition-duration: 160ms; transition-timing-function: ease; }
+[data-theme='zen-sakura'] :is(.btn-primary, .btn-secondary, .task-input-field, .select-compact, .reflection-textarea, .task-controls-toggle) { min-height: 44px; border-radius: 12px; font-size: 13px; }
+[data-theme='zen-sakura'] :is(.task-input-field, .select-compact, .reflection-textarea, .profile-edit-form input, .profile-edit-form textarea, .assistant-form textarea, .login-card input, .reminder-controls input) { background: var(--bg-elevated); border-color: var(--border-subtle); color: var(--text-primary); }
+[data-theme='zen-sakura'] :is(input, textarea)::placeholder { color: var(--text-muted); opacity: 1; }
+[data-theme='zen-sakura'] :is(select option, select optgroup) { background: var(--bg-surface); color: var(--text-primary); }
+[data-theme='zen-sakura'] :is(.btn-primary, .assistant-form button, .assistant-proposal button, .login-card button) { background: var(--text-primary); border-color: var(--text-primary); color: var(--bg-surface); font-weight: 600; }
+[data-theme='zen-sakura'] :is(.btn-primary, .assistant-form button, .assistant-proposal button, .login-card button):hover:not(:disabled) { background: #35434b; border-color: #35434b; color: var(--bg-surface); }
+[data-theme='zen-sakura'] .btn-secondary { background: var(--bg-surface); color: var(--text-primary); border-color: var(--border-subtle); }
+[data-theme='zen-sakura'] .btn-secondary:hover { background: var(--bg-sidebar); border-color: var(--border-strong); }
+[data-theme='zen-sakura'] :is(input, textarea, select):focus { border-color: var(--border-strong); }
+[data-theme='zen-sakura'] :is(button, input, textarea, select, summary, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+[data-theme='zen-sakura'] .task-capture-form { gap: 10px; margin-bottom: 20px; }
+[data-theme='zen-sakura'] .task-controls-toggle { background: var(--bg-surface); color: var(--text-primary); border-color: var(--border-subtle); font-weight: 600; }
+[data-theme='zen-sakura'] .task-controls-toggle:hover { background: var(--bg-subtle); border-color: var(--border-strong); }
+[data-theme='zen-sakura'] .task-settings-panel { background: var(--bg-elevated); border-color: var(--border-subtle); border-radius: 14px; }
+[data-theme='zen-sakura'] .task-results-count { font-size: 12px; color: var(--text-muted); }
+[data-theme='zen-sakura'] .task-search-wrap { background: var(--bg-surface); }
+[data-theme='zen-sakura'] :is(.task-view-tabs, .mode-btn.active) { box-shadow: none; }
+[data-theme='zen-sakura'] .task-view-tabs button.active { background: var(--accent-subtle); color: var(--accent-text); border-color: #dec4ba; }
+
+[data-theme='zen-sakura'] :is(.task-card, .habit-card, .today-event-card, .today-event-form, .preview-block) { background: var(--bg-elevated); border-color: var(--border-subtle); border-radius: 12px; }
+[data-theme='zen-sakura'] :is(.task-card, .habit-card) { padding: 17px; }
+[data-theme='zen-sakura'] .habit-card { flex-wrap: wrap; }
+[data-theme='zen-sakura'] .habit-card-actions { flex-wrap: wrap; }
+[data-theme='zen-sakura'] :is(.task-card, .habit-card):hover { background: #f3eee5; border-color: #c8bcaa; }
+[data-theme='zen-sakura'] .today-event-card { padding: 17px 18px; border-left: 3px solid var(--accent); }
+[data-theme='zen-sakura'] .today-event-card.is-deadline { border-left-color: var(--danger); }
+[data-theme='zen-sakura'] .today-event-heading strong { font-size: 14px; }
+[data-theme='zen-sakura'] :is(.custom-checkbox, .habit-check-btn) { border-color: #a39887; }
+[data-theme='zen-sakura'] .custom-checkbox.checked { background: var(--accent); border-color: var(--accent); color: var(--bg-surface); }
+[data-theme='zen-sakura'] .habit-check-btn.completed { background: var(--success-subtle); border-color: #a8b69f; color: var(--success); }
+[data-theme='zen-sakura'] .priority-high { color: var(--danger); background: var(--danger-subtle); }
+[data-theme='zen-sakura'] .empty-state { background: var(--bg-elevated); border-color: #c8bcaa; border-radius: 14px; padding: 28px 20px; }
+[data-theme='zen-sakura'] :is(.task-card.completion-flash, .habit-card.completion-flash) { animation: sakura-complete 500ms ease-out; }
+[data-theme='zen-sakura'] .completion-flash::after { display: none; }
+@keyframes sakura-complete { 40% { border-color: var(--success); } }
+
+/* All in-app dialogs, menus, tooltip content, and assistant surfaces use the palette. */
+[data-theme='zen-sakura'] :is(.modal-overlay, .sidebar-backdrop) { background: var(--bg-sidebar); }
+[data-theme='zen-sakura'] .assistant-dialog::backdrop { background: #efeae0; }
+[data-theme='zen-sakura'] :is(.modal-content, .assistant-dialog) { background: var(--bg-surface); border-color: var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-floating); }
+[data-theme='zen-sakura'] .modal-content { padding: 28px; gap: 20px; }
+[data-theme='zen-sakura'] .assistant-header { padding: 22px 24px 14px; border-bottom: 1px solid var(--border-subtle); }
+[data-theme='zen-sakura'] .assistant-body { padding: 20px 24px; }
+[data-theme='zen-sakura'] .assistant-message { border-radius: 12px; font-size: 14px; }
+[data-theme='zen-sakura'] .assistant-message-user { background: #f1e7dc; border-color: #e3d6c5; }
+[data-theme='zen-sakura'] .assistant-message-assistant { background: var(--bg-elevated); border-color: var(--border-subtle); }
+[data-theme='zen-sakura'] .assistant-proposal { background: var(--bg-surface); border-color: var(--border-subtle); border-radius: 12px; }
+[data-theme='zen-sakura'] .assistant-form { padding: 18px 24px 22px; }
+[data-theme='zen-sakura'] :is(.heatmap-tooltip, [role='tooltip']) { color: var(--text-secondary); font-family: var(--font-app); }
+[data-theme='zen-sakura'] .cat-pet-bubble { background: var(--bg-surface); border-color: var(--border-subtle); box-shadow: var(--shadow-subtle); font-family: var(--font-app); }
+[data-theme='zen-sakura'] .cat-pet-bubble-name { font-family: var(--font-app); }
+[data-theme='zen-sakura'] .cat-pet-bubble::after { background: var(--bg-surface); border-color: var(--border-subtle); }
+
+/* Calendar, finance, projects, goals, profile, inbox, and progress. */
+[data-theme='zen-sakura'] .calendar-day { background: var(--bg-elevated); border-radius: 12px; }
+[data-theme='zen-sakura'] .calendar-day.outside { background: var(--bg-surface); }
+[data-theme='zen-sakura'] .calendar-day.selected { background: var(--accent-subtle); border-color: var(--accent); }
+[data-theme='zen-sakura'] .calendar-day.today .calendar-day-number { background: var(--accent); color: var(--bg-surface); }
+[data-theme='zen-sakura'] .calendar-weekday { text-transform: uppercase; letter-spacing: 0.05em; }
+[data-theme='zen-sakura'] :is(.finance-summary-card, .finance-safe-card, .finance-obligation, .finance-purchase-card) { border-radius: 14px; border-color: var(--border-subtle); }
+[data-theme='zen-sakura'] .finance-summary-card.primary { background: var(--bg-surface); border-color: #c8bcaa; }
+[data-theme='zen-sakura'] .finance-summary-card > strong { font-size: clamp(22px, 2.3vw, 29px); }
+[data-theme='zen-sakura'] .finance-safe-card { background: var(--bg-surface); }
+[data-theme='zen-sakura'] .finance-safe-top strong { font-family: var(--font-display); }
+[data-theme='zen-sakura'] .finance-panel { box-shadow: var(--shadow-subtle); }
+[data-theme='zen-sakura'] .finance-editor { border-color: var(--border-strong); }
+[data-theme='zen-sakura'] .finance-obligation { background: var(--bg-elevated); }
+[data-theme='zen-sakura'] .project-rail-item.active { background: var(--accent-subtle); border-color: #dec4ba; }
+[data-theme='zen-sakura'] .inbox-page { max-width: 880px; }
+[data-theme='zen-sakura'] .profile-avatar { border-radius: 14px; border-color: var(--border-subtle); }
+[data-theme='zen-sakura'] .profile-level strong { font-family: var(--font-display); font-size: 28px; }
+[data-theme='zen-sakura'] :is(.progress-goal-fill, .profile-level-bar span, .progress-mini-bar-fill) { background: var(--secondary-accent); }
+[data-theme='zen-sakura'] .progress-card h2 { font-size: 21px; }
+[data-theme='zen-sakura'] .progress-card-icon { border-radius: 12px; background: var(--success-subtle); }
+[data-theme='zen-sakura'] .progress-ring-track { stroke: var(--border-subtle); }
+[data-theme='zen-sakura'] .weekly-kpi-card { border-radius: 14px; padding: 20px; }
+[data-theme='zen-sakura'] .cockpit-quote { font-family: var(--font-display); font-size: 15px; border-left-color: var(--secondary-accent); background: var(--bg-surface); }
+[data-theme='zen-sakura'] .reward-streak-scene { font-family: var(--font-app); }
+[data-theme='zen-sakura'] .reward-streak-count { font-family: var(--font-display); color: var(--text-primary); }
+[data-theme='zen-sakura'] .reward-feedback-streak { background: var(--bg-primary); }
+[data-theme='zen-sakura'] .reward-streak-continue { border-radius: 12px; }
+[data-theme='zen-sakura'] :is(.reward-xp-toast, .reward-level-popup) { background: var(--bg-surface); border-color: var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-floating); }
+[data-theme='zen-sakura'] .reward-streak-embers { display: none; }
+
+@media (min-width: 1100px) {
+  [data-theme='zen-sakura'] .date-navigator { grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr); grid-template-rows: auto 1fr; gap: 12px 24px; min-height: 194px; padding: 30px; }
+  [data-theme='zen-sakura'] .date-navigator .date-banner-top { grid-column: 1; grid-row: 1; align-self: end; }
+  [data-theme='zen-sakura'] .date-navigator .date-controls-row { grid-column: 1; grid-row: 2; align-self: start; }
+  [data-theme='zen-sakura'] .date-navigator::after { grid-column: 2; grid-row: 1 / 3; height: 100%; min-height: 132px; background-size: contain; }
+}
+@media (max-width: 980px) {
+  [data-theme='zen-sakura'] .app-container { padding-inline: 22px; }
+}
+@media (max-width: 640px) {
+  [data-theme='zen-sakura'] .app-container { padding-inline: 16px; }
+  [data-theme='zen-sakura'] .app-header { padding-block: 12px; margin-bottom: 20px; }
+  [data-theme='zen-sakura'] :is(.cockpit-section, .contribution-container, .review-nav-section, .reflection-section, .modal-content) { padding: 20px; margin-bottom: 20px; }
+  [data-theme='zen-sakura'] .date-navigator { padding: 22px; gap: 10px; }
+  [data-theme='zen-sakura'] .date-navigator::after { height: 86px; }
+  [data-theme='zen-sakura'] .date-navigator .cockpit-title { font-size: 31px; }
+  [data-theme='zen-sakura'] .section-title { font-size: 21px; }
+  [data-theme='zen-sakura'] .section-header { gap: 12px; margin-bottom: 18px; }
+  [data-theme='zen-sakura'] .assistant-header { padding: 18px 20px 12px; }
+  [data-theme='zen-sakura'] .assistant-body { padding: 16px 20px; }
+  [data-theme='zen-sakura'] .assistant-form { padding: 16px 20px 20px; }
+}
+@media (max-width: 480px) {
+  [data-theme='zen-sakura'] .app-container { padding-inline: 12px; }
+  [data-theme='zen-sakura'] .header-actions { gap: 6px; }
+  [data-theme='zen-sakura'] .assistant-header-button { padding-inline: 10px; font-size: 11px; }
+  [data-theme='zen-sakura'] .header-actions .icon-btn { width: 36px; height: 38px; }
+  [data-theme='zen-sakura'] .date-navigator { padding: 18px 16px; }
+  [data-theme='zen-sakura'] .date-controls-row { grid-template-columns: 30px minmax(0, 1fr) 30px; gap: 5px; width: 100%; }
+  [data-theme='zen-sakura'] .date-title-picker-wrap { gap: 0; }
+  [data-theme='zen-sakura'] .date-nav-btn { width: 30px; min-height: 36px; height: 36px; }
+  [data-theme='zen-sakura'] .calendar-icon-btn { min-width: 24px; width: 24px; padding: 2px; }
+  [data-theme='zen-sakura'] .date-navigator .cockpit-title { font-size: clamp(21px, 6.5vw, 29px); }
+  [data-theme='zen-sakura'] .date-title-button { white-space: normal; }
+  [data-theme='zen-sakura'] .date-navigator::after { height: 68px; }
+  [data-theme='zen-sakura'] :is(.cockpit-section, .contribution-container, .review-nav-section, .reflection-section) { padding: 18px; }
+  [data-theme='zen-sakura'] .finance-summary-card { padding: 14px; }
+  [data-theme='zen-sakura'] .finance-summary-card > strong { font-size: 21px; }
+  [data-theme='zen-sakura'] .finance-section-head h2 { font-size: 21px; }
+  [data-theme='zen-sakura'] .calendar-board { padding: 12px; }
+}
+@media (max-width: 380px) {
+  [data-theme='zen-sakura'] .calendar-board { padding: 10px; }
+  [data-theme='zen-sakura'] .calendar-grid { gap: 2px; }
+  [data-theme='zen-sakura'] .calendar-day { padding: 3px; }
+  [data-theme='zen-sakura'] .calendar-day-number { width: 20px; height: 23px; font-size: 11px; }
+}
