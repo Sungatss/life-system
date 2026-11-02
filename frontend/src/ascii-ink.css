@@ -1,0 +1,99 @@
+/* ASCII Ink: black negative space, white ink, and solid reading surfaces. */
+[data-theme='ascii-ink'] {
+  color-scheme: dark;
+  --font-app: 'Adwaita Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bg-primary: #050505;
+  --bg-surface: #0e0e0e;
+  --bg-surface-hover: #1c1c1c;
+  --bg-subtle: #202020;
+  --bg-elevated: #151515;
+  --border-subtle: #303030;
+  --border-strong: #707070;
+  --text-primary: #f1f1ee;
+  --text-secondary: #c2c2bf;
+  --text-muted: #a1a19e;
+  --accent: #ededed;
+  --accent-subtle: #262626;
+  --success: #d3ddd0;
+  --success-subtle: #252a24;
+  --warning: #e1cda6;
+  --warning-subtle: #2d281e;
+  --danger: #edaaaa;
+  --danger-subtle: #302020;
+  --heatmap-1: #303030;
+  --heatmap-2: #555555;
+  --heatmap-3: #909090;
+  --heatmap-4: #dededb;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --shadow-subtle: 0 2px 12px #000000;
+}
+
+.ascii-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+[data-theme='ascii-ink'] #root { isolation: isolate; }
+[data-theme='ascii-ink'] :is(.app-shell, .login-shell) { position: relative; z-index: 1; }
+[data-theme='ascii-ink'] body { background: var(--bg-primary); }
+[data-theme='ascii-ink'] ::selection { color: #050505; background: #ededed; }
+[data-theme='ascii-ink'] *,
+[data-theme='ascii-ink'] *::before,
+[data-theme='ascii-ink'] *::after { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+[data-theme='ascii-ink'] :is(.app-sidebar, .app-header) { background: var(--bg-primary); }
+[data-theme='ascii-ink'] .brand-avatar { background: var(--bg-subtle); border-radius: 6px; }
+[data-theme='ascii-ink'] .brand-label { letter-spacing: -0.04em; }
+[data-theme='ascii-ink'] .sidebar-link.active { border-color: var(--border-strong); background: var(--bg-subtle); }
+[data-theme='ascii-ink'] :is(.cockpit-weekday, .section-badge, .task-controls-count, .profile-level-label) {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+[data-theme='ascii-ink'] .cockpit-weekday { letter-spacing: 0.18em; font-size: 10px; }
+[data-theme='ascii-ink'] :is(.cockpit-title, .profile-page-title, .review-title) { font-weight: 550; letter-spacing: -0.055em; }
+[data-theme='ascii-ink'] .cockpit-date-banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  min-height: 192px;
+  background: linear-gradient(90deg, #0a0a0a 0%, #0a0a0a 40%, #0a0a0a00 100%);
+  border-color: var(--border-subtle);
+  box-shadow: none;
+}
+[data-theme='ascii-ink'] :is(.date-status-wrap, .date-controls-row) { width: fit-content; background: #0a0a0a; border-radius: 6px; }
+[data-theme='ascii-ink'] .date-controls-row { padding: 7px 4px; margin-left: -4px; }
+[data-theme='ascii-ink'] :is(.date-nav-btn, .calendar-icon-btn) { color: var(--text-secondary); }
+[data-theme='ascii-ink'] :is(.cockpit-section, .contribution-container, .review-nav-section, .reflection-section, .progress-card) {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-subtle);
+}
+[data-theme='ascii-ink'] .theme-menu { max-height: calc(100dvh - 80px); overflow-y: auto; }
+[data-theme='ascii-ink'] :is(.modal-overlay, .sidebar-backdrop) { background: #050505eb; }
+[data-theme='ascii-ink'] .assistant-dialog::backdrop { background: #050505eb; }
+[data-theme='ascii-ink'] .progress-mini-bar-fill { background: var(--accent); }
+[data-theme='ascii-ink'] .past-date-pill { border-color: var(--warning); background: var(--warning-subtle); }
+
+@media (max-width: 600px) {
+  [data-theme='ascii-ink'] .ascii-background { opacity: 0.75; }
+  [data-theme='ascii-ink'] .cockpit-date-banner { min-height: 158px; padding: 18px 12px; }
+  [data-theme='ascii-ink'] .cockpit-title { font-size: clamp(21px, 5.5vw, 29px); }
+}
+
+@media (max-width: 520px) {
+  [data-theme='ascii-ink'] .assistant-header-button span { display: none; }
+  [data-theme='ascii-ink'] .assistant-header-button { width: 36px; padding: 0; justify-content: center; }
+  [data-theme='ascii-ink'] .header-actions { gap: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ascii-motion-toggle { display: none; }
+}

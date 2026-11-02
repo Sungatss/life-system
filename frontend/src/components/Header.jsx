@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { CalendarDays, Check, Palette, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { CalendarDays, Check, Palette, Pause, Play, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { themes } from '../theme';
 
-export default function Header({ activeTab, showCalendar, onNavigate, theme, onSelectTheme, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
+export default function Header({ activeTab, showCalendar, onNavigate, theme, onSelectTheme, asciiPaused, onToggleAscii, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -35,12 +35,23 @@ export default function Header({ activeTab, showCalendar, onNavigate, theme, onS
   return (
     <header className="app-header">
       <div className="header-actions" ref={menuRef}>
-        <button type="button" className="assistant-header-button" onClick={onOpenAssistant} aria-haspopup="dialog" aria-expanded={assistantOpen} aria-controls={assistantOpen ? 'ask-lock-in-panel' : undefined}>
+        <button type="button" className="assistant-header-button" aria-label="Ask Lock In" onClick={onOpenAssistant} aria-haspopup="dialog" aria-expanded={assistantOpen} aria-controls={assistantOpen ? 'ask-lock-in-panel' : undefined}>
           <Sparkles size={16} aria-hidden="true" /> <span>Ask Lock In</span>
         </button>
         {showCalendar && (
           <button type="button" className={`icon-btn${activeTab === 'calendar' ? ' header-calendar-active' : ''}`} onClick={() => { setMenuOpen(false); onNavigate('calendar'); }} title="Calendar" aria-label="Calendar" aria-current={activeTab === 'calendar' ? 'page' : undefined}>
             <CalendarDays size={17} aria-hidden="true" />
+          </button>
+        )}
+        {theme === 'ascii-ink' && (
+          <button
+            className="icon-btn ascii-motion-toggle"
+            type="button"
+            onClick={onToggleAscii}
+            title={asciiPaused ? 'Play ASCII animation (respects reduced motion)' : 'Pause ASCII animation'}
+            aria-label={asciiPaused ? 'Play ASCII animation' : 'Pause ASCII animation'}
+          >
+            {asciiPaused ? <Play size={17} aria-hidden="true" /> : <Pause size={17} aria-hidden="true" />}
           </button>
         )}
         <button

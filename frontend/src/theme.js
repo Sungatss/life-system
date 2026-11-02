@@ -5,6 +5,10 @@ export const themes = [
   },
   { id: 'light', label: 'White with black text', background: '#ffffff', accent: '#000000' },
   { id: 'dark-gray', label: 'Dark gray with white', background: '#121212', accent: '#ffffff' },
+  {
+    id: 'ascii-ink', label: 'ASCII Ink · live monochrome', background: '#050505', accent: '#ededed',
+    swatch: 'repeating-linear-gradient(135deg, #050505 0 4px, #818181 4px 5px, #050505 5px 9px)',
+  },
   { id: 'dark-green', label: 'Dark green · solid', background: '#101a15', accent: '#9bd1ad' },
   { id: 'glass-green', label: 'Dark glass gray', background: '#141819', accent: '#93a99e' },
   {

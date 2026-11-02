@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <!-- Original vector stencil for the ASCII renderer, inspired by ink crosshatching. -->
+  <defs>
+    <pattern id="hatch" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(-28)">
+      <path d="M0 0V11M5 0V11" stroke="#aaa" stroke-width="1"/>
+    </pattern>
+    <pattern id="wrap" width="70" height="62" patternUnits="userSpaceOnUse">
+      <path d="M0 0L70 62M70 0L0 62" stroke="#c9c9c9" stroke-width="8"/>
+      <path d="M0 8L70 70M70 8L0 70" stroke="#555" stroke-width="2"/>
+    </pattern>
+    <linearGradient id="steel" x1="0" x2="1">
+      <stop stop-color="#f1f1f1"/>
+      <stop offset=".19" stop-color="#777"/>
+      <stop offset=".27" stop-color="#111"/>
+      <stop offset=".78" stop-color="#404040"/>
+      <stop offset="1" stop-color="#ddd"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sleeve folds falling into the black, deliberately cropped at the edge. -->
+  <path d="M900 118L810 169 774 288 827 426 900 468M899 154L839 214 834 314 891 376M886 170L860 240 879 327" fill="none" stroke="#666" stroke-width="3"/>
+  <path d="M900 475L806 447 720 477 644 566 647 695 754 784 900 819Z" fill="#141414" stroke="#777" stroke-width="3"/>
+  <path d="M900 496L795 488 706 558 691 679 781 746 900 762M900 526L805 531 750 583M900 722L797 696 739 630" fill="none" stroke="#999" stroke-width="7"/>
+  <path d="M700 693L765 755 900 799 900 865 744 796 667 722Z" fill="url(#hatch)"/>
+
+  <!-- Katana: bound handle, oval guard, long narrow blade. -->
+  <g transform="rotate(-12 460 640)">
+    <path d="M427 -60L495 -60 498 666 425 666Z" fill="#1d1d1d" stroke="#929292" stroke-width="3"/>
+    <path d="M434 -60H489V652H434Z" fill="url(#wrap)"/>
+    <path d="M425 7H499M425 26H499M425 634H499M425 653H499" stroke="#ddd" stroke-width="5"/>
+    <ellipse cx="460" cy="686" rx="112" ry="27" fill="#111" stroke="#c7c7c7" stroke-width="6"/>
+    <ellipse cx="460" cy="681" rx="90" ry="16" fill="#080808" stroke="#666" stroke-width="3"/>
+    <path d="M430 688H489V754L471 1265 440 1330 431 753Z" fill="url(#steel)" stroke="#ddd" stroke-width="2"/>
+    <path d="M443 758L449 1245" stroke="#eee" stroke-width="4"/>
+    <path d="M474 761L461 1226" stroke="#696969" stroke-width="2"/>
+  </g>
+
+  <!-- Hand at the upper grip: separate knuckles and strong ink-cut shadows. -->
+  <path d="M900 342C813 311 772 300 724 302L612 326 532 356 494 390C480 404 483 426 502 436L552 443 592 433 531 469C510 481 513 506 534 514L558 519C548 533 549 551 565 562L587 574C582 594 594 614 616 620L679 631 757 611 815 574 900 593Z" fill="#c5c5c5" stroke="#e4e4e4" stroke-width="3"/>
+  <path d="M900 365L766 339 682 345 587 382 530 413 575 418 652 389 701 388 620 430 547 483 572 492 652 447 713 429 639 473 571 541 594 552 674 496 735 470 665 526 613 592 646 604 716 564 788 554 900 572" fill="#161616"/>
+  <path d="M540 395L618 355 708 333 778 330M577 468L654 420M600 525L682 465M637 577L712 514M721 600L774 578" fill="none" stroke="#686868" stroke-width="4"/>
+  <path d="M771 303L798 365 795 424 752 478 729 515 754 536 800 504 843 439 866 372" fill="url(#hatch)"/>
+  <path d="M532 358L562 353 575 381 543 399 512 398M555 477L578 463 595 482 573 500M586 535L607 514 627 535 605 556" fill="#eee"/>
+
+  <!-- Lower hand and cuff, with the same broken white contour as the reference. -->
+  <path d="M900 963L752 854 681 805 634 763 575 738 538 698 505 664 467 635C450 626 432 635 434 652L466 703 493 727 468 745 423 703 392 672C370 654 345 673 357 696L398 751 433 779 419 795 380 763 349 727C332 708 310 726 320 748L356 805 411 851 467 877 521 891 591 939 744 1072Z" fill="#aaa" stroke="#ddd" stroke-width="3"/>
+  <path d="M877 980L728 872 644 818 603 783 552 769 503 734 492 754 526 786 590 812 627 854 568 836 510 809 470 782 459 799 510 835 554 856 501 849 450 828 411 799 404 813 448 849 496 869 538 877 612 925 747 1042Z" fill="#131313"/>
+  <path d="M453 645L493 677 510 708M376 684L412 726 446 749M337 740L374 787 420 818M460 862L514 880 576 920" fill="none" stroke="#ececec" stroke-width="4"/>
+  <path d="M552 742L599 757 645 796 693 824 749 866 720 917 659 882 608 834 568 810 529 777Z" fill="url(#hatch)"/>
+  <path d="M900 912L790 843 730 887 686 960 740 1043 900 1148Z" fill="#171717" stroke="#777" stroke-width="4"/>
+  <path d="M900 938L798 879 764 912 739 957 783 1016 900 1082M900 963L809 920 779 955 826 995 900 1032" fill="none" stroke="#b5b5b5" stroke-width="5"/>
+  <path d="M758 1015L900 1099 900 1147 738 1056Z" fill="url(#hatch)"/>
+</svg>

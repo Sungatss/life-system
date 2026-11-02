@@ -15,6 +15,7 @@ import RewardFeedback from './components/RewardFeedback';
 import LoginScreen from './components/LoginScreen';
 import AssistantPanel from './components/AssistantPanel';
 import CatPet from './components/CatPet';
+import AsciiBackground from './components/AsciiBackground';
 import { api } from './api/client';
 import { getTheme } from './theme';
 import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
@@ -33,6 +34,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState(getInitialView);
   const [theme, setTheme] = useState(() => getTheme(localStorage.getItem('life-system-theme')).id);
+  const [asciiPaused, setAsciiPaused] = useState(() => localStorage.getItem('life-system-ascii-paused') === 'true');
   const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('life-system-sound') !== 'off');
   const [showCat, setShowCat] = useState(() => localStorage.getItem('life-system-show-cat') !== 'false');
   const [authState, setAuthState] = useState({ loading: true, authenticated: false, configured: false });
@@ -95,6 +97,10 @@ export default function App() {
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getTheme(theme).background);
     localStorage.setItem('life-system-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('life-system-ascii-paused', String(asciiPaused));
+  }, [asciiPaused]);
 
   useEffect(() => {
     localStorage.setItem('life-system-sound', soundEnabled ? 'on' : 'off');
@@ -160,10 +166,13 @@ export default function App() {
     }
   };
 
-  if (authState.loading) return <div className="login-shell" role="status">Opening Lock In…</div>;
-  if (!authState.authenticated) return <LoginScreen configured={authState.configured} serverError={authError} onLogin={() => setAuthState((current) => ({ ...current, authenticated: true }))} onRetry={retrySession} />;
+  const background = theme === 'ascii-ink' ? <AsciiBackground paused={asciiPaused} /> : null;
+  if (authState.loading) return <>{background}<div className="login-shell" role="status">Opening Lock In…</div></>;
+  if (!authState.authenticated) return <>{background}<LoginScreen configured={authState.configured} serverError={authError} onLogin={() => setAuthState((current) => ({ ...current, authenticated: true }))} onRetry={retrySession} /></>;
 
   return (
+    <>
+    {background}
     <div className={`app-shell ${sidebarExpanded ? 'sidebar-expanded' : 'sidebar-collapsed'}${isNarrow && mobileSidebarOpen ? ' mobile-sidebar-open' : ''}`}>
       <a className="skip-link" href="#main-content">Skip to content</a>
       {isNarrow && mobileSidebarOpen && <button type="button" className="sidebar-backdrop" aria-label="Close navigation" tabIndex={-1} onClick={() => setMobileSidebarOpen(false)} />}
@@ -184,6 +193,8 @@ export default function App() {
           onNavigate={navigateTo}
           theme={theme}
           onSelectTheme={setTheme}
+          asciiPaused={asciiPaused}
+          onToggleAscii={() => setAsciiPaused((paused) => !paused)}
           soundEnabled={soundEnabled}
           onOpenAssistant={() => setAssistantOpen(true)}
           assistantOpen={assistantOpen}
@@ -217,5 +228,6 @@ export default function App() {
       {showCat && <CatPet activeTab={activeTab} paused={mobileSidebarOpen || assistantOpen} sidebarExpanded={sidebarExpanded} />}
       <RewardFeedback soundEnabled={soundEnabled} />
     </div>
+    </>
   );
 }
