@@ -1,5 +1,5 @@
 // Service Worker for Lock In
-const CACHE_NAME = 'lock-in-v11';
+const CACHE_NAME = 'lock-in-v12';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -14,6 +14,7 @@ const STATIC_ASSETS = [
   '/fonts/LiberationSerif-Italic.ttf',
   '/fonts/LiberationSerif-BoldItalic.ttf',
   '/fonts/AdwaitaSans-Variable.woff2',
+  '/fonts/GeistSerif-Regular.woff2',
   '/art/zen-sakura-header.webp',
   '/art/ascii-katana.svg'
 ];

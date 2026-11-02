@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { CalendarDays, Check, Palette, Pause, Play, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { themes } from '../theme';
+import { fonts } from '../fonts';
 
-export default function Header({ activeTab, showCalendar, onNavigate, theme, onSelectTheme, asciiPaused, onToggleAscii, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
+export default function Header({ activeTab, showCalendar, onNavigate, theme, onSelectTheme, font, onSelectFont, asciiPaused, onToggleAscii, soundEnabled, onToggleSound, onOpenAssistant, assistantOpen }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -68,8 +69,8 @@ export default function Header({ activeTab, showCalendar, onNavigate, theme, onS
           className="icon-btn"
           onClick={() => setMenuOpen((open) => !open)}
           type="button"
-          title="Choose theme"
-          aria-label="Choose theme"
+          title="Choose theme and font"
+          aria-label="Choose theme and font"
           aria-expanded={menuOpen}
           aria-controls={menuOpen ? 'theme-menu' : undefined}
           ref={triggerRef}
@@ -77,7 +78,7 @@ export default function Header({ activeTab, showCalendar, onNavigate, theme, onS
           <Palette size={17} aria-hidden="true" />
         </button>
         {menuOpen && (
-          <div className="theme-menu" id="theme-menu" role="group" aria-label="Color theme">
+          <div className="theme-menu" id="theme-menu" role="group" aria-label="Theme and font">
             {themes.map((option) => (
               <button
                 key={option.id}
@@ -91,6 +92,12 @@ export default function Header({ activeTab, showCalendar, onNavigate, theme, onS
                 {theme === option.id && <Check size={16} className="theme-option-check" aria-hidden="true" />}
               </button>
             ))}
+            <div className="appearance-font-field">
+              <label htmlFor="appearance-font">Font</label>
+              <select id="appearance-font" value={font} onChange={(event) => onSelectFont(event.target.value)}>
+                {fonts.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+              </select>
+            </div>
           </div>
         )}
       </div>

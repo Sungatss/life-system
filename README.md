@@ -1,5 +1,9 @@
 # Life System
 
+The header palette menu lets you choose a theme and font independently. Fonts include **Liberation Serif**, **Geist Serif**, **Adwaita Sans**, and **Theme default**. Both preferences are saved on this device. Retired Dark Green · solid selections fall back to Dark Gray.
+
+Fonts are self-hosted and cached for offline use. Geist Serif Regular comes from the official [`geist` 1.9.0 package](https://github.com/vercel/geist-font), with its license in `frontend/public/fonts/GeistSerif-LICENSE.txt`. Its current release includes Latin glyphs and Regular weight; unsupported characters fall back to Liberation Serif. Existing Liberation Serif regular, bold, italic, and bold italic files remain bundled.
+
 ## Daily push reminders
 
 In **Profile → Daily reminders**, enable notifications on each phone or laptop. On a local always-on server, choose a time for each device; on Vercel Hobby, the reminder is fixed near 19:00 Almaty time. Lock In sends one reminder per device per day when due or overdue tasks remain or active habits are unchecked. It does not send anything when the day is complete. The browser must grant permission; on iPhone, open the app from its Home Screen icon.

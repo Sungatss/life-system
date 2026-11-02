@@ -9,7 +9,6 @@ export const themes = [
     id: 'ascii-ink', label: 'ASCII Ink · live monochrome', background: '#050505', accent: '#ededed',
     swatch: 'repeating-linear-gradient(135deg, #050505 0 4px, #818181 4px 5px, #050505 5px 9px)',
   },
-  { id: 'dark-green', label: 'Dark green · solid', background: '#101a15', accent: '#9bd1ad' },
   { id: 'glass-green', label: 'Dark glass gray', background: '#141819', accent: '#93a99e' },
   {
     id: 'bloom', label: 'Bloom · peach and blue', background: '#f4eee0', accent: '#3173ad',
@@ -22,6 +21,7 @@ const themeAliases = {
   dark: 'dark-gray',
   'dark-purple': 'dark-gray',
   'bloom-dark': 'dark-gray',
+  'dark-green': 'dark-gray',
   'light-matcha': 'light',
   'light-brown': 'light',
 };

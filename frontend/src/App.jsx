@@ -18,6 +18,7 @@ import CatPet from './components/CatPet';
 import AsciiBackground from './components/AsciiBackground';
 import { api } from './api/client';
 import { getTheme } from './theme';
+import { getFont } from './fonts';
 import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
 import { getHiddenPages, saveHiddenPages } from './utils/navigationPreferences';
 
@@ -34,6 +35,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState(getInitialView);
   const [theme, setTheme] = useState(() => getTheme(localStorage.getItem('life-system-theme')).id);
+  const [font, setFont] = useState(() => getFont(localStorage.getItem('life-system-font')).id);
   const [asciiPaused, setAsciiPaused] = useState(() => localStorage.getItem('life-system-ascii-paused') === 'true');
   const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('life-system-sound') !== 'off');
   const [showCat, setShowCat] = useState(() => localStorage.getItem('life-system-show-cat') !== 'false');
@@ -97,6 +99,11 @@ export default function App() {
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getTheme(theme).background);
     localStorage.setItem('life-system-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-font', font);
+    localStorage.setItem('life-system-font', font);
+  }, [font]);
 
   useEffect(() => {
     localStorage.setItem('life-system-ascii-paused', String(asciiPaused));
@@ -193,6 +200,8 @@ export default function App() {
           onNavigate={navigateTo}
           theme={theme}
           onSelectTheme={setTheme}
+          font={font}
+          onSelectFont={setFont}
           asciiPaused={asciiPaused}
           onToggleAscii={() => setAsciiPaused((paused) => !paused)}
           soundEnabled={soundEnabled}

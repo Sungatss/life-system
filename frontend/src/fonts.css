@@ -1,0 +1,57 @@
+@font-face {
+  font-family: 'Geist Serif';
+  src: url('/fonts/GeistSerif-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Explicit preferences override each theme's body and display families. */
+:root[data-font='liberation-serif'] {
+  --font-app: 'Liberation Serif', Georgia, 'Times New Roman', serif;
+  --font-display: var(--font-app);
+}
+
+:root[data-font='geist-serif'] {
+  --font-app: 'Geist Serif', 'Liberation Serif', Georgia, serif;
+  --font-display: var(--font-app);
+}
+
+:root[data-font='adwaita-sans'] {
+  --font-app: 'Adwaita Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-app);
+}
+
+/* Keep the chosen typeface in metadata, rewards, and companion messages too. */
+:root[data-font]:not([data-font='theme']) :is(
+  .cockpit-weekday, .section-badge, .task-controls-count, .profile-level-label,
+  .reward-streak-scene, .cat-pet-bubble-name
+) { font-family: var(--font-app); }
+
+.theme-menu {
+  max-height: calc(100dvh - 80px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.appearance-font-field {
+  display: grid;
+  gap: 8px;
+  margin: 6px 2px 2px;
+  padding: 12px 7px 5px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.appearance-font-field label { color: var(--text-secondary); font-size: 12px; font-weight: 600; }
+.appearance-font-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+}
