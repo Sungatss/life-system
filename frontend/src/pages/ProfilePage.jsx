@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react';
 import { Flame, Pencil, Save, X, Zap } from 'lucide-react';
 import { api } from '../api/client';
 import ContributionGraph from '../components/ContributionGraph';
-import ReminderSettings from '../components/ReminderSettings';
 import WeeklyReviewPage from './WeeklyReviewPage';
-import { hideablePages } from '../utils/navigationPreferences';
 import './ProfilePage.css';
 
-export default function ProfilePage({ onSignOut, hiddenPages, onTogglePageVisibility, showCat, onToggleCatVisibility }) {
+export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [progress, setProgress] = useState(null);
   const [contributions, setContributions] = useState(null);
@@ -65,7 +63,6 @@ export default function ProfilePage({ onSignOut, hiddenPages, onTogglePageVisibi
     <div className="profile-page">
       <div className="profile-title-row">
         <h1 className="profile-page-title">Profile</h1>
-        <button type="button" className="btn-secondary" onClick={onSignOut}>Sign out</button>
       </div>
 
       {loadError && <p className="profile-error" role="alert">{loadError}</p>}
@@ -117,30 +114,6 @@ export default function ProfilePage({ onSignOut, hiddenPages, onTogglePageVisibi
       )}
 
       {contributions && <ContributionGraph contributions={contributions} title="Contributions" />}
-
-      <ReminderSettings />
-
-      <section className="navigation-settings" aria-labelledby="companion-settings-title">
-        <h2 id="companion-settings-title">Companion</h2>
-        <p>Choose whether Yuki appears in the app. Saved on this device.</p>
-        <label className="navigation-settings-option">
-          <span>Show Yuki (cat)</span>
-          <input type="checkbox" checked={showCat} onChange={onToggleCatVisibility} />
-        </label>
-      </section>
-
-      <section className="navigation-settings" aria-labelledby="navigation-settings-title">
-        <h2 id="navigation-settings-title">Navigation</h2>
-        <p>Choose which page buttons appear. Your pages and data remain available. Changes are saved on this device.</p>
-        <div className="navigation-settings-list">
-          {hideablePages.map(({ id, label }) => (
-            <label className="navigation-settings-option" key={id}>
-              <span>Show {label}</span>
-              <input type="checkbox" checked={!hiddenPages.includes(id)} onChange={() => onTogglePageVisibility(id)} />
-            </label>
-          ))}
-        </div>
-      </section>
 
       <WeeklyReviewPage />
     </div>

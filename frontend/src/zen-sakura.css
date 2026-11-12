@@ -78,14 +78,11 @@
 [data-theme='zen-sakura'] .app-sidebar { background: var(--bg-sidebar); border-color: var(--border-subtle); box-shadow: none; }
 [data-theme='zen-sakura'] .brand-label { font-family: var(--font-display); font-size: 22px; letter-spacing: -0.035em; }
 [data-theme='zen-sakura'] .brand-avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--text-primary); border-color: var(--border-subtle); }
-[data-theme='zen-sakura'] .sidebar-nav { gap: 7px; }
-[data-theme='zen-sakura'] .sidebar-link { min-height: 46px; font-size: 13px; font-weight: 500; border-radius: 12px; }
 [data-theme='zen-sakura'] .sidebar-link:hover { background: #e7e0d4; }
-[data-theme='zen-sakura'] .sidebar-link.active { position: relative; background: var(--bg-surface); color: var(--accent); border-color: var(--border-subtle); font-weight: 650; }
-[data-theme='zen-sakura'] .sidebar-link.active::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--accent); }
+[data-theme='zen-sakura'] .sidebar-link.active { background: #e4ddd1; color: var(--text-primary); }
 [data-theme='zen-sakura'] .app-header { background: var(--bg-primary); border-bottom: 1px solid var(--border-subtle); padding-block: 16px; margin-bottom: 28px; }
 [data-theme='zen-sakura'] .header-actions { margin-left: auto; gap: 8px; }
-[data-theme='zen-sakura'] :is(.icon-btn, .sidebar-toggle) { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-sidebar); border: 1px solid var(--border-subtle); color: var(--text-primary); }
+[data-theme='zen-sakura'] .icon-btn:not(.sidebar-toggle) { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-sidebar); border: 1px solid var(--border-subtle); color: var(--text-primary); }
 [data-theme='zen-sakura'] .icon-btn:hover { background: #e7e0d4; border-color: var(--border-strong); }
 [data-theme='zen-sakura'] .assistant-header-button { min-height: 40px; padding-inline: 14px; border-radius: 12px; background: var(--text-primary); color: var(--bg-surface); border-color: var(--text-primary); filter: none; }
 [data-theme='zen-sakura'] .assistant-header-button:hover { background: #35434b; filter: none; }
@@ -108,7 +105,7 @@
 
 /* Solid cards: calm content areas, with no decorative image behind recorded data. */
 [data-theme='zen-sakura'] :is(.cockpit-section, .contribution-container, .review-nav-section, .reflection-section) { padding: 26px; margin-bottom: 24px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-subtle); }
-[data-theme='zen-sakura'] :is(.profile-hero, .profile-stats > div, .reminder-settings, .navigation-settings, .progress-card, .project-rail, .login-card) { background: var(--bg-surface); border-color: var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-subtle); }
+[data-theme='zen-sakura'] :is(.profile-hero, .profile-stats > div, .progress-card, .project-rail, .login-card) { background: var(--bg-surface); border-color: var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-subtle); }
 [data-theme='zen-sakura'] .cockpit-date-banner { background: var(--bg-surface); border-radius: 16px; padding: 28px; }
 [data-theme='zen-sakura'] .section-header { align-items: center; gap: 16px; margin-bottom: 22px; }
 [data-theme='zen-sakura'] .section-title-wrap { gap: 11px; }

@@ -1,5 +1,5 @@
 // Service Worker for Lock In
-const CACHE_NAME = 'lock-in-v12';
+const CACHE_NAME = 'lock-in-v13';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

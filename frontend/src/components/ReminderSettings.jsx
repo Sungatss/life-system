@@ -140,7 +140,7 @@ export default function ReminderSettings() {
       ) : (
         <p className="reminder-unavailable">{!available ? 'Push reminders need server setup before they can be enabled. On Vercel, set the VAPID variables and CRON_SECRET for Production, then redeploy.' : 'This browser cannot receive push reminders. On iPhone, add Lock In to your Home Screen and open it there.'}</p>
       )}
-      {error && <p className="profile-error" role="alert">{error}</p>}
+      {error && <p className="reminder-error" role="alert">{error}</p>}
     </section>
   );
 }

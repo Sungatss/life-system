@@ -68,7 +68,7 @@ export default function CatPet({ activeTab, paused = false, sidebarExpanded = fa
   const messageIdRef = useRef(0);
   const lastPointerUpRef = useRef(0);
 
-  const rail = viewport.width <= 900 ? 56 : sidebarExpanded ? 220 : 68;
+  const rail = viewport.width <= 900 ? 56 : sidebarExpanded ? 256 : 68;
   const maxX = Math.max(8, viewport.width - CAT_WIDTH - 8);
   const minX = Math.min(rail + 8, maxX);
   const maxY = Math.max(8, viewport.height - CAT_HEIGHT - 8);

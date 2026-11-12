@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import TodayPage from './pages/TodayPage';
 import TasksPage from './pages/TasksPage';
@@ -11,6 +10,7 @@ import GoalsPage from './pages/GoalsPage';
 import ProfilePage from './pages/ProfilePage';
 import CalendarPage from './pages/CalendarPage';
 import FinancePage from './pages/FinancePage';
+import SettingsPage from './pages/SettingsPage';
 import RewardFeedback from './components/RewardFeedback';
 import LoginScreen from './components/LoginScreen';
 import AssistantPanel from './components/AssistantPanel';
@@ -22,7 +22,7 @@ import { getFont } from './fonts';
 import { stopRewardAudio, unlockRewardAudio } from './utils/rewardSound';
 import { getHiddenPages, saveHiddenPages } from './utils/navigationPreferences';
 
-const views = ['today', 'inbox', 'projects', 'goals', 'calendar', 'finance', 'tasks', 'habits', 'profile'];
+const views = ['today', 'inbox', 'projects', 'goals', 'calendar', 'finance', 'tasks', 'habits', 'profile', 'settings'];
 const resolveView = (hash) => hash === 'review' ? 'profile' : views.includes(hash) ? hash : 'today';
 const narrowScreen = '(max-width: 900px)';
 
@@ -188,32 +188,14 @@ export default function App() {
         expanded={sidebarExpanded}
         hiddenPages={hiddenPages}
         onNavigate={navigateTo}
+        assistantOpen={assistantOpen}
+        onOpenAssistant={() => { setMobileSidebarOpen(false); setAssistantOpen(true); }}
         onToggle={() => {
           if (isNarrow) setMobileSidebarOpen((open) => !open);
           else setSidebarCollapsed((collapsed) => !collapsed);
         }}
       />
       <div className="app-container" inert={isNarrow && mobileSidebarOpen}>
-        <Header
-          activeTab={activeTab}
-          showCalendar={!hiddenPages.includes('calendar')}
-          onNavigate={navigateTo}
-          theme={theme}
-          onSelectTheme={setTheme}
-          font={font}
-          onSelectFont={setFont}
-          asciiPaused={asciiPaused}
-          onToggleAscii={() => setAsciiPaused((paused) => !paused)}
-          soundEnabled={soundEnabled}
-          onOpenAssistant={() => setAssistantOpen(true)}
-          assistantOpen={assistantOpen}
-          onToggleSound={() => {
-            if (soundEnabled) stopRewardAudio();
-            else unlockRewardAudio();
-            setSoundEnabled((enabled) => !enabled);
-          }}
-        />
-
         <main className="app-main" id="main-content" key={dataVersion}>
           {['tasks', 'habits'].includes(activeTab) && <ProgressCard />}
           {activeTab === 'today' && (
@@ -229,7 +211,23 @@ export default function App() {
           {activeTab === 'finance' && <FinancePage />}
           {activeTab === 'tasks' && <TasksPage onNavigateToCalendar={() => navigateTo('calendar')} showCalendar={!hiddenPages.includes('calendar')} />}
           {activeTab === 'habits' && <HabitsPage />}
-          {activeTab === 'profile' && <ProfilePage onSignOut={signOut} hiddenPages={hiddenPages} onTogglePageVisibility={togglePageVisibility} showCat={showCat} onToggleCatVisibility={() => setShowCat((visible) => !visible)} />}
+          {activeTab === 'profile' && <ProfilePage />}
+          {activeTab === 'settings' && (
+            <SettingsPage
+              theme={theme} onSelectTheme={setTheme}
+              font={font} onSelectFont={setFont}
+              asciiPaused={asciiPaused} onToggleAscii={() => setAsciiPaused((paused) => !paused)}
+              soundEnabled={soundEnabled} onToggleSound={() => {
+                if (soundEnabled) stopRewardAudio();
+                else unlockRewardAudio();
+                setSoundEnabled((enabled) => !enabled);
+              }}
+              showCat={showCat} onToggleCatVisibility={() => setShowCat((visible) => !visible)}
+              sidebarCollapsed={sidebarCollapsed} onToggleSidebar={() => setSidebarCollapsed((collapsed) => !collapsed)}
+              hiddenPages={hiddenPages} onTogglePageVisibility={togglePageVisibility}
+              onSignOut={signOut}
+            />
+          )}
         </main>
       </div>
 
