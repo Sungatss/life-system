@@ -6,7 +6,7 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null, proje
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [stepsText, setStepsText] = useState('');
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
   const [priority, setPriority] = useState('none');
   const [category, setCategory] = useState('');
   const [dueDate, setDueDate] = useState(defaultDueDate || '');
@@ -34,7 +34,6 @@ export default function QuickTaskInput({ onAddTask, defaultDueDate = null, proje
       setDescription('');
       setStepsText('');
       setCategory('');
-      setShowDetails(false);
       setPriority('none');
       if (!defaultDueDate) {
         setDueDate('');

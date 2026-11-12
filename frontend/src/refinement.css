@@ -675,7 +675,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 :is([data-theme='dark-gray'], [data-theme='zen-sakura']) .app-header { background: var(--bg-primary); }
 :is([data-theme='dark-gray'], [data-theme='zen-sakura']) .cockpit-date-banner { background: var(--bg-surface); }
 :is([data-theme='dark-gray'], [data-theme='zen-sakura']) .brand-avatar { background: var(--bg-subtle); }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) :is(.modal-overlay, .sidebar-backdrop, .reward-feedback-level, .reward-feedback-streak) {
+:is([data-theme='dark-gray'], [data-theme='zen-sakura']) :is(.modal-overlay, .sidebar-backdrop, .reward-feedback-level) {
   background: var(--bg-primary);
 }
 [data-theme='dark-gray'] .assistant-dialog::backdrop { background: #121212; }
@@ -700,37 +700,9 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   border-color: var(--border-subtle);
 }
 :is([data-theme='dark-gray'], [data-theme='zen-sakura']) .progress-mini-bar-fill { background: var(--accent); }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-feedback-streak {
-  color: var(--text-primary);
-  scrollbar-color: var(--border-strong) var(--bg-primary);
-  animation: none;
-}
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) :is(.reward-streak-glow, .reward-streak-shadow) { display: none; }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-flame { filter: none; }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-ring { border-color: var(--border-strong); }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-count { text-shadow: none; }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-embers i { box-shadow: none; }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) :is(.reward-streak-bonuses span, .reward-streak-milestone) {
-  background: var(--bg-surface);
-  border-color: var(--border-subtle);
-  color: var(--text-primary);
-}
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) :is(.reward-streak-kicker, .reward-streak-copy h2, .reward-streak-milestone strong) { color: var(--text-primary); }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) :is(.reward-streak-copy p, .reward-streak-milestone > div:first-child span) { color: var(--text-secondary); }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-track { background: var(--bg-subtle); }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-track span { background: var(--accent); box-shadow: none; }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-continue {
-  background: var(--accent);
-  color: var(--bg-primary);
-  box-shadow: none;
-}
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-continue:hover { background: var(--text-secondary); }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-streak-continue:active { box-shadow: none; }
 :is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-xp-toast { animation-name: solid-dark-toast-in; }
 :is([data-theme='dark-gray'], [data-theme='zen-sakura']) .reward-level-popup { animation: solid-dark-level-in 520ms cubic-bezier(.17, 1.45, .35, 1) both; }
 :is([data-theme='dark-gray'], [data-theme='zen-sakura']) .cat-pet-bubble { animation-name: solid-dark-bubble-in; }
-:is([data-theme='dark-gray'], [data-theme='zen-sakura']) :is(.reward-streak-bonuses, .reward-streak-milestone, .reward-streak-continue) { animation-name: solid-dark-rise; }
 @keyframes solid-dark-toast-in { from { transform: translateY(-22px) scale(.85); } to { transform: translateY(0) scale(1); } }
 @keyframes solid-dark-level-in { from { transform: translateY(25px) scale(.72); } to { transform: translateY(0) scale(1); } }
 @keyframes solid-dark-bubble-in { from { transform: translateY(4px); } to { transform: translateY(0); } }
-@keyframes solid-dark-rise { from { transform: translateY(17px); } to { transform: translateY(0); } }

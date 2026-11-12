@@ -19,13 +19,15 @@ A minimalist personal productivity web application built for daily use.
 Primary areas:
 1. **Today**: Date, today's tasks and habits.
 2. **Inbox**: An empty-at-start capture list for thoughts and tasks, with multiline entries you can edit or delete. Draft text remains in the browser until saved.
-3. **Tasks**: Structured tasks with optional descriptions and nested steps with their own checkboxes. Add steps while creating a task (one per line under details) or from any existing task card. Checking the final step offers **Complete** or **Keep open** for the parent task; it never completes the parent automatically.
+3. **Tasks**: Structured tasks with optional descriptions and nested steps with their own checkboxes. Description, area, and steps are expanded by default in the Today, Tasks, and Projects task forms. You can collapse them manually, and adding a task keeps your current open/collapsed choice. Add steps while creating a task (one per line) or from any existing task card. Checking the final step offers **Complete** or **Keep open** for the parent task; it never completes the parent automatically.
 4. **Projects**: A simple project plan or roadmap with its own tasks and nested steps. Existing tasks can be assigned through Edit. Deleting a project leaves its tasks in Tasks.
 5. **Habits**: Consistency tracking with a 14-day history grid.
 6. **Calendar**: Month view and selected-day schedule for events, deadlines, and existing task due dates.
 7. **Finance**: KZT personal ledger with Overview, Transactions, Payments & Debts, Budget, and Things to Buy. Tracks received and expected income, essential and optional spending, installments, monthly bills, tuition, month-specific budgets, and a wishlist.
 
 A compact progress card on Tasks and Habits rewards each completed task or daily habit with 10 XP. The daily goal is 30 XP, each 100 XP adds a level, and one completion per day maintains a streak. An unfinished day keeps yesterday’s streak until the day ends. Dates follow the device’s timezone. Progress is calculated from saved completions, including existing history: undoing or deleting activity removes its XP, archived habits retain theirs, and subtasks do not earn separate XP.
+
+A confirmed streak increase shows a compact, theme-matched card with a rolling counter, flame pulse, and next-milestone progress. It leaves the page usable, dismisses automatically after 4.5 seconds, and can be closed with Escape or its close button. Reduced-motion preferences disable its animations; the Sound effects setting still controls its existing sound cue.
 
 The sidebar provides workspace navigation, with AI near the top and Settings and Profile at the bottom. Collapse it to an icon rail or expand it to see page names. On smaller screens it opens as a drawer; choosing a page or pressing Escape closes the drawer.
 

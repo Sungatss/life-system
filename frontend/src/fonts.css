@@ -25,7 +25,7 @@
 /* Keep the chosen typeface in metadata, rewards, and companion messages too. */
 :root[data-font]:not([data-font='theme']) :is(
   .cockpit-weekday, .section-badge, .task-controls-count, .profile-level-label,
-  .reward-streak-scene, .cat-pet-bubble-name
+  .reward-streak-card, .cat-pet-bubble-name
 ) { font-family: var(--font-app); }
 
 .theme-menu {

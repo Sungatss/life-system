@@ -206,12 +206,8 @@
 [data-theme='zen-sakura'] .progress-ring-track { stroke: var(--border-subtle); }
 [data-theme='zen-sakura'] .weekly-kpi-card { border-radius: 14px; padding: 20px; }
 [data-theme='zen-sakura'] .cockpit-quote { font-family: var(--font-display); font-size: 15px; border-left-color: var(--secondary-accent); background: var(--bg-surface); }
-[data-theme='zen-sakura'] .reward-streak-scene { font-family: var(--font-app); }
 [data-theme='zen-sakura'] .reward-streak-count { font-family: var(--font-display); color: var(--text-primary); }
-[data-theme='zen-sakura'] .reward-feedback-streak { background: var(--bg-primary); }
-[data-theme='zen-sakura'] .reward-streak-continue { border-radius: 12px; }
 [data-theme='zen-sakura'] :is(.reward-xp-toast, .reward-level-popup) { background: var(--bg-surface); border-color: var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-floating); }
-[data-theme='zen-sakura'] .reward-streak-embers { display: none; }
 
 @media (min-width: 1100px) {
   [data-theme='zen-sakura'] .date-navigator { grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr); grid-template-rows: auto 1fr; gap: 12px 24px; min-height: 194px; padding: 30px; }
