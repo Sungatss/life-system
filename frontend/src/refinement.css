@@ -467,6 +467,10 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .filter-pill.active { border-color: var(--accent); background: var(--accent-subtle); color: var(--accent); }
 .task-controls { margin: 0 0 16px; }
 .task-controls-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.task-controls-options { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.task-date-scope { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer; }
+.task-date-scope input { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+.task-date-scope input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .task-controls-toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 8px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-elevated); color: var(--text-secondary); cursor: pointer; font-weight: 600; }
 .task-controls-toggle:hover, .task-controls-toggle.configured { border-color: var(--border-strong); color: var(--text-primary); }
 .task-controls-toggle:focus-visible, .task-settings-pin:focus-visible, .task-settings-reset:focus-visible, .task-priority-option:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }

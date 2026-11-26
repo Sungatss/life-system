@@ -11,10 +11,12 @@ export const emptyTaskViewSettings = (status = 'all') => ({
 
 export function readTaskViewSettings(view, initialStatus, storage = globalThis.localStorage) {
   const fallback = emptyTaskViewSettings(initialStatus);
+  if (view === 'today') fallback.todayOnly = false;
   try {
     const saved = JSON.parse(storage.getItem(storageKey(view)));
     if (!saved || saved.pinned !== true) return fallback;
     return {
+      ...(view === 'today' ? { todayOnly: saved.todayOnly === true } : {}),
       status: validStatuses.has(saved.status) ? saved.status : fallback.status,
       priorities: Array.isArray(saved.priorities)
         ? [...new Set(saved.priorities.filter((priority) => validPriorities.has(priority)))]

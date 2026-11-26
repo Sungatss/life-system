@@ -18,7 +18,7 @@ test('pinned settings restore independently for Tasks and Today, then unpin clea
 
   assert.deepEqual(readTaskViewSettings('tasks', 'active', store), pinned);
   assert.deepEqual(readTaskViewSettings('today', 'all', store), {
-    status: 'all', priorities: [], area: '', sortBy: 'newest', pinned: false,
+    status: 'all', priorities: [], area: '', sortBy: 'newest', pinned: false, todayOnly: false,
   });
 
   writeTaskViewSettings('tasks', { ...pinned, pinned: false }, store);
@@ -35,6 +35,6 @@ test('invalid saved choices cannot break the controls', () => {
   }, store);
 
   assert.deepEqual(readTaskViewSettings('today', 'all', store), {
-    status: 'all', priorities: ['high'], area: '', sortBy: 'newest', pinned: true,
+    status: 'all', priorities: ['high'], area: '', sortBy: 'newest', pinned: true, todayOnly: false,
   });
 });

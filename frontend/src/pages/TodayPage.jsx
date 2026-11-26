@@ -20,7 +20,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
   const [error, setError] = useState(null);
   const requestIdRef = useRef(0);
   const { settings, change, reset } = useTaskViewSettings('today', 'all');
-  const { status, priorities, area, sortBy, pinned } = settings;
+  const { status, priorities, area, sortBy, pinned, todayOnly } = settings;
 
   const loadTodayData = async () => {
     const requestId = ++requestIdRef.current;
@@ -242,12 +242,15 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
     );
   }
 
-  const tasks = hasCurrentData ? todayData.tasks : [];
+  const allTasks = hasCurrentData ? todayData.tasks : [];
+  const tasks = todayOnly
+    ? allTasks.filter((task) => task.due_date === currentDateStr)
+    : allTasks;
   const events = hasCurrentData ? todayData.events || [] : [];
   const habits = hasCurrentData ? todayData.habits : [];
   const visibleTasks = filterAndSortTasks(tasks, settings);
   const taskAreas = getTaskAreas(tasks);
-  const hasTaskFilters = status !== 'all' || priorities.length > 0 || Boolean(area);
+  const hasTaskFilters = todayOnly || status !== 'all' || priorities.length > 0 || Boolean(area);
 
   const completedTasksCount = tasks.filter((t) => t.completed).length;
   const completedHabitsCount = habits.filter((h) => h.completed_today).length;
@@ -297,6 +300,9 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
         />
 
         <TaskControls
+          todayOnly={todayOnly}
+          onTodayOnlyChange={(value) => change({ todayOnly: value })}
+          todayOnlyLabel={currentDateStr === todayStr ? 'Today only' : 'Selected day only'}
           status={status}
           onStatusChange={(value) => change({ status: value })}
           priorities={priorities}
@@ -316,7 +322,7 @@ export default function TodayPage({ onNavigateToTasks, onNavigateToHabits }) {
 
         {visibleTasks.length === 0 ? (
           <div className="empty-state">
-            <p>{tasks.length ? 'No tasks match these filters.' : 'No tasks for this day.'}</p>
+            <p>{tasks.length ? 'No tasks match these filters.' : todayOnly ? 'No tasks due on this day.' : 'No tasks for this day.'}</p>
             {tasks.length > 0 && hasTaskFilters && (
               <button type="button" className="btn-secondary" onClick={reset}>Clear filters</button>
             )}

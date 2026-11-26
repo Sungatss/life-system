@@ -17,7 +17,7 @@ On Vercel Hobby, reminders run once daily through a protected cron at **14:00 UT
 A minimalist personal productivity web application built for daily use.
 
 Primary areas:
-1. **Today**: Date, today's tasks and habits.
+1. **Today**: Date, today's tasks and habits. Check **Today only** above the task list to show tasks due on the selected date, excluding overdue and undated tasks. The option follows the date navigator and is called **Selected day only** on other dates. Use **Pin as default** under **Filter & sort** to remember it for this page.
 2. **Inbox**: An empty-at-start capture list for thoughts and tasks, with multiline entries you can edit or delete. Draft text remains in the browser until saved.
 3. **Tasks**: Structured tasks with optional descriptions and nested steps with their own checkboxes. Description, area, and steps are expanded by default in the Today, Tasks, and Projects task forms. You can collapse them manually, and adding a task keeps your current open/collapsed choice. Add steps while creating a task (one per line) or from any existing task card. Checking the final step offers **Complete** or **Keep open** for the parent task; it never completes the parent automatically.
 4. **Projects**: A simple project plan or roadmap with its own tasks and nested steps. Existing tasks can be assigned through Edit. Deleting a project leaves its tasks in Tasks.

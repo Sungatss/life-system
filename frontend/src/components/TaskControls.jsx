@@ -2,14 +2,14 @@ import React, { useId, useState } from 'react';
 import { ChevronDown, Pin, SlidersHorizontal } from 'lucide-react';
 import { TASK_PRIORITIES, TASK_SORT_OPTIONS } from '../utils/taskFilters';
 
-export default function TaskControls({ status, onStatusChange, priorities, onPrioritiesChange, area, onAreaChange, areas, hasUnassignedArea, sortBy, onSortChange, pinned, onPinnedChange, onReset, visibleCount, totalCount }) {
+export default function TaskControls({ todayOnly = false, onTodayOnlyChange, todayOnlyLabel = 'Today only', status, onStatusChange, priorities, onPrioritiesChange, area, onAreaChange, areas, hasUnassignedArea, sortBy, onSortChange, pinned, onPinnedChange, onReset, visibleCount, totalCount }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const panelId = `${id}-settings`;
   const statusId = `${id}-status`;
   const areaId = `${id}-area`;
   const sortId = `${id}-sort`;
-  const activeCount = Number(status !== 'all') + Number(priorities.length > 0) + Number(Boolean(area));
+  const activeCount = Number(todayOnly) + Number(status !== 'all') + Number(priorities.length > 0) + Number(Boolean(area));
 
   const togglePriority = (priority) => {
     onPrioritiesChange(priorities.includes(priority)
@@ -20,14 +20,22 @@ export default function TaskControls({ status, onStatusChange, priorities, onPri
   return (
     <div className="task-controls">
       <div className="task-controls-bar">
-        <button type="button" className={`task-controls-toggle${activeCount || sortBy !== 'newest' ? ' configured' : ''}`}
-          onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-controls={panelId}>
-          <SlidersHorizontal size={16} aria-hidden="true" />
-          Filter &amp; sort
-          {activeCount > 0 && <span className="task-controls-count" aria-label={`${activeCount} active filters`}>{activeCount}</span>}
-          {pinned && <Pin size={14} className="task-controls-pin-icon" aria-label="Settings pinned as default" />}
-          <ChevronDown size={15} className={open ? 'rotated' : ''} aria-hidden="true" />
-        </button>
+        <div className="task-controls-options">
+          <button type="button" className={`task-controls-toggle${activeCount || sortBy !== 'newest' ? ' configured' : ''}`}
+            onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-controls={panelId}>
+            <SlidersHorizontal size={16} aria-hidden="true" />
+            Filter &amp; sort
+            {activeCount > 0 && <span className="task-controls-count" aria-label={`${activeCount} active filters`}>{activeCount}</span>}
+            {pinned && <Pin size={14} className="task-controls-pin-icon" aria-label="Settings pinned as default" />}
+            <ChevronDown size={15} className={open ? 'rotated' : ''} aria-hidden="true" />
+          </button>
+          {onTodayOnlyChange && (
+            <label className="task-date-scope" title="Show only tasks due on the selected day, excluding overdue and undated tasks.">
+              <input type="checkbox" checked={todayOnly} onChange={(event) => onTodayOnlyChange(event.target.checked)} />
+              {todayOnlyLabel}
+            </label>
+          )}
+        </div>
         <span className="task-results-count" role="status">{visibleCount} of {totalCount} tasks</span>
       </div>
 

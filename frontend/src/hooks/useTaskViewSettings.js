@@ -11,6 +11,7 @@ export default function useTaskViewSettings(view, initialStatus) {
   const change = (patch) => setSettings((current) => ({ ...current, ...patch }));
   const reset = () => setSettings((current) => ({
     ...current, status: 'all', priorities: [], area: '', sortBy: 'newest',
+    ...(view === 'today' ? { todayOnly: false } : {}),
   }));
 
   return { settings, change, reset };
